@@ -1,4 +1,4 @@
-# ReNote Documentation Package
+# ReNote Documentation
 
 ReNote is a web-based academic repository and knowledge management system. It helps users organize academic resources into repositories, control repository visibility, request access to restricted resources, upload and preview files, search resources, generate AI file summaries, and revisit summary history.
 
