@@ -10,15 +10,16 @@ function LandingPage() {
         <div className="max-w-3xl space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1 text-sm text-muted-foreground shadow-sm">
             <Sparkles className="size-4 text-primary" />
-            Phase 0 prototype foundation
+            Academic resource workspace
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
               ReNote
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-              A clean academic workspace foundation for notes, repositories,
-              discovery, and collaboration.
+              A clean academic workspace for organizing repositories, managing
+              learning materials, and reviewing content with AI-assisted
+              summaries.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -29,7 +30,7 @@ function LandingPage() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/explore-public">Explore Public Notes</Link>
+              <Link to="/explore-public">Explore Public Resources</Link>
             </Button>
           </div>
         </div>

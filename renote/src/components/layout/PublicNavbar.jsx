@@ -1,12 +1,36 @@
-import { Link, NavLink } from "react-router"
-import { Moon, Search, Sun } from "lucide-react"
+import { useState } from "react"
+import { Link, NavLink, useLocation } from "react-router"
+import { Menu, Moon, Search, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { publicNavItems } from "@/data/navigation"
 import useTheme from "@/hooks/useTheme"
+import { cn } from "@/lib/utils"
+
+function isActiveRoute(pathname, href) {
+  if (href === "/") {
+    return pathname === "/"
+  }
+
+  const currentPath = pathname.replace(/\/+$/, "")
+  const itemPath = href.replace(/\/+$/, "")
+
+  return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`)
+}
 
 function PublicNavbar() {
+  const location = useLocation()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === "dark"
 
@@ -40,7 +64,7 @@ function PublicNavbar() {
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
-              placeholder="Search notes"
+              placeholder="Search resources"
               type="search"
             />
           </div>
@@ -56,12 +80,79 @@ function PublicNavbar() {
           >
             {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
           </Button>
-          <Button asChild variant="ghost">
+          <Button asChild className="hidden md:inline-flex" variant="ghost">
             <Link to="/role-selection">Sign In</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="hidden md:inline-flex">
             <Link to="/role-selection">Sign Up</Link>
           </Button>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                aria-label="Open public navigation"
+                className="md:hidden"
+                size="icon"
+                variant="ghost"
+              >
+                <Menu className="size-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              className="w-[19rem] max-w-[calc(100vw-1.5rem)] p-0"
+              side="right"
+            >
+              <SheetHeader className="border-b px-5 py-5 text-left">
+                <SheetTitle className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-2xl bg-primary text-primary-foreground">
+                    R
+                  </span>
+                  ReNote
+                </SheetTitle>
+                <SheetDescription>Public navigation</SheetDescription>
+              </SheetHeader>
+
+              <nav className="flex flex-col gap-2 px-4 py-5">
+                {publicNavItems.map((item) => {
+                  const isActive = isActiveRoute(location.pathname, item.href)
+
+                  return (
+                    <SheetClose asChild key={item.href}>
+                      <NavLink
+                        className={cn(
+                          "flex h-11 items-center rounded-2xl px-3 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                        to={item.href}
+                      >
+                        {item.label}
+                      </NavLink>
+                    </SheetClose>
+                  )
+                })}
+              </nav>
+
+              <div className="mt-auto flex flex-col gap-2 border-t px-4 py-5">
+                <SheetClose asChild>
+                  <Link
+                    className="flex h-11 items-center justify-center rounded-2xl text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    to="/role-selection"
+                  >
+                    Sign In
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    className="flex h-11 items-center justify-center rounded-2xl bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-[var(--renote-primary-hover)]"
+                    to="/role-selection"
+                  >
+                    Sign Up
+                  </Link>
+                </SheetClose>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
