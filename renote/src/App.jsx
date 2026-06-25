@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import AppLayout from "@/layouts/AppLayout"
 import PublicLayout from "@/layouts/PublicLayout"
+import DesignSystemPage from "@/pages/app/DesignSystemPage"
 import DashboardPage from "@/pages/app/DashboardPage"
 import ExplorePage from "@/pages/app/ExplorePage"
 import MyRepositoriesPage from "@/pages/app/MyRepositoriesPage"
@@ -29,6 +30,7 @@ function App() {
           <Route path="app" element={<AppLayout />}>
             <Route index element={<Navigate to="/app/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="design-system" element={<DesignSystemPage />} />
             <Route path="explore" element={<ExplorePage />} />
             <Route path="my-repositories" element={<MyRepositoriesPage />} />
             <Route
