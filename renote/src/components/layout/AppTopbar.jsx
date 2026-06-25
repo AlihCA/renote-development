@@ -3,14 +3,19 @@ import { NavLink, useLocation } from "react-router"
 import {
   Bell,
   BookOpen,
+  Bot,
   Circle,
   Compass,
+  FolderOpen,
+  KeyRound,
   LayoutDashboard,
   Menu,
   Moon,
   Palette,
   Search,
   Sun,
+  Archive,
+  User,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -43,17 +48,29 @@ import useTheme from "@/hooks/useTheme"
 import { cn } from "@/lib/utils"
 
 const mobileNavIcons = {
+  "AI Summaries": Bot,
+  "Access Requests": KeyRound,
+  "Archive / Trash": Archive,
+  Collections: FolderOpen,
   Dashboard: LayoutDashboard,
   "Design System": Palette,
   Explore: Compass,
   "My Repositories": BookOpen,
+  Notifications: Bell,
+  Profile: User,
 }
 
-function isActiveRoute(pathname, href) {
+function isActivePath(pathname, href) {
   const currentPath = pathname.replace(/\/+$/, "")
   const itemPath = href.replace(/\/+$/, "")
 
   return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`)
+}
+
+function isActiveRoute(pathname, item) {
+  const activeHrefs = item.activeHrefs ?? [item.href]
+
+  return activeHrefs.some((href) => isActivePath(pathname, href))
 }
 
 function AppTopbar() {
@@ -92,7 +109,7 @@ function AppTopbar() {
           <nav className="flex flex-col gap-2 px-4 py-5">
             {appNavItems.map((item) => {
               const Icon = mobileNavIcons[item.label] ?? Circle
-              const isActive = isActiveRoute(location.pathname, item.href)
+              const isActive = isActiveRoute(location.pathname, item)
 
               return (
                 <SheetClose asChild key={item.href}>

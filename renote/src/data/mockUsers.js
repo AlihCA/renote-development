@@ -1,0 +1,77 @@
+export const mockUsers = [
+  {
+    id: "user-student-mia",
+    name: "Mia Santos",
+    role: "student",
+    course: "BS Information Technology",
+    year: "3rd Year",
+    section: "IT3A",
+    avatarInitials: "MS",
+    stats: {
+      repositories: 4,
+      collections: 5,
+      summaries: 18,
+    },
+  },
+  {
+    id: "user-student-daniel",
+    name: "Daniel Cruz",
+    role: "student",
+    course: "BS Computer Science",
+    year: "2nd Year",
+    section: "CS2B",
+    avatarInitials: "DC",
+    stats: {
+      repositories: 3,
+      collections: 4,
+      summaries: 11,
+    },
+  },
+  {
+    id: "user-faculty-rivera",
+    name: "Dr. Elena Rivera",
+    role: "faculty",
+    trustLabel: "faculty",
+    avatarInitials: "ER",
+    stats: {
+      repositories: 8,
+      collections: 6,
+      summaries: 24,
+    },
+  },
+  {
+    id: "user-faculty-lim",
+    name: "Prof. Nathan Lim",
+    role: "faculty",
+    trustLabel: "faculty",
+    avatarInitials: "NL",
+    stats: {
+      repositories: 6,
+      collections: 3,
+      summaries: 15,
+    },
+  },
+  {
+    id: "user-institution-ccs",
+    name: "College of Computing Studies",
+    role: "institution",
+    trustLabel: "official",
+    avatarInitials: "CCS",
+    stats: {
+      repositories: 14,
+      collections: 9,
+      summaries: 32,
+    },
+  },
+  {
+    id: "user-guest-demo",
+    name: "Guest Reviewer",
+    role: "guest",
+    avatarInitials: "GR",
+    stats: {
+      repositories: 0,
+      collections: 1,
+      summaries: 0,
+    },
+  },
+]

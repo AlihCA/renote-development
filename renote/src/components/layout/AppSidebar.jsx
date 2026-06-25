@@ -47,11 +47,17 @@ function getStoredSidebarState() {
   }
 }
 
-function isActiveRoute(pathname, href) {
+function isActivePath(pathname, href) {
   const currentPath = pathname.replace(/\/+$/, "")
   const itemPath = href.replace(/\/+$/, "")
 
   return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`)
+}
+
+function isActiveRoute(pathname, item) {
+  const activeHrefs = item.activeHrefs ?? [item.href]
+
+  return activeHrefs.some((href) => isActivePath(pathname, href))
 }
 
 function AppSidebar() {
@@ -120,7 +126,7 @@ function AppSidebar() {
         >
           {appNavItems.map((item) => {
             const Icon = sidebarIcons[item.label] ?? Circle
-            const isActive = isActiveRoute(location.pathname, item.href)
+            const isActive = isActiveRoute(location.pathname, item)
 
             return isCollapsed ? (
               <Tooltip key={item.href}>

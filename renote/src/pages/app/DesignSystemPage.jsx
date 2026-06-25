@@ -30,6 +30,14 @@ import FileTypeIcon from "@/components/files/FileTypeIcon"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  mockCollections,
+  mockFiles,
+  mockNotifications,
+  mockRepositories,
+  mockSummaries,
+  mockUsers,
+} from "@/data"
 import useTheme from "@/hooks/useTheme"
 import { cn } from "@/lib/utils"
 
@@ -52,6 +60,14 @@ const fileTypeSamples = [
   { type: "image/png", label: "PNG" },
   { type: "url", label: "Link" },
   { extension: "zip", label: "Default" },
+]
+const mockDataStats = [
+  { label: "Users", value: mockUsers.length },
+  { label: "Repositories", value: mockRepositories.length },
+  { label: "Files", value: mockFiles.length },
+  { label: "Collections", value: mockCollections.length },
+  { label: "Summaries", value: mockSummaries.length },
+  { label: "Notifications", value: mockNotifications.length },
 ]
 
 function DesignSystemPage() {
@@ -195,6 +211,27 @@ function DesignSystemPage() {
           />
         </div>
       </section>
+
+      <SectionCard
+        description="Reusable prototype records now available from src/data."
+        icon={FolderOpen}
+        title="Mock Data Snapshot"
+        variant="muted"
+      >
+        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+          {mockDataStats.map((item) => (
+            <div
+              className="rounded-2xl border bg-background/70 p-3"
+              key={item.label}
+            >
+              <p className="text-2xl font-semibold tracking-tight">
+                {item.value}
+              </p>
+              <p className="text-xs text-muted-foreground">{item.label}</p>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
 
       <section className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
         <div className="renote-preview-tile">
