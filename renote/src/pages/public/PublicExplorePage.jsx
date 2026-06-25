@@ -1,25 +1,38 @@
-import { useMemo, useState } from "react"
-import { Library, Search } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router"
+import { Filter, Library, Search } from "lucide-react"
 
 import EmptyState from "@/components/common/EmptyState"
+import Pagination from "@/components/repositories/Pagination"
 import PublicRepositoryCard from "@/components/repositories/PublicRepositoryCard"
-import RepositoryFilterBar from "@/components/repositories/RepositoryFilterBar"
+import RepositoryFilterPanel from "@/components/repositories/RepositoryFilterPanel"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { mockFiles, mockRepositories } from "@/data"
 
+const PAGE_SIZE = 5
+
 const initialFilters = {
-  fileType: "all",
+  excludeTags: [],
+  includeTags: [],
   query: "",
   sort: "newest",
   subject: "all",
   trust: "all",
+  visibility: "all",
 }
 
-function toLabel(value) {
-  return String(value)
-    .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+function normalizeTag(value) {
+  return String(value).trim().toLowerCase()
 }
 
 function normalizeFileType(value) {
@@ -65,7 +78,7 @@ function getRepositoryFileTypes(repositoryId) {
   ]
 }
 
-function getRepositorySearchText(repository, fileTypes) {
+function getRepositorySearchText(repository) {
   return [
     repository.title,
     repository.description,
@@ -75,7 +88,6 @@ function getRepositorySearchText(repository, fileTypes) {
     repository.trustLabel,
     repository.visibility,
     ...repository.tags,
-    ...fileTypes,
   ]
     .join(" ")
     .toLowerCase()
@@ -95,17 +107,34 @@ function sortRepositories(repositories, sort) {
   })
 }
 
+function getResultRange(currentPage, totalResults) {
+  if (totalResults === 0) {
+    return "Showing 0 repositories"
+  }
+
+  const start = (currentPage - 1) * PAGE_SIZE + 1
+  const end = Math.min(currentPage * PAGE_SIZE, totalResults)
+
+  return `Showing ${start}-${end} of ${totalResults} repositories`
+}
+
 function PublicExplorePage() {
-  const [filters, setFilters] = useState(initialFilters)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlQuery = searchParams.get("q") ?? ""
+  const [currentPage, setCurrentPage] = useState(1)
+  const [filters, setFilters] = useState({
+    ...initialFilters,
+    query: urlQuery,
+  })
 
   const repositories = useMemo(
     () =>
       mockRepositories
         .filter((repository) => repository.status === "active")
-        .filter((repository) => ["public", "restricted"].includes(repository.visibility))
         .map((repository) => ({
           ...repository,
           fileTypes: getRepositoryFileTypes(repository.id),
+          normalizedTags: repository.tags.map(normalizeTag),
         })),
     []
   )
@@ -120,86 +149,162 @@ function PublicExplorePage() {
     [repositories]
   )
 
-  const fileTypeOptions = useMemo(
-    () => [
-      { label: "All file types", value: "all" },
-      ...[...new Set(repositories.flatMap((repository) => repository.fileTypes))]
-        .sort((first, second) => first.localeCompare(second))
-        .map((fileType) => ({ label: toLabel(fileType), value: fileType })),
-    ],
-    [repositories]
-  )
-
-  const trustOptions = useMemo(
-    () => [
-      { label: "All trust labels", value: "all" },
-      ...[...new Set(repositories.map((repository) => repository.trustLabel))]
-        .sort((first, second) => first.localeCompare(second))
-        .map((trust) => ({ label: toLabel(trust), value: trust })),
-    ],
-    [repositories]
-  )
-
   const filteredRepositories = useMemo(() => {
     const query = filters.query.trim().toLowerCase()
     const filtered = repositories.filter((repository) => {
-      const matchesQuery =
-        !query || getRepositorySearchText(repository, repository.fileTypes).includes(query)
+      const matchesQuery = !query || getRepositorySearchText(repository).includes(query)
       const matchesSubject =
         filters.subject === "all" || repository.subject === filters.subject
-      const matchesFileType =
-        filters.fileType === "all" || repository.fileTypes.includes(filters.fileType)
       const matchesTrust =
         filters.trust === "all" || repository.trustLabel === filters.trust
+      const matchesVisibility =
+        filters.visibility === "all" || repository.visibility === filters.visibility
+      const matchesIncludedTags =
+        filters.includeTags.length === 0 ||
+        filters.includeTags.some((tag) =>
+          repository.normalizedTags.some((repositoryTag) =>
+            repositoryTag.includes(tag)
+          )
+        )
+      const matchesExcludedTags = !filters.excludeTags.some((tag) =>
+        repository.normalizedTags.some((repositoryTag) => repositoryTag.includes(tag))
+      )
 
-      return matchesQuery && matchesSubject && matchesFileType && matchesTrust
+      return (
+        matchesQuery &&
+        matchesSubject &&
+        matchesTrust &&
+        matchesVisibility &&
+        matchesIncludedTags &&
+        matchesExcludedTags
+      )
     })
 
     return sortRepositories(filtered, filters.sort)
   }, [filters, repositories])
 
+  const totalPages = Math.max(1, Math.ceil(filteredRepositories.length / PAGE_SIZE))
+  const safeCurrentPage = Math.min(currentPage, totalPages)
+  const paginatedRepositories = filteredRepositories.slice(
+    (safeCurrentPage - 1) * PAGE_SIZE,
+    safeCurrentPage * PAGE_SIZE
+  )
+
+  useEffect(() => {
+    setCurrentPage(1)
+    setFilters((currentFilters) =>
+      currentFilters.query === urlQuery
+        ? currentFilters
+        : {
+            ...currentFilters,
+            query: urlQuery,
+          }
+    )
+  }, [urlQuery])
+
+  function updateSearchQuery(value) {
+    const nextSearchParams = new URLSearchParams(searchParams)
+
+    if (value.trim()) {
+      nextSearchParams.set("q", value)
+    } else {
+      nextSearchParams.delete("q")
+    }
+
+    setSearchParams(nextSearchParams, { replace: true })
+  }
+
   function updateFilter(key, value) {
+    if (key === "query") {
+      updateSearchQuery(value)
+      return
+    }
+
+    setCurrentPage(1)
     setFilters((currentFilters) => ({
       ...currentFilters,
       [key]: value,
     }))
   }
 
+  function addTag(key, value) {
+    const tag = normalizeTag(value)
+
+    if (!tag) {
+      return
+    }
+
+    setCurrentPage(1)
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      [key]: currentFilters[key].includes(tag)
+        ? currentFilters[key]
+        : [...currentFilters[key], tag],
+    }))
+  }
+
+  function removeTag(key, value) {
+    setCurrentPage(1)
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      [key]: currentFilters[key].filter((tag) => tag !== value),
+    }))
+  }
+
+  function resetFilters() {
+    setCurrentPage(1)
+    setFilters(initialFilters)
+    const nextSearchParams = new URLSearchParams(searchParams)
+    nextSearchParams.delete("q")
+    setSearchParams(nextSearchParams, { replace: true })
+  }
+
+  function renderFilterPanel() {
+    return (
+      <RepositoryFilterPanel
+        filters={filters}
+        onAddTag={addTag}
+        onFilterChange={updateFilter}
+        onRemoveTag={removeTag}
+        onReset={resetFilters}
+        subjectOptions={subjectOptions}
+      />
+    )
+  }
+
   return (
     <div className="bg-background">
       <section className="border-b bg-muted/35">
-        <div className="renote-container py-10 sm:py-14">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(20rem,0.65fr)] lg:items-end">
-            <div className="max-w-3xl space-y-5">
-              <Badge
-                className="gap-2 rounded-2xl border-primary/20 bg-background/85 px-3 py-1.5 text-primary shadow-sm"
-                variant="outline"
-              >
-                <Library className="size-3.5" />
-                Public academic library
-              </Badge>
+        <div className="renote-container py-8 sm:py-10">
+          <div className="max-w-3xl space-y-5">
+            <Badge
+              className="gap-2 rounded-2xl border-primary/20 bg-background/85 px-3 py-1.5 text-primary shadow-sm"
+              variant="outline"
+            >
+              <Library className="size-3.5" />
+              Public academic library
+            </Badge>
 
-              <div className="space-y-3">
-                <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                  Explore Public Resources
-                </h1>
-                <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                  Browse public academic repositories, reviewers, notes, and
-                  learning materials shared through ReNote.
-                </p>
-              </div>
+            <div className="space-y-3">
+              <h1 className="text-4xl font-semibold tracking-tight">
+                Explore Public Resources
+              </h1>
+              <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+                Browse public academic repositories, reviewers, notes, and
+                learning materials shared through ReNote.
+              </p>
             </div>
 
-            <label className="space-y-2">
+            <label className="block max-w-2xl space-y-2 md:hidden">
               <span className="px-1 text-xs font-medium text-muted-foreground">
-                Search the public library
+                Search repositories
               </span>
               <div className="renote-input-shell bg-background/90">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
                   onChange={(event) => updateFilter("query", event.target.value)}
-                  placeholder="Search repositories, owners, subjects, or tags"
+                  placeholder="Search by title, owner, subject, or tag"
                   type="search"
                   value={filters.query}
                 />
@@ -209,47 +314,70 @@ function PublicExplorePage() {
         </div>
       </section>
 
-      <section className="renote-container space-y-6 py-8 sm:py-10">
-        <RepositoryFilterBar
-          fileTypeOptions={fileTypeOptions}
-          filters={filters}
-          onFilterChange={updateFilter}
-          subjectOptions={subjectOptions}
-          trustOptions={trustOptions}
-        />
+      <section className="renote-container py-8 sm:py-10 lg:pr-[25rem]">
+        <div className="min-w-0 space-y-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight">
+                Repository results
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {getResultRange(safeCurrentPage, filteredRepositories.length)}
+              </p>
+            </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight">
-              Public repository results
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredRepositories.length} of {repositories.length} guest-friendly
-              resource previews.
-            </p>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button className="w-full sm:w-fit lg:hidden" variant="outline">
+                  <Filter className="size-4" />
+                  Filters
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-y-auto p-0"
+                side="right"
+              >
+                <SheetHeader className="border-b px-5 py-5 text-left">
+                  <SheetTitle>Sort and Filter</SheetTitle>
+                  <SheetDescription>
+                    Refine public repository results.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="p-4">{renderFilterPanel()}</div>
+              </SheetContent>
+            </Sheet>
           </div>
-          <Badge className="w-fit" variant="secondary">
-            Public and restricted previews
-          </Badge>
+
+          {paginatedRepositories.length > 0 ? (
+            <>
+              <div className="space-y-4">
+                {paginatedRepositories.map((repository) => (
+                  <PublicRepositoryCard
+                    fileTypes={repository.fileTypes}
+                    key={repository.id}
+                    repository={repository}
+                  />
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={safeCurrentPage}
+                onPageChange={setCurrentPage}
+                totalPages={totalPages}
+              />
+            </>
+          ) : (
+            <EmptyState
+              description="Try adjusting your search, include tags, exclude tags, or filters."
+              icon={Library}
+              title="No public resources found"
+            />
+          )}
         </div>
 
-        {filteredRepositories.length > 0 ? (
-          <div className="grid gap-4 lg:grid-cols-2">
-            {filteredRepositories.map((repository) => (
-              <PublicRepositoryCard
-                fileTypes={repository.fileTypes}
-                key={repository.id}
-                repository={repository}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            description="Try adjusting your search or filters."
-            icon={Library}
-            title="No public resources found"
-          />
-        )}
+        <aside className="fixed bottom-8 right-8 top-24 z-30 hidden w-[22rem] overflow-y-auto pr-1 lg:block">
+          {renderFilterPanel()}
+        </aside>
       </section>
     </div>
   )

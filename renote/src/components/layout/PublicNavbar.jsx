@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, NavLink, useLocation } from "react-router"
+import { Link, NavLink, useLocation, useSearchParams } from "react-router"
 import { Menu, Moon, Search, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -30,9 +30,33 @@ function isActiveRoute(pathname, href) {
 
 function PublicNavbar() {
   const location = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [localSearch, setLocalSearch] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === "dark"
+  const isPublicExplore = location.pathname === "/explore-public"
+  const exploreSearchQuery = searchParams.get("q") ?? ""
+  const searchValue = isPublicExplore ? exploreSearchQuery : localSearch
+
+  function handleSearchChange(event) {
+    const value = event.target.value
+
+    if (!isPublicExplore) {
+      setLocalSearch(value)
+      return
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams)
+
+    if (value.trim()) {
+      nextSearchParams.set("q", value)
+    } else {
+      nextSearchParams.delete("q")
+    }
+
+    setSearchParams(nextSearchParams, { replace: true })
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
@@ -64,8 +88,10 @@ function PublicNavbar() {
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
+              onChange={handleSearchChange}
               placeholder="Search resources"
               type="search"
+              value={searchValue}
             />
           </div>
         </div>
