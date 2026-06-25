@@ -219,11 +219,12 @@
 
   .renote-gradient-button {
     @apply text-white shadow-sm transition;
-    background-image: linear-gradient(135deg, #ec4899 0%, #b43bd1 52%, #6366f1 100%);
+    background-image: linear-gradient(135deg, #d85edb 0%, #b43bd1 52%, #8b5cf6 100%);
     box-shadow: 0 14px 32px rgb(180 59 209 / 24%);
   }
 
   .renote-gradient-button:hover {
+    background-image: linear-gradient(135deg, #c34ad4 0%, #9f2cc2 52%, #7c3aed 100%);
     box-shadow: 0 16px 38px rgb(180 59 209 / 30%);
     filter: saturate(1.06) brightness(1.02);
   }

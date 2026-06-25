@@ -83,7 +83,7 @@ function PublicNavbar() {
           <Button asChild className="hidden md:inline-flex" variant="ghost">
             <Link to="/role-selection">Sign In</Link>
           </Button>
-          <Button asChild className="hidden md:inline-flex">
+          <Button asChild className="renote-gradient-button border-transparent hover:text-white hidden md:inline-flex">
             <Link to="/role-selection">Sign Up</Link>
           </Button>
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
