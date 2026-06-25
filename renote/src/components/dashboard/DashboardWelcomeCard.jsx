@@ -21,10 +21,10 @@ function DashboardWelcomeCard() {
         </span>
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Welcome back, ReNote User 👋
+            Welcome back, ReNote User {"\u{1F44B}"}
           </h2>
           <p className="max-w-xl text-sm leading-6 text-white/85 sm:text-base">
-            Here’s a quick snapshot of your academic workspace.
+            Here's a quick snapshot of your academic workspace.
           </p>
         </div>
       </div>

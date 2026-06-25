@@ -2,30 +2,26 @@ import { Link } from "react-router"
 import {
   FileText,
   Layers,
-  LayoutDashboard,
   Library,
-  Plus,
-  Search,
   Sparkles,
 } from "lucide-react"
 
 import EmptyState from "@/components/common/EmptyState"
-import PageHeader from "@/components/common/PageHeader"
 import PageShell from "@/components/common/PageShell"
 import SectionCard from "@/components/common/SectionCard"
-import ActivitySnapshot from "@/components/dashboard/ActivitySnapshot"
 import DashboardCollectionCard from "@/components/dashboard/DashboardCollectionCard"
-import DashboardRepositoryCard from "@/components/dashboard/DashboardRepositoryCard"
+import DashboardRecentCard from "@/components/dashboard/DashboardRecentCard"
+import {
+  RecentFileCompactRow,
+  RecentRepositoryRow,
+  RecentSummaryRow,
+} from "@/components/dashboard/DashboardRecentRows"
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard"
 import DashboardWelcomeCard from "@/components/dashboard/DashboardWelcomeCard"
-import RecentFileRow from "@/components/dashboard/RecentFileRow"
-import SummaryPreviewCard from "@/components/dashboard/SummaryPreviewCard"
 import { Button } from "@/components/ui/button"
 import {
-  mockAccessRequests,
   mockCollections,
   mockFiles,
-  mockNotifications,
   mockRepositories,
   mockSummaries,
 } from "@/data"
@@ -52,36 +48,10 @@ function DashboardPage() {
   const recentFiles = sortByDate(mockFiles, "updatedAt").slice(0, 3)
   const recentSummaries = sortByDate(mockSummaries, "generatedAt").slice(0, 3)
   const recentCollections = sortByDate(mockCollections, "updatedAt").slice(0, 3)
-  const latestNotification = sortByDate(mockNotifications, "createdAt")[0]
-  const latestRequest = sortByDate(mockAccessRequests, "createdAt")[0]
 
   return (
     <PageShell className="space-y-8">
-    
       <DashboardWelcomeCard />
-
-      <PageHeader
-        actions={
-          <>
-            <Button asChild>
-              <Link to="/app/my-repositories">
-                <Plus className="size-4" />
-                Create Repository
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/app/explore">
-                <Search className="size-4" />
-                Explore Resources
-              </Link>
-            </Button>
-          </>
-        }
-        description="A quick overview of your repositories, saved resources, summaries, and recent activity."
-        eyebrow="Workspace"
-        icon={LayoutDashboard}
-        title="Dashboard"
-      />
 
       <div className="grid gap-4 md:grid-cols-3">
         <DashboardStatCard
@@ -104,26 +74,21 @@ function DashboardPage() {
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
-        <SectionCard
-          action={
-            <Button asChild size="sm" variant="secondary">
-              <Link to="/app/my-repositories">View all</Link>
-            </Button>
-          }
-          description="Recently updated spaces across public, restricted, and private academic materials."
+      <div className="grid items-stretch gap-4 xl:grid-cols-3">
+        <DashboardRecentCard
           icon={Library}
           title="Recent Repositories"
+          to="/app/my-repositories"
         >
           {recentRepositories.length > 0 ? (
-            <div className="space-y-3">
+            <>
               {recentRepositories.map((repository) => (
-                <DashboardRepositoryCard
+                <RecentRepositoryRow
                   key={repository.id}
                   repository={repository}
                 />
               ))}
-            </div>
+            </>
           ) : (
             <EmptyState
               className="min-h-44"
@@ -132,24 +97,17 @@ function DashboardPage() {
               title="No repositories yet"
             />
           )}
-        </SectionCard>
+        </DashboardRecentCard>
 
-        <ActivitySnapshot
-          latestNotification={latestNotification}
-          latestRequest={latestRequest}
-        />
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <SectionCard
-          description="Latest uploaded or updated materials across mock repositories."
+        <DashboardRecentCard
           icon={FileText}
           title="Recent Files"
+          to="/app/my-repositories"
         >
           {recentFiles.length > 0 ? (
-            <div className="space-y-3">
+            <>
               {recentFiles.map((file) => (
-                <RecentFileRow
+                <RecentFileCompactRow
                   file={file}
                   key={file.id}
                   repositoryTitle={getRepositoryTitle(
@@ -158,7 +116,7 @@ function DashboardPage() {
                   )}
                 />
               ))}
-            </div>
+            </>
           ) : (
             <EmptyState
               className="min-h-44"
@@ -167,25 +125,20 @@ function DashboardPage() {
               title="No files yet"
             />
           )}
-        </SectionCard>
+        </DashboardRecentCard>
 
-        <SectionCard
-          action={
-            <Button asChild size="sm" variant="secondary">
-              <Link to="/app/summaries">View history</Link>
-            </Button>
-          }
-          description="AI-assisted summary history from recent academic materials."
+        <DashboardRecentCard
           icon={Sparkles}
-          title="AI Summary Preview"
-          variant="glow"
+          title="Recent Summaries"
+          to="/app/summaries"
+          viewAllLabel="View history"
         >
           {recentSummaries.length > 0 ? (
-            <div className="space-y-3">
+            <>
               {recentSummaries.map((summary) => (
-                <SummaryPreviewCard key={summary.id} summary={summary} />
+                <RecentSummaryRow key={summary.id} summary={summary} />
               ))}
-            </div>
+            </>
           ) : (
             <EmptyState
               className="min-h-44"
@@ -194,7 +147,7 @@ function DashboardPage() {
               title="No summaries yet"
             />
           )}
-        </SectionCard>
+        </DashboardRecentCard>
       </div>
 
       <SectionCard
