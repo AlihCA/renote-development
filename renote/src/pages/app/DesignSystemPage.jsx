@@ -26,6 +26,7 @@ import StatCard from "@/components/common/StatCard"
 import StatusBadge from "@/components/common/StatusBadge"
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
+import FileTypeIcon from "@/components/files/FileTypeIcon"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -43,6 +44,15 @@ const iconChips = [
 
 const statusSamples = ["draft", "pending", "approved", "rejected", "archived"]
 const visibilitySamples = ["public", "private", "restricted", "unlisted"]
+const fileTypeSamples = [
+  { extension: "pdf", label: "PDF" },
+  { extension: "docx", label: "DOCX" },
+  { extension: "xlsx", label: "XLSX" },
+  { extension: "pptx", label: "PPTX" },
+  { type: "image/png", label: "PNG" },
+  { type: "url", label: "Link" },
+  { extension: "zip", label: "Default" },
+]
 
 function DesignSystemPage() {
   const { setTheme, theme, toggleTheme } = useTheme()
@@ -243,6 +253,31 @@ function DesignSystemPage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="renote-preview-tile">
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold">File Type Icons</h2>
+          <p className="text-sm text-muted-foreground">
+            Rounded-square indicators for future repository file lists.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {fileTypeSamples.map((sample) => (
+            <div
+              className="flex items-center gap-3 rounded-2xl border bg-background/70 p-3"
+              key={sample.label}
+            >
+              <FileTypeIcon extension={sample.extension} type={sample.type} />
+              <div>
+                <p className="text-sm font-medium">{sample.label}</p>
+                <p className="text-xs text-muted-foreground">
+                  {sample.extension ?? sample.type}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
