@@ -34,14 +34,14 @@ function SectionCard({
   return (
     <Card className={cn(variants[variant], className)}>
       {(title || description || Icon || action) ? (
-        <CardHeader>
+        <CardHeader className="gap-3">
           <div className="flex items-start gap-3">
             {Icon ? (
               <span className={iconVariants[variant]}>
                 <Icon className="size-5" />
               </span>
             ) : null}
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
               {title ? <CardTitle>{title}</CardTitle> : null}
               {description ? (
                 <CardDescription>{description}</CardDescription>
@@ -51,8 +51,8 @@ function SectionCard({
           {action ? <CardAction>{action}</CardAction> : null}
         </CardHeader>
       ) : null}
-      {children ? <CardContent>{children}</CardContent> : null}
-      {footer ? <CardFooter>{footer}</CardFooter> : null}
+      {children ? <CardContent className="text-sm">{children}</CardContent> : null}
+      {footer ? <CardFooter className="text-sm">{footer}</CardFooter> : null}
     </Card>
   )
 }

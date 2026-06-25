@@ -2,16 +2,24 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 const statusStyles = {
-  active: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  approved: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  archived: "bg-muted text-muted-foreground",
-  destructive: "bg-destructive/10 text-destructive",
-  draft: "bg-secondary text-secondary-foreground",
-  muted: "bg-muted text-muted-foreground",
-  pending: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  rejected: "bg-destructive/10 text-destructive",
-  success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  warning: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  active:
+    "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+  approved:
+    "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+  archived:
+    "border-border/80 bg-muted text-muted-foreground dark:bg-muted/60",
+  destructive:
+    "border-destructive/20 bg-destructive/10 text-destructive",
+  draft:
+    "border-primary/15 bg-primary/10 text-primary dark:border-primary/25",
+  muted: "border-border/80 bg-muted text-muted-foreground dark:bg-muted/60",
+  pending:
+    "border-amber-200/90 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300",
+  rejected: "border-destructive/20 bg-destructive/10 text-destructive",
+  success:
+    "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+  warning:
+    "border-amber-200/90 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300",
 }
 
 function toLabel(value) {
@@ -25,7 +33,7 @@ function StatusBadge({ children, className, status = "draft" }) {
 
   return (
     <Badge
-      className={cn(statusStyles[key] ?? statusStyles.muted, className)}
+      className={cn("shadow-none", statusStyles[key] ?? statusStyles.muted, className)}
       variant="secondary"
     >
       {children ?? toLabel(status)}

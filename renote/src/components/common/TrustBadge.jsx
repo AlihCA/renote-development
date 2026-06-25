@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 const trustStyles = {
-  community: "bg-sky-500/10 text-sky-700 dark:text-sky-300",
-  official: "bg-primary/10 text-primary",
-  trusted: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  verified: "bg-primary/10 text-primary",
+  community:
+    "border-sky-200/90 bg-sky-50 text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300",
+  official: "border-primary/15 bg-primary/10 text-primary",
+  trusted:
+    "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+  verified: "border-primary/15 bg-primary/10 text-primary",
 }
 
 function TrustBadge({
@@ -20,7 +22,11 @@ function TrustBadge({
 
   return (
     <Badge
-      className={cn("gap-1", trustStyles[key] ?? trustStyles.verified, className)}
+      className={cn(
+        "gap-1 shadow-none",
+        trustStyles[key] ?? trustStyles.verified,
+        className
+      )}
       variant="secondary"
     >
       <Icon className="size-3" />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { NavLink } from "react-router"
+import { NavLink, useLocation } from "react-router"
 import {
   Archive,
   Bell,
@@ -47,7 +47,15 @@ function getStoredSidebarState() {
   }
 }
 
+function isActiveRoute(pathname, href) {
+  const currentPath = pathname.replace(/\/+$/, "")
+  const itemPath = href.replace(/\/+$/, "")
+
+  return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`)
+}
+
 function AppSidebar() {
+  const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(getStoredSidebarState)
 
   useEffect(() => {
@@ -57,7 +65,7 @@ function AppSidebar() {
   return (
     <aside
       className={cn(
-        "sidebar-gradient relative hidden h-svh shrink-0 overflow-hidden border-r border-[#E9C8F2] text-[#32103F] transition-[width] duration-300 ease-out dark:border-[#5D2B74] dark:text-white lg:flex",
+        "sidebar-gradient relative hidden h-svh shrink-0 overflow-hidden border-r border-[#E9B8F2] text-[#32103F] transition-[width] duration-300 ease-out dark:border-[#5D2B74] dark:text-white lg:flex",
         isCollapsed ? "w-[4.75rem]" : "w-[17rem]"
       )}
     >
@@ -73,7 +81,7 @@ function AppSidebar() {
             isCollapsed ? "flex-col gap-3" : "gap-3"
           )}
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-2xl border border-[#E9C8F2] bg-[#A855F7] font-semibold text-white shadow-sm shadow-fuchsia-200/60 dark:border-[#AA3BC3]/40 dark:bg-[#AA3BC3] dark:shadow-none">
+          <span className="grid size-10 shrink-0 place-items-center rounded-2xl border border-[#E9B8F2] bg-primary font-semibold text-primary-foreground shadow-sm shadow-fuchsia-200/60 dark:border-primary/40 dark:bg-primary dark:shadow-none">
             R
           </span>
           {!isCollapsed ? (
@@ -88,7 +96,7 @@ function AppSidebar() {
             aria-expanded={!isCollapsed}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             className={cn(
-              "grid shrink-0 place-items-center rounded-xl border border-[#E9C8F2] bg-white/55 text-[#32103F] shadow-sm transition hover:border-[#DDADE9] hover:bg-[#F7E5FF] hover:text-[#32103F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A855F7]/30 dark:border-[#5D2B74] dark:bg-[#32103F] dark:text-[#F8EFFC] dark:shadow-none dark:hover:border-[#AA3BC3] dark:hover:bg-[#48146E] dark:hover:text-white dark:focus-visible:ring-[#AA3BC3]/45",
+              "grid shrink-0 place-items-center rounded-xl border border-[#E9B8F2] bg-white/55 text-[#32103F] shadow-sm transition hover:border-[#E9B8F2] hover:bg-[#F8D7FF] hover:text-[#32103F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 dark:border-[#5D2B74] dark:bg-[#32103F] dark:text-[#F8EFFC] dark:shadow-none dark:hover:border-primary/60 dark:hover:bg-[#48146E] dark:hover:text-white dark:focus-visible:ring-primary/45",
               isCollapsed ? "size-10" : "size-9",
               !isCollapsed && "ml-auto"
             )}
@@ -112,20 +120,19 @@ function AppSidebar() {
         >
           {appNavItems.map((item) => {
             const Icon = sidebarIcons[item.label] ?? Circle
+            const isActive = isActiveRoute(location.pathname, item.href)
 
             return isCollapsed ? (
               <Tooltip key={item.href}>
                 <TooltipTrigger asChild>
                   <NavLink
                     aria-label={item.label}
-                    className={({ isActive }) =>
-                      cn(
-                        "mx-auto flex h-11 w-11 items-center justify-center rounded-[14px] border border-transparent p-0 shadow-none outline-none transition focus-visible:ring-2 focus-visible:ring-[#B43BD1]/35",
-                        isActive
-                          ? "bg-[#B43BD1] text-white"
-                          : "bg-transparent text-[#5E216F] hover:bg-[#F7D9FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
-                      )
-                    }
+                    className={cn(
+                      "mx-auto flex h-11 w-11 items-center justify-center rounded-[14px] border border-transparent p-0 shadow-none outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
+                    )}
                     to={item.href}
                   >
                     <Icon aria-hidden="true" className="size-5 shrink-0" />
@@ -137,14 +144,12 @@ function AppSidebar() {
               </Tooltip>
             ) : (
               <NavLink
-                className={({ isActive }) =>
-                  cn(
-                    "flex h-11 w-full items-center justify-start gap-3 rounded-2xl border px-3 py-2.5 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-[#B43BD1]/35",
-                    isActive
-                      ? "border-transparent bg-[#B43BD1] text-white shadow-none"
-                      : "border-transparent text-[#5E216F] hover:bg-[#F7D9FF] hover:text-[#32103F] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
-                  )
-                }
+                className={cn(
+                  "flex h-11 w-full items-center justify-start gap-3 rounded-2xl border px-3 py-2.5 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                  isActive
+                    ? "border-transparent bg-primary text-primary-foreground shadow-none"
+                    : "border-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
+                )}
                 key={item.href}
                 to={item.href}
               >

@@ -13,11 +13,11 @@ function EmptyState({
   return (
     <div
       className={cn(
-        "flex min-h-56 flex-col items-center justify-center rounded-2xl border border-dashed bg-background/60 px-6 py-10 text-center",
+        "flex min-h-64 flex-col items-center justify-center rounded-3xl border border-dashed bg-card/75 px-6 py-10 text-center shadow-sm",
         className
       )}
     >
-      <span className="mb-4 grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+      <span className="renote-icon-container mb-4 size-12">
         <Icon className="size-6" />
       </span>
       <h2 className="text-lg font-semibold">{title}</h2>

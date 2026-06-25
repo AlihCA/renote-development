@@ -1,14 +1,20 @@
 import {
   Bell,
   BookOpen,
-  FileText,
+  CheckCircle2,
+  Eye,
   FolderOpen,
+  Globe2,
+  Inbox,
+  Lock,
   Moon,
   Palette,
   Plus,
   Search,
   Sparkles,
   Sun,
+  UploadCloud,
+  Users,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -26,12 +32,24 @@ import { Skeleton } from "@/components/ui/skeleton"
 import useTheme from "@/hooks/useTheme"
 import { cn } from "@/lib/utils"
 
+const iconChips = [
+  { Icon: BookOpen, label: "Repository" },
+  { Icon: FolderOpen, label: "Collection" },
+  { Icon: Sparkles, label: "AI" },
+  { Icon: Users, label: "Class" },
+  { Icon: Lock, label: "Private" },
+  { Icon: CheckCircle2, label: "Verified" },
+]
+
+const statusSamples = ["draft", "pending", "approved", "rejected", "archived"]
+const visibilitySamples = ["public", "private", "restricted", "unlisted"]
+
 function DesignSystemPage() {
   const { setTheme, theme, toggleTheme } = useTheme()
   const isDark = theme === "dark"
 
   return (
-    <PageShell className="space-y-8">
+    <PageShell className="space-y-10" size="wide">
       <PageHeader
         actions={
           <Button onClick={toggleTheme} variant="secondary">
@@ -39,42 +57,65 @@ function DesignSystemPage() {
             {isDark ? "Light mode" : "Dark mode"}
           </Button>
         }
-        description="Core ReNote UI pieces for the academic workspace foundation."
-        eyebrow="Phase 1"
+        description="Common ReNote surfaces for the Phase 1 academic workspace."
+        eyebrow="Phase 1 foundation"
         icon={Palette}
         title="Design System"
       />
 
-      <section className="renote-section">
-        <div>
-          <h2 className="text-xl font-semibold">Buttons</h2>
-          <p className="text-sm text-muted-foreground">
-            Primary actions stay purple while secondary actions stay quiet.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button>
-            <Plus className="size-4" />
-            Primary
-          </Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="destructive">Destructive</Button>
-        </div>
+      <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+        <SectionCard
+          description="Solid primary actions, quiet secondary actions, and compact icon buttons."
+          icon={Plus}
+          title="Buttons"
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <Button>
+              <Plus className="size-4" />
+              New repository
+            </Button>
+            <Button variant="secondary">Invite class</Button>
+            <Button variant="outline">Preview</Button>
+            <Button variant="ghost">Cancel</Button>
+            <Button size="icon" variant="secondary">
+              <Bell className="size-4" />
+            </Button>
+            <Button variant="destructive">Remove</Button>
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          description="Soft rounded search and form fields for repository workflows."
+          icon={Search}
+          title="Inputs and Search"
+          variant="muted"
+        >
+          <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
+            <div className="renote-input-shell">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
+                placeholder="Search repositories, notes, or authors"
+                type="search"
+              />
+            </div>
+            <Input placeholder="Course code" />
+          </div>
+        </SectionCard>
       </section>
 
       <section className="renote-section">
         <div>
           <h2 className="text-xl font-semibold">Cards</h2>
           <p className="text-sm text-muted-foreground">
-            Modular surfaces for repository, collection, and summary previews.
+            Repository, collection, and AI-focused examples.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <SectionCard
-            description="A calm card for everyday workspace content."
+            description="Lecture notes, readings, and shared class references."
             icon={BookOpen}
-            title="Repository Card"
+            title="Research Methods"
           >
             <div className="flex flex-wrap gap-2">
               <TrustBadge level="verified">Verified</TrustBadge>
@@ -82,9 +123,9 @@ function DesignSystemPage() {
             </div>
           </SectionCard>
           <SectionCard
-            description="A lighter card for secondary summaries."
+            description="Grouped materials for a course or study topic."
             icon={FolderOpen}
-            title="Collection Card"
+            title="Midterm Review"
             variant="muted"
           >
             <div className="flex flex-wrap gap-2">
@@ -93,13 +134,13 @@ function DesignSystemPage() {
             </div>
           </SectionCard>
           <SectionCard
-            description="A soft glow for landing and AI-focused moments."
+            description="A subtle accent treatment for future AI summaries."
             icon={Sparkles}
-            title="AI Summary Card"
+            title="Summary Draft"
             variant="glow"
           >
-            <p className="text-sm text-muted-foreground">
-              Highlighted surfaces should stay rare and intentional.
+            <p className="text-sm leading-6 text-muted-foreground">
+              Key terms, outline points, and review prompts can sit here later.
             </p>
           </SectionCard>
         </div>
@@ -107,169 +148,208 @@ function DesignSystemPage() {
 
       <section className="renote-section">
         <div>
-          <h2 className="text-xl font-semibold">Stats</h2>
+          <h2 className="text-xl font-semibold">Stat Cards</h2>
           <p className="text-sm text-muted-foreground">
-            Small dashboard metrics for signed-in workspaces.
+            Dashboard-ready metrics with calm icon chips.
           </p>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
-            description="Repositories ready for future uploads."
+            description="Prototype repositories ready for future uploads."
             icon={BookOpen}
             title="Repositories"
             trend="+3 this week"
             value="12"
           />
           <StatCard
-            description="Study sets organized by course or topic."
+            description="Study sets grouped by course or topic."
             icon={FolderOpen}
             title="Collections"
             value="8"
             variant="muted"
           />
           <StatCard
-            description="AI summary placeholders for Phase 2."
+            description="Reserved for later AI integration."
             icon={Sparkles}
             title="Summaries"
-            trend="Prototype"
+            trend="Phase 2"
             value="24"
+            variant="glow"
+          />
+          <StatCard
+            description="Classmates and future collaborators."
+            icon={Users}
+            title="Members"
+            value="5"
+            variant="muted"
           />
         </div>
       </section>
 
-      <section className="renote-section">
-        <div>
-          <h2 className="text-xl font-semibold">Badges</h2>
-          <p className="text-sm text-muted-foreground">
-            Status, trust, and visibility labels for repository metadata.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <StatusBadge status="draft" />
-          <StatusBadge status="pending" />
-          <StatusBadge status="approved" />
-          <StatusBadge status="rejected" />
-          <StatusBadge status="archived" />
-          <TrustBadge level="official">Official</TrustBadge>
-          <TrustBadge level="community">Community</TrustBadge>
-          <VisibilityBadge visibility="public" />
-          <VisibilityBadge visibility="private" />
-          <VisibilityBadge visibility="unlisted" />
-        </div>
-      </section>
-
-      <section className="renote-section">
-        <div>
-          <h2 className="text-xl font-semibold">Input</h2>
-          <p className="text-sm text-muted-foreground">
-            Search fields use a soft shell around the base shadcn input.
-          </p>
-        </div>
-        <div className="renote-input-shell max-w-xl">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
-            placeholder="Search repositories, notes, or authors"
-            type="search"
-          />
-        </div>
-      </section>
-
-      <section className="renote-section grid gap-4 lg:grid-cols-2">
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold">Empty State</h2>
+      <section className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="renote-preview-tile">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Icon Chips</h2>
             <p className="text-sm text-muted-foreground">
-              Friendly placeholders for future repository workflows.
+              Rounded-square chips for tool and metadata icons.
             </p>
           </div>
-          <EmptyState
-            action={
-              <Button variant="secondary">
-                <Plus className="size-4" />
-                New repository
-              </Button>
-            }
-            description="Create a repository later to organize notes, files, and summaries."
-            icon={FileText}
-            title="No repositories yet"
-          />
+          <div className="grid gap-3 sm:grid-cols-2">
+            {iconChips.map(({ Icon, label }) => (
+              <div
+                className="flex items-center gap-3 rounded-2xl border bg-background/70 p-3"
+                key={label}
+              >
+                <span className="renote-icon-container">
+                  <Icon className="size-5" />
+                </span>
+                <span className="text-sm font-medium">{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold">Skeleton</h2>
+        <div className="renote-preview-tile">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Badges</h2>
             <p className="text-sm text-muted-foreground">
-              Loading previews for cards and lists.
+              Status, trust, and visibility labels for repository metadata.
             </p>
           </div>
-          <div className="renote-muted-card space-y-4 p-5">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-24 w-full" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Status</p>
+              <div className="flex flex-wrap gap-2">
+                {statusSamples.map((status) => (
+                  <StatusBadge key={status} status={status} />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Trust</p>
+              <div className="flex flex-wrap gap-2">
+                <TrustBadge level="verified">Verified</TrustBadge>
+                <TrustBadge level="official">Official</TrustBadge>
+                <TrustBadge level="community">Community</TrustBadge>
+                <TrustBadge level="trusted">Trusted</TrustBadge>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Visibility</p>
+              <div className="flex flex-wrap gap-2">
+                {visibilitySamples.map((visibility) => (
+                  <VisibilityBadge key={visibility} visibility={visibility} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="renote-section grid gap-4 lg:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-2">
+        <EmptyState
+          action={
+            <Button variant="secondary">
+              <UploadCloud className="size-4" />
+              Add materials
+            </Button>
+          }
+          description="Create a repository later to organize notes, files, and summaries."
+          icon={Inbox}
+          title="No repositories yet"
+        />
+
+        <div className="renote-preview-tile space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold">Skeleton</h2>
+            <p className="text-sm text-muted-foreground">
+              Soft loading placeholders for lists and cards.
+            </p>
+          </div>
+          <div className="space-y-4 rounded-2xl border bg-background/70 p-4">
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-10 rounded-2xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-3 w-28" />
+              </div>
+            </div>
+            <Skeleton className="h-24 w-full" />
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
         <SectionCard
-          description="Sonner is already mounted in the app shell."
+          description="Sonner examples for common app feedback."
           icon={Bell}
-          title="Toasts"
+          title="Toast Examples"
         >
           <div className="flex flex-wrap gap-3">
             <Button onClick={() => toast.success("Repository saved")}>
-              Success toast
+              <CheckCircle2 className="size-4" />
+              Success
             </Button>
             <Button
               onClick={() => toast("Summary queued for review")}
               variant="secondary"
             >
-              Neutral toast
+              <Sparkles className="size-4" />
+              Neutral
             </Button>
             <Button
               onClick={() => toast.error("Upload failed")}
               variant="destructive"
             >
-              Error toast
+              Error
             </Button>
           </div>
         </SectionCard>
 
         <SectionCard
-          description="The theme provider writes renote-theme to localStorage."
+          description="Light remains the default, with a clean dark workspace available."
           icon={isDark ? Moon : Sun}
-          title="Theme Preview"
+          title="Light and Dark Preview"
           variant="muted"
         >
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               className={cn(
-                "rounded-2xl border bg-white p-4 text-left text-slate-950 shadow-sm transition",
+                "rounded-2xl border bg-white p-4 text-left text-slate-950 shadow-sm transition hover:border-violet-300",
                 theme === "light" && "ring-3 ring-primary/25"
               )}
               onClick={() => setTheme("light")}
               type="button"
             >
-              <span className="text-sm font-semibold">Light</span>
-              <span className="mt-2 block text-xs text-slate-500">
-                Clean academic default
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <Sun className="size-4 text-violet-600" />
+                Light
+              </span>
+              <span className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                <Eye className="size-3" />
+                Academic default
               </span>
             </button>
             <button
               className={cn(
-                "rounded-2xl border border-white/15 bg-slate-950 p-4 text-left text-white shadow-sm transition",
+                "rounded-2xl border border-white/15 bg-slate-950 p-4 text-left text-white shadow-sm transition hover:border-violet-300/60",
                 theme === "dark" && "ring-3 ring-primary/35"
               )}
               onClick={() => setTheme("dark")}
               type="button"
             >
-              <span className="text-sm font-semibold">Dark</span>
-              <span className="mt-2 block text-xs text-slate-300">
-                Optional focused workspace
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <Moon className="size-4 text-violet-200" />
+                Dark
+              </span>
+              <span className="mt-3 flex items-center gap-2 text-xs text-slate-300">
+                <Globe2 className="size-3" />
+                Focused workspace
               </span>
             </button>
           </div>

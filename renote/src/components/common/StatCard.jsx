@@ -33,9 +33,11 @@ function StatCard({
   return (
     <Card className={cn(variants[variant], className)}>
       <CardHeader className="flex-row items-start justify-between gap-3">
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           <CardDescription>{title}</CardDescription>
-          <CardTitle className="text-2xl font-semibold">{value}</CardTitle>
+          <CardTitle className="text-2xl font-semibold tracking-tight">
+            {value}
+          </CardTitle>
         </div>
         {Icon ? (
           <span className={iconVariants[variant]}>
@@ -46,7 +48,7 @@ function StatCard({
       {(description || trend) ? (
         <CardContent className="space-y-2">
           {trend ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+            <span className="inline-flex w-fit items-center gap-1 rounded-xl border border-primary/15 bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
               <ArrowUpRight className="size-3" />
               {trend}
             </span>

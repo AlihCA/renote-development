@@ -14,18 +14,18 @@
   --card-foreground: oklch(0.18 0.03 293);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.03 293);
-  --primary: #a855f7;
+  --primary: #b43bd1;
   --primary-foreground: #ffffff;
-  --secondary: #f7e5ff;
+  --secondary: #f8d7ff;
   --secondary-foreground: oklch(0.28 0.07 294);
   --muted: oklch(0.96 0.018 292);
   --muted-foreground: oklch(0.48 0.04 292);
-  --accent: #f7e5ff;
+  --accent: #f8d7ff;
   --accent-foreground: oklch(0.28 0.09 295);
   --destructive: oklch(0.58 0.22 28);
   --border: oklch(0.9 0.02 292);
   --input: oklch(0.9 0.02 292);
-  --ring: #c084fc;
+  --ring: #b43bd1;
   --chart-1: oklch(0.65 0.2 296);
   --chart-2: oklch(0.7 0.16 265);
   --chart-3: oklch(0.74 0.14 325);
@@ -34,26 +34,27 @@
   --radius: 0.875rem;
   --sidebar: #ffcfee;
   --sidebar-foreground: #32103f;
-  --sidebar-primary: #a855f7;
+  --sidebar-primary: #b43bd1;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f7e5ff;
+  --sidebar-accent: #f8d7ff;
   --sidebar-accent-foreground: #32103f;
-  --sidebar-border: #e9c8f2;
-  --sidebar-ring: #c084fc;
+  --sidebar-border: #e9b8f2;
+  --sidebar-ring: #b43bd1;
 
   --renote-purple-50: #fbf7ff;
-  --renote-purple-100: #f7e5ff;
-  --renote-purple-500: #a855f7;
-  --renote-purple-700: #9333ea;
-  --renote-primary: #a855f7;
-  --renote-primary-hover: #9333ea;
-  --renote-primary-dark: #7e22ce;
-  --renote-primary-soft: #f7e5ff;
+  --renote-purple-100: #f8d7ff;
+  --renote-purple-500: #b43bd1;
+  --renote-purple-700: #9f2cc2;
+  --renote-primary: #b43bd1;
+  --renote-primary-hover: #9f2cc2;
+  --renote-primary-dark: #8721a8;
+  --renote-primary-soft: #f8d7ff;
+  --renote-primary-soft-border: #e9b8f2;
   --renote-accent-pink: #ec4899;
-  --renote-dark-accent: #aa3bc3;
+  --renote-dark-accent: #b43bd1;
   --renote-ink: #251b33;
   --renote-soft-shadow: 0 16px 40px rgb(39 18 68 / 7%);
-  --renote-glow-shadow: 0 18px 48px rgb(168 85 247 / 13%);
+  --renote-glow-shadow: 0 18px 44px rgb(180 59 209 / 10%);
 }
 
 .dark {
@@ -65,7 +66,7 @@
   --card-foreground: oklch(0.94 0.015 300);
   --popover: oklch(0.2 0.045 292);
   --popover-foreground: oklch(0.94 0.015 300);
-  --primary: #a855f7;
+  --primary: #b43bd1;
   --primary-foreground: #ffffff;
   --secondary: oklch(0.28 0.055 292);
   --secondary-foreground: oklch(0.94 0.015 300);
@@ -76,7 +77,7 @@
   --destructive: oklch(0.7 0.18 24);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.76 0.15 300);
+  --ring: #b43bd1;
   --chart-1: oklch(0.76 0.15 300);
   --chart-2: oklch(0.72 0.14 260);
   --chart-3: oklch(0.74 0.14 330);
@@ -84,12 +85,12 @@
   --chart-5: oklch(0.82 0.12 85);
   --sidebar: #24102f;
   --sidebar-foreground: oklch(0.98 0.01 300);
-  --sidebar-primary: #aa3bc3;
+  --sidebar-primary: #b43bd1;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #48146e;
   --sidebar-accent-foreground: oklch(0.98 0.01 300);
   --sidebar-border: oklch(1 0 0 / 14%);
-  --sidebar-ring: oklch(0.78 0.12 300);
+  --sidebar-ring: #b43bd1;
 }
 
 @theme inline {
@@ -176,7 +177,7 @@
   }
 
   .renote-muted-card {
-    @apply rounded-3xl border bg-card text-card-foreground shadow-sm transition-shadow;
+    @apply rounded-3xl border bg-card/85 text-card-foreground shadow-sm transition-shadow;
     box-shadow: var(--renote-soft-shadow);
   }
 
@@ -194,31 +195,36 @@
   .renote-icon-container {
     @apply grid size-10 shrink-0 place-items-center border text-primary;
     background: var(--renote-primary-soft);
-    border-color: #e9c8f2;
+    border-color: var(--renote-primary-soft-border);
     border-radius: 14px;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 70%);
   }
 
   .renote-icon-container-glow {
     background: color-mix(in oklch, var(--renote-primary-soft), var(--renote-accent-pink) 8%);
-    border-color: color-mix(in oklch, #e9c8f2, var(--renote-primary) 18%);
+    border-color: color-mix(in oklch, var(--renote-primary-soft-border), var(--renote-primary) 18%);
     box-shadow:
-      0 10px 26px rgb(168 85 247 / 11%),
+      0 10px 26px rgb(180 59 209 / 11%),
       inset 0 1px 0 rgb(255 255 255 / 74%);
   }
 
   .renote-input-shell {
-    @apply relative flex items-center rounded-full border bg-background/80 shadow-sm transition focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20;
+    @apply relative flex items-center rounded-2xl border bg-background/80 shadow-sm transition focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20;
+  }
+
+  .renote-preview-tile {
+    @apply rounded-3xl border bg-card/80 p-5 shadow-sm;
+    box-shadow: var(--renote-soft-shadow);
   }
 
   .renote-gradient-button {
     @apply text-white shadow-sm transition;
-    background-image: linear-gradient(135deg, #ec4899 0%, #a855f7 52%, #6366f1 100%);
-    box-shadow: 0 14px 32px rgb(168 85 247 / 24%);
+    background-image: linear-gradient(135deg, #ec4899 0%, #b43bd1 52%, #6366f1 100%);
+    box-shadow: 0 14px 32px rgb(180 59 209 / 24%);
   }
 
   .renote-gradient-button:hover {
-    box-shadow: 0 16px 38px rgb(168 85 247 / 30%);
+    box-shadow: 0 16px 38px rgb(180 59 209 / 30%);
     filter: saturate(1.06) brightness(1.02);
   }
 
@@ -259,7 +265,7 @@
 
   .dark .renote-icon-container-glow {
     background: #3b1850;
-    border-color: #aa3bc3;
+    border-color: #b43bd1;
     color: #f1c7fb;
     box-shadow: none;
   }

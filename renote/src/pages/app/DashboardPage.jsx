@@ -1,4 +1,4 @@
-import { BookOpen, FolderOpen, Sparkles, Users } from "lucide-react"
+import { BookOpen, Clock, FolderOpen, Plus, Sparkles, Users } from "lucide-react"
 
 import PageHeader from "@/components/common/PageHeader"
 import PageShell from "@/components/common/PageShell"
@@ -13,7 +13,12 @@ function DashboardPage() {
   return (
     <PageShell className="space-y-8">
       <PageHeader
-        actions={<Button>Create Repository</Button>}
+        actions={
+          <Button>
+            <Plus className="size-4" />
+            Create Repository
+          </Button>
+        }
         description="A signed-in overview for repositories, collections, and upcoming AI summaries."
         eyebrow="Workspace"
         icon={BookOpen}
@@ -52,12 +57,17 @@ function DashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <SectionCard
+          action={
+            <Button size="sm" variant="secondary">
+              View all
+            </Button>
+          }
           description="A simple workspace snapshot while backend features are still out of scope."
           icon={FolderOpen}
-          title="Recent Repository"
+          title="Recent Repositories"
         >
           <div className="space-y-4">
-            <div className="rounded-2xl border bg-background/60 p-4">
+            <div className="rounded-2xl border bg-background/70 p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="mr-auto font-semibold">
                   Research Methods Notes
@@ -70,9 +80,20 @@ function DashboardPage() {
                 summary previews.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="rounded-2xl border bg-background/70 p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="mr-auto font-semibold">Capstone References</h2>
+                <TrustBadge level="community">Community</TrustBadge>
+                <VisibilityBadge visibility="private" />
+              </div>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                A quiet prototype row for saved source material and class notes.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-1">
               <StatusBadge status="active" />
               <StatusBadge status="pending">2 access requests</StatusBadge>
+              <StatusBadge status="draft">Draft upload</StatusBadge>
             </div>
           </div>
         </SectionCard>
@@ -83,10 +104,25 @@ function DashboardPage() {
           title="AI Summary Preview"
           variant="glow"
         >
-          <p className="text-sm leading-6 text-muted-foreground">
-            Future summaries will appear here after OpenAI integration is added
-            in a later phase.
-          </p>
+          <div className="space-y-4">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Future summaries will appear here after OpenAI integration is
+              added in a later phase.
+            </p>
+            <div className="rounded-2xl border bg-background/65 p-4">
+              <div className="flex items-center gap-3">
+                <span className="renote-icon-container size-9">
+                  <Clock className="size-4" />
+                </span>
+                <div>
+                  <p className="text-sm font-medium">Phase 2 placeholder</p>
+                  <p className="text-xs text-muted-foreground">
+                    Summary generation is not wired yet.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </SectionCard>
       </div>
     </PageShell>

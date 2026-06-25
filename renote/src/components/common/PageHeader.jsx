@@ -13,7 +13,7 @@ function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between",
+        "flex flex-col gap-4 border-b pb-7 sm:flex-row sm:items-end sm:justify-between",
         className
       )}
     >
@@ -25,12 +25,12 @@ function PageHeader({
         ) : null}
         <div className="flex items-center gap-3">
           {Icon ? (
-            <span className="grid size-11 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <span className="renote-icon-container size-11">
               <Icon className="size-5" />
             </span>
           ) : null}
           <div className="space-y-1">
-            <h1 className="text-3xl font-semibold tracking-tight text-balance">
+            <h1 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
               {title}
             </h1>
             {description ? (
