@@ -1,3 +1,4 @@
+// Custom thumbnail upload is a future enhancement; these preset covers keep the prototype local.
 export const mockCollections = [
   {
     id: "collection-cybersecurity-reviewers",
@@ -13,6 +14,10 @@ export const mockCollections = [
     savedCount: 42,
     updatedAt: "2026-06-22T10:15:00Z",
     previewTags: ["cybersecurity", "assurance", "risk"],
+    coverType: "preset",
+    coverLabel: "Cybersecurity",
+    coverGradient: "linear-gradient(135deg, #FDF2FF 0%, #F3E8FF 48%, #DBEAFE 100%)",
+    coverIcon: "shield",
   },
   {
     id: "collection-thesis-writing-resources",
@@ -24,6 +29,10 @@ export const mockCollections = [
     savedCount: 36,
     updatedAt: "2026-06-20T14:40:00Z",
     previewTags: ["thesis", "research", "writing"],
+    coverType: "preset",
+    coverLabel: "Research / Thesis",
+    coverGradient: "linear-gradient(135deg, #FFF1F8 0%, #F5E8FF 52%, #EDE9FE 100%)",
+    coverIcon: "graduation",
   },
   {
     id: "collection-capstone-references",
@@ -39,6 +48,10 @@ export const mockCollections = [
     savedCount: 29,
     updatedAt: "2026-06-19T09:05:00Z",
     previewTags: ["capstone", "documentation", "defense"],
+    coverType: "preset",
+    coverLabel: "Capstone",
+    coverGradient: "linear-gradient(135deg, #FDF2FF 0%, #FAE8FF 42%, #E0E7FF 100%)",
+    coverIcon: "template",
   },
   {
     id: "collection-database-notes",
@@ -50,6 +63,10 @@ export const mockCollections = [
     savedCount: 18,
     updatedAt: "2026-06-15T15:00:00Z",
     previewTags: ["database", "normalization", "schema"],
+    coverType: "preset",
+    coverLabel: "References",
+    coverGradient: "linear-gradient(135deg, #F8FAFC 0%, #F3E8FF 50%, #E0F2FE 100%)",
+    coverIcon: "library",
   },
   {
     id: "collection-final-exam-materials",
@@ -65,5 +82,9 @@ export const mockCollections = [
     savedCount: 24,
     updatedAt: "2026-06-12T18:30:00Z",
     previewTags: ["finals", "reviewer", "study plan"],
+    coverType: "preset",
+    coverLabel: "Reviewers",
+    coverGradient: "linear-gradient(135deg, #FFF7ED 0%, #FDF2FF 45%, #EDE9FE 100%)",
+    coverIcon: "bookmark",
   },
 ]
