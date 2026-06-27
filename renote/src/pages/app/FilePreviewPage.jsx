@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Send,
   Sparkles,
+  ShieldCheck,
   Tag,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -763,12 +764,32 @@ function SummaryPanel({ file, summary }) {
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-semibold tracking-tight">Quick Summary</h3>
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-semibold tracking-tight">Quick Summary</h3>
+
+            <span className="group relative inline-flex">
+              <button
+                aria-label="AI-generated summaries should be verified with the original file before academic use."
+                className="inline-flex size-5 items-center justify-center rounded-full text-muted-foreground transition hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+                type="button"
+              >
+                <Info className="size-3.5" />
+              </button>
+
+              <span className="pointer-events-none absolute left-1/2 top-7 z-40 hidden w-64 -translate-x-1/2 rounded-2xl border border-[#E9C8F2] bg-background px-3 py-2 text-xs leading-5 text-muted-foreground shadow-lg group-hover:block group-focus-within:block dark:border-primary/25">
+                AI-generated summary. Verify with the original file before academic use.
+              </span>
+            </span>
+          </div>
+
           <p className="text-xs text-muted-foreground">
-            {summary ? `Generated ${formatDate(summary.generatedAt)}` : "No saved summary yet"}
+            {summary
+              ? `Generated ${formatDate(summary.generatedAt)}`
+              : "No saved summary yet"}
           </p>
         </div>
+
         <Button
           onClick={() => toast("New summary generation will be connected later.")}
           size="sm"
@@ -778,13 +799,6 @@ function SummaryPanel({ file, summary }) {
           <RefreshCw className="size-4" />
           Generate new
         </Button>
-      </div>
-
-      <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 dark:border-primary/20 dark:bg-primary/5">
-        <p className="text-sm leading-6 text-muted-foreground">
-          {summary?.preview ??
-            `${file.name} is ready for AI summary generation in prototype mode.`}
-        </p>
       </div>
 
       <div className="space-y-2">

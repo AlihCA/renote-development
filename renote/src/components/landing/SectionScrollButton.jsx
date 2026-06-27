@@ -35,6 +35,13 @@ const sectionFlow = [
 ]
 
 function getCurrentSectionId() {
+  const scrollPosition = window.scrollY + window.innerHeight
+  const pageHeight = document.documentElement.scrollHeight
+
+  if (pageHeight - scrollPosition <= 120) {
+    return "cta"
+  }
+
   const viewportMarker = window.innerHeight * 0.45
   let currentId = sectionFlow[0].id
 
