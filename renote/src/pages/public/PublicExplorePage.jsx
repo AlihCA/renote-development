@@ -6,7 +6,6 @@ import EmptyState from "@/components/common/EmptyState"
 import Pagination from "@/components/repositories/Pagination"
 import PublicRepositoryCard from "@/components/repositories/PublicRepositoryCard"
 import RepositoryFilterPanel from "@/components/repositories/RepositoryFilterPanel"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -18,6 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { mockFiles, mockRepositories } from "@/data"
+import { cn } from "@/lib/utils"
 
 const PAGE_SIZE = 5
 
@@ -126,6 +126,7 @@ function PublicExplorePage() {
     ...initialFilters,
     query: urlQuery,
   })
+  const [isFilterOpen, setIsFilterOpen] = useState(true)
 
   const repositories = useMemo(
     () =>
@@ -259,11 +260,12 @@ function PublicExplorePage() {
     setSearchParams(nextSearchParams, { replace: true })
   }
 
-  function renderFilterPanel() {
+  function renderFilterPanel({ onClose } = {}) {
     return (
       <RepositoryFilterPanel
         filters={filters}
         onAddTag={addTag}
+        onClose={onClose}
         onFilterChange={updateFilter}
         onRemoveTag={removeTag}
         onReset={resetFilters}
@@ -273,26 +275,49 @@ function PublicExplorePage() {
   }
 
   return (
-    <div className="bg-background">
-      <section className="border-b bg-muted/35">
-        <div className="renote-container py-8 sm:py-10">
-          <div className="max-w-3xl space-y-5">
-            <Badge
-              className="gap-2 rounded-2xl border-primary/20 bg-background/85 px-3 py-1.5 text-primary shadow-sm"
-              variant="outline"
-            >
-              <Library className="size-3.5" />
-              Public academic library
-            </Badge>
+    <div className="bg-muted/25">
+      <section
+        className={cn(
+          "mx-auto w-full max-w-[1500px] px-4 py-6 transition-[padding] sm:px-6 sm:py-8 lg:px-8",
+          isFilterOpen && "lg:pr-[24rem] xl:pr-[25rem]"
+        )}
+      >
+        <div className="min-w-0 space-y-5">
+          <div className="space-y-4 border-b border-[#E9C8F2]/70 pb-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="space-y-2">
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Explore Public Resources
+                </h1>
+                <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+                  Browse academic repositories, reviewers, notes, and learning
+                  materials shared through ReNote.
+                </p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {getResultRange(safeCurrentPage, filteredRepositories.length)}
+                </p>
+              </div>
 
-            <div className="space-y-3">
-              <h1 className="text-4xl font-semibold tracking-tight">
-                Explore Public Resources
-              </h1>
-              <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                Browse public academic repositories, reviewers, notes, and
-                learning materials shared through ReNote.
-              </p>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button className="w-full sm:w-fit lg:hidden" variant="outline">
+                    <Filter className="size-4" />
+                    Filters
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-y-auto p-0"
+                  side="right"
+                >
+                  <SheetHeader className="border-b px-5 py-5 text-left">
+                    <SheetTitle>Sort and Filter</SheetTitle>
+                    <SheetDescription>
+                      Refine public repository results.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="p-4">{renderFilterPanel()}</div>
+                </SheetContent>
+              </Sheet>
             </div>
 
             <label className="block max-w-2xl space-y-2 md:hidden">
@@ -310,42 +335,6 @@ function PublicExplorePage() {
                 />
               </div>
             </label>
-          </div>
-        </div>
-      </section>
-
-      <section className="renote-container py-8 sm:py-10 lg:pr-[25rem]">
-        <div className="min-w-0 space-y-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight">
-                Repository results
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {getResultRange(safeCurrentPage, filteredRepositories.length)}
-              </p>
-            </div>
-
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button className="w-full sm:w-fit lg:hidden" variant="outline">
-                  <Filter className="size-4" />
-                  Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-y-auto p-0"
-                side="right"
-              >
-                <SheetHeader className="border-b px-5 py-5 text-left">
-                  <SheetTitle>Sort and Filter</SheetTitle>
-                  <SheetDescription>
-                    Refine public repository results.
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="p-4">{renderFilterPanel()}</div>
-              </SheetContent>
-            </Sheet>
           </div>
 
           {paginatedRepositories.length > 0 ? (
@@ -375,9 +364,22 @@ function PublicExplorePage() {
           )}
         </div>
 
-        <aside className="fixed bottom-8 right-8 top-24 z-30 hidden w-[22rem] overflow-y-auto pr-1 lg:block">
-          {renderFilterPanel()}
-        </aside>
+        {isFilterOpen ? (
+          <div className="fixed bottom-4 right-8 top-[5rem] z-30 hidden w-[21rem] lg:block xl:w-[22rem]">
+            {renderFilterPanel({ onClose: () => setIsFilterOpen(false) })}
+          </div>
+        ) : (
+          <Button
+            aria-expanded="false"
+            className="fixed right-8 top-[5rem] z-30 hidden rounded-lg border-[#E9C8F2] bg-white shadow-sm hover:bg-primary-soft lg:inline-flex dark:border-primary/25 dark:bg-card"
+            onClick={() => setIsFilterOpen(true)}
+            type="button"
+            variant="outline"
+          >
+            <Filter className="size-4" />
+            Filters
+          </Button>
+        )}
       </section>
     </div>
   )
