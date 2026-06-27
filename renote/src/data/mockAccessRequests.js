@@ -36,6 +36,18 @@ export const mockAccessRequests = [
     createdAt: "2026-06-15T15:30:00Z",
   },
   {
+    id: "request-dsa-daniel",
+    repositoryId: "repo-data-structures-algorithms",
+    repositoryTitle: "Data Structures and Algorithms",
+    requesterId: "user-student-daniel",
+    requesterName: "Daniel Cruz",
+    ownerId: "user-student-mia",
+    ownerName: "Mia Santos",
+    reason: "I want to compare your DSA reviewer notes with my finals study plan.",
+    status: "pending",
+    createdAt: "2026-06-16T08:45:00Z",
+  },
+  {
     id: "request-os-reviewer-daniel",
     repositoryId: "repo-operating-systems-reviewer",
     repositoryTitle: "Operating Systems Reviewer",
