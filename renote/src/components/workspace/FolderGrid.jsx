@@ -2,7 +2,12 @@ import { FileText, Folder, FolderOpen } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-function FolderGrid({ files, folders, onSelectFolder, selectedFolderId }) {
+function FolderGrid({
+  files,
+  folders,
+  onSelectFolder,
+  selectedFolderId,
+}) {
   function getFileCount(folderId) {
     return files.filter((file) => file.folderId === folderId).length
   }
@@ -23,17 +28,12 @@ function FolderGrid({ files, folders, onSelectFolder, selectedFolderId }) {
   ]
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="font-semibold tracking-tight">Folders</h2>
-          <p className="text-sm text-muted-foreground">
-            Choose a folder to narrow the file list.
-          </p>
-        </div>
-        <span className="text-xs font-medium text-muted-foreground">
-          {folders.length} folders
-        </span>
+    <section className="renote-card space-y-4 p-4 sm:p-5">
+      <div>
+        <h2 className="font-semibold tracking-tight">Folders</h2>
+        <p className="text-sm text-muted-foreground">
+          Choose a folder to narrow the file list.
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -45,9 +45,9 @@ function FolderGrid({ files, folders, onSelectFolder, selectedFolderId }) {
           return (
             <button
               className={cn(
-                "group flex min-w-0 items-center gap-3 rounded-3xl border bg-background/80 p-3 text-left shadow-sm transition hover:border-primary/20 hover:bg-[#FFF7FD] dark:hover:bg-primary/5",
+                "group flex min-w-0 items-center gap-3 rounded-lg border border-[#E9C8F2]/70 bg-white/85 p-3 text-left shadow-sm transition-colors hover:border-primary/30 hover:bg-[#FFF8FE] dark:border-primary/20 dark:bg-background/40 dark:hover:border-primary/35 dark:hover:bg-primary/5",
                 isActive &&
-                  "border-primary/40 bg-primary/10 text-primary shadow-none"
+                  "border-primary/45 bg-primary/10 text-primary shadow-none"
               )}
               key={folder.id}
               onClick={() => onSelectFolder(folder.id)}

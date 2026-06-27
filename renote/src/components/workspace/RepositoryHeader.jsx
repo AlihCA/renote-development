@@ -3,15 +3,12 @@ import {
   Info,
   MoreHorizontal,
   Share2,
-  Upload,
 } from "lucide-react"
 import { Link } from "react-router"
 import { toast } from "sonner"
 
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
-import NewFolderDialog from "@/components/workspace/NewFolderDialog"
-import UploadFileDialog from "@/components/workspace/UploadFileDialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -38,10 +35,7 @@ function toLabel(value) {
 }
 
 function RepositoryHeader({
-  folders,
-  onCreateFolder,
   onOpenDetails,
-  onUploadFile,
   repository,
 }) {
   return (
@@ -87,13 +81,6 @@ function RepositoryHeader({
         </div>
 
         <div className="flex flex-wrap gap-2 xl:justify-end">
-          <UploadFileDialog folders={folders} onUploadFile={onUploadFile}>
-            <Button size="sm">
-              <Upload className="size-4" />
-              Upload File
-            </Button>
-          </UploadFileDialog>
-          <NewFolderDialog folders={folders} onCreateFolder={onCreateFolder} />
           <Button
             onClick={() => toast("Share options will be connected later.")}
             size="sm"

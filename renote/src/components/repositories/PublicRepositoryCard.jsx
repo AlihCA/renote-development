@@ -1,11 +1,12 @@
 import { Link } from "react-router"
-import { BookOpen, Eye, Heart, MessageCircle, Star } from "lucide-react"
+import { BookOpen, Eye, Quote, Star } from "lucide-react"
 import { toast } from "sonner"
 
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
 import { Badge } from "@/components/ui/badge"
+import { formatCount } from "@/lib/utils"
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("en", {
@@ -13,12 +14,6 @@ function formatDate(value) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(value))
-}
-
-function formatNumber(value) {
-  return new Intl.NumberFormat("en", {
-    notation: value >= 1000 ? "compact" : "standard",
-  }).format(value)
 }
 
 function toLabel(value) {
@@ -35,14 +30,6 @@ function RepositoryStat({ icon: Icon, label, value }) {
       <span>{label}</span>
     </div>
   )
-}
-
-function getLikeCount(repository) {
-  return Math.max(8, Math.round(repository.views / 32))
-}
-
-function getCommentCount(repository) {
-  return Math.max(2, repository.folderCount + repository.summaryCount)
 }
 
 function PublicRepositoryCard({ fileTypes = [], repository }) {
@@ -90,19 +77,14 @@ function PublicRepositoryCard({ fileTypes = [], repository }) {
               value={repository.subject}
             />
             <RepositoryStat
-              icon={Heart}
-              label="Likes"
-              value={getLikeCount(repository)}
-            />
-            <RepositoryStat
-              icon={MessageCircle}
-              label="Comments"
-              value={getCommentCount(repository)}
-            />
-            <RepositoryStat
               icon={Eye}
               label="Views"
-              value={formatNumber(repository.views)}
+              value={formatCount(repository.views)}
+            />
+            <RepositoryStat
+              icon={Quote}
+              label="Citations"
+              value={formatCount(repository.citationCount)}
             />
           </div>
         </div>

@@ -1,21 +1,20 @@
 import { Link } from "react-router"
 import {
-  FileText,
   Layers,
   Library,
   Sparkles,
+  TrendingUp,
 } from "lucide-react"
 
 import EmptyState from "@/components/common/EmptyState"
 import PageShell from "@/components/common/PageShell"
 import SectionCard from "@/components/common/SectionCard"
 import DashboardCollectionCard from "@/components/dashboard/DashboardCollectionCard"
-import DashboardRecentCard from "@/components/dashboard/DashboardRecentCard"
+import DashboardRecentTabs from "@/components/dashboard/DashboardRecentTabs"
 import {
-  RecentFileCompactRow,
-  RecentRepositoryRow,
-  RecentSummaryRow,
-} from "@/components/dashboard/DashboardRecentRows"
+  RecommendedRepositoryRow,
+  TrendingRepositoryRow,
+} from "@/components/dashboard/DashboardRepositoryHighlights"
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard"
 import DashboardWelcomeCard from "@/components/dashboard/DashboardWelcomeCard"
 import { Button } from "@/components/ui/button"
@@ -26,14 +25,25 @@ import {
   mockSummaries,
 } from "@/data"
 
+const recommendationSeeds = [
+  {
+    reason: "Related to Capstone",
+    repositoryId: "repo-web-development-references",
+  },
+  {
+    reason: "Based on your saved resources",
+    repositoryId: "repo-research-methods-notes",
+  },
+  {
+    reason: "Popular in Cybersecurity",
+    repositoryId: "repo-information-assurance-reviewer",
+  },
+]
+
 function sortByDate(items, key) {
   return [...items].sort((first, second) => {
     return new Date(second[key]) - new Date(first[key])
   })
-}
-
-function getRepositoryTitle(repositoryLookup, repositoryId) {
-  return repositoryLookup.get(repositoryId)?.title ?? "Unknown repository"
 }
 
 function DashboardPage() {
@@ -48,6 +58,15 @@ function DashboardPage() {
   const recentFiles = sortByDate(mockFiles, "updatedAt").slice(0, 3)
   const recentSummaries = sortByDate(mockSummaries, "generatedAt").slice(0, 3)
   const recentCollections = sortByDate(mockCollections, "updatedAt").slice(0, 3)
+  const trendingRepositories = [...activeRepositories]
+    .sort((first, second) => second.views - first.views)
+    .slice(0, 3)
+  const recommendedRepositories = recommendationSeeds
+    .map((item) => ({
+      reason: item.reason,
+      repository: repositoryLookup.get(item.repositoryId),
+    }))
+    .filter((item) => item.repository)
 
   return (
     <PageShell className="space-y-8">
@@ -74,81 +93,43 @@ function DashboardPage() {
         />
       </div>
 
-      <div className="grid items-stretch gap-4 xl:grid-cols-3">
-        <DashboardRecentCard
-          icon={Library}
-          title="Recent Repositories"
-          to="/app/my-repositories"
-        >
-          {recentRepositories.length > 0 ? (
-            <>
-              {recentRepositories.map((repository) => (
-                <RecentRepositoryRow
-                  key={repository.id}
-                  repository={repository}
-                />
-              ))}
-            </>
-          ) : (
-            <EmptyState
-              className="min-h-44"
-              description="Create or save a repository to see it here."
-              icon={Library}
-              title="No repositories yet"
-            />
-          )}
-        </DashboardRecentCard>
+      <DashboardRecentTabs
+        recentFiles={recentFiles}
+        recentRepositories={recentRepositories}
+        recentSummaries={recentSummaries}
+        repositoryLookup={repositoryLookup}
+      />
 
-        <DashboardRecentCard
-          icon={FileText}
-          title="Recent Files"
-          to="/app/my-repositories"
-        >
-          {recentFiles.length > 0 ? (
-            <>
-              {recentFiles.map((file) => (
-                <RecentFileCompactRow
-                  file={file}
-                  key={file.id}
-                  repositoryTitle={getRepositoryTitle(
-                    repositoryLookup,
-                    file.repositoryId
-                  )}
-                />
-              ))}
-            </>
-          ) : (
-            <EmptyState
-              className="min-h-44"
-              description="Recent files will appear after resources are added."
-              icon={FileText}
-              title="No files yet"
+      <SectionCard
+        description="Popular academic resources based on recent activity."
+        icon={TrendingUp}
+        title="Trending Repositories"
+      >
+        <div className="grid gap-3">
+          {trendingRepositories.map((repository) => (
+            <TrendingRepositoryRow
+              key={repository.id}
+              repository={repository}
             />
-          )}
-        </DashboardRecentCard>
+          ))}
+        </div>
+      </SectionCard>
 
-        <DashboardRecentCard
-          icon={Sparkles}
-          title="Recent Summaries"
-          to="/app/summaries"
-          viewAllLabel="View history"
-        >
-          {recentSummaries.length > 0 ? (
-            <>
-              {recentSummaries.map((summary) => (
-                <RecentSummaryRow key={summary.id} summary={summary} />
-              ))}
-            </>
-          ) : (
-            <EmptyState
-              className="min-h-44"
-              description="Generated summaries will appear here when available."
-              icon={Sparkles}
-              title="No summaries yet"
+      <SectionCard
+        description="Suggested resources based on your recent workspace activity."
+        icon={Sparkles}
+        title="Recommended for You"
+      >
+        <div className="grid gap-3">
+          {recommendedRepositories.map((item) => (
+            <RecommendedRepositoryRow
+              key={item.repository.id}
+              reason={item.reason}
+              repository={item.repository}
             />
-          )}
-        </DashboardRecentCard>
-      </div>
+          ))}
+        </div>
+      </SectionCard>
 
       <SectionCard
         action={

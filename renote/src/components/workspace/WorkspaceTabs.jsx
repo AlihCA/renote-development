@@ -25,9 +25,13 @@ const tabs = [
   },
 ]
 
-function WorkspaceTabs() {
+function WorkspaceTabs({ onValueChange, value = "files" }) {
   return (
-    <Tabs className="overflow-x-auto" value="files">
+    <Tabs
+      className="overflow-x-auto"
+      onValueChange={onValueChange}
+      value={value}
+    >
       <TabsList className="border border-border/70 bg-background/80 shadow-sm">
         {tabs.map((tab) => {
           const Icon = tab.icon

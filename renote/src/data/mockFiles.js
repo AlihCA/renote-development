@@ -1,3 +1,24 @@
+const citationAccessDate = "2026-06-27"
+
+function createCitationMetadata({
+  author,
+  citationCount,
+  repositoryTitle,
+  sourceType,
+  title,
+}) {
+  return {
+    title,
+    author,
+    organization: "College of Computing Studies",
+    year: 2026,
+    sourceType,
+    repositoryTitle,
+    accessDate: citationAccessDate,
+    citationCount,
+  }
+}
+
 export const mockFiles = [
   {
     id: "file-ia-controls-pdf",
@@ -10,6 +31,13 @@ export const mockFiles = [
     updatedAt: "2026-06-18T09:20:00Z",
     summaryAvailable: true,
     ownerName: "Dr. Elena Rivera",
+    citation: createCitationMetadata({
+      title: "Information Assurance Controls",
+      author: "Dr. Elena Rivera",
+      sourceType: "PDF",
+      repositoryTitle: "Information Assurance Reviewer",
+      citationCount: 7,
+    }),
   },
   {
     id: "file-ia-slides-pptx",
@@ -22,6 +50,13 @@ export const mockFiles = [
     updatedAt: "2026-06-12T12:40:00Z",
     summaryAvailable: true,
     ownerName: "Dr. Elena Rivera",
+    citation: createCitationMetadata({
+      title: "Assurance Principles Slides",
+      author: "Dr. Elena Rivera",
+      sourceType: "Slide deck",
+      repositoryTitle: "Information Assurance Reviewer",
+      citationCount: 5,
+    }),
   },
   {
     id: "file-risk-register-xlsx",
@@ -34,6 +69,13 @@ export const mockFiles = [
     updatedAt: "2026-06-10T09:00:00Z",
     summaryAvailable: false,
     ownerName: "Mia Santos",
+    citation: createCitationMetadata({
+      title: "Sample Risk Register",
+      author: "Mia Santos",
+      sourceType: "Spreadsheet",
+      repositoryTitle: "Risk Management Notes",
+      citationCount: 2,
+    }),
   },
   {
     id: "file-risk-guide-docx",
@@ -46,6 +88,13 @@ export const mockFiles = [
     updatedAt: "2026-06-16T11:20:00Z",
     summaryAvailable: true,
     ownerName: "Mia Santos",
+    citation: createCitationMetadata({
+      title: "Risk Response Guide",
+      author: "Mia Santos",
+      sourceType: "Document",
+      repositoryTitle: "Risk Management Notes",
+      citationCount: 6,
+    }),
   },
   {
     id: "file-db-normalization-pdf",
@@ -58,6 +107,13 @@ export const mockFiles = [
     updatedAt: "2026-06-15T14:45:00Z",
     summaryAvailable: true,
     ownerName: "Prof. Nathan Lim",
+    citation: createCitationMetadata({
+      title: "Normalization Walkthrough",
+      author: "Prof. Nathan Lim",
+      sourceType: "PDF",
+      repositoryTitle: "Database Normalization Guide",
+      citationCount: 10,
+    }),
   },
   {
     id: "file-db-er-diagram-png",
@@ -70,6 +126,13 @@ export const mockFiles = [
     updatedAt: "2026-06-12T08:00:00Z",
     summaryAvailable: false,
     ownerName: "Prof. Nathan Lim",
+    citation: createCitationMetadata({
+      title: "ER Diagram Example",
+      author: "Prof. Nathan Lim",
+      sourceType: "Image",
+      repositoryTitle: "Database Normalization Guide",
+      citationCount: 3,
+    }),
   },
   {
     id: "file-thesis-template-docx",
@@ -82,6 +145,13 @@ export const mockFiles = [
     updatedAt: "2026-06-20T08:30:00Z",
     summaryAvailable: true,
     ownerName: "College of Computing Studies",
+    citation: createCitationMetadata({
+      title: "Thesis Chapter Template",
+      author: "College of Computing Studies",
+      sourceType: "Document",
+      repositoryTitle: "Thesis Writing Resources",
+      citationCount: 19,
+    }),
   },
   {
     id: "file-thesis-citation-link",
@@ -94,6 +164,13 @@ export const mockFiles = [
     updatedAt: "2026-06-03T09:25:00Z",
     summaryAvailable: false,
     ownerName: "College of Computing Studies",
+    citation: createCitationMetadata({
+      title: "Citation Style Reference",
+      author: "College of Computing Studies",
+      sourceType: "Web resource",
+      repositoryTitle: "Thesis Writing Resources",
+      citationCount: 12,
+    }),
   },
   {
     id: "file-web-responsive-pptx",
@@ -106,6 +183,13 @@ export const mockFiles = [
     updatedAt: "2026-06-12T13:05:00Z",
     summaryAvailable: true,
     ownerName: "Daniel Cruz",
+    citation: createCitationMetadata({
+      title: "Responsive Layout Patterns",
+      author: "Daniel Cruz",
+      sourceType: "Slide deck",
+      repositoryTitle: "Web Development References",
+      citationCount: 4,
+    }),
   },
   {
     id: "file-web-starter-zip",
@@ -118,6 +202,13 @@ export const mockFiles = [
     updatedAt: "2026-06-01T09:10:00Z",
     summaryAvailable: false,
     ownerName: "Daniel Cruz",
+    citation: createCitationMetadata({
+      title: "Frontend Starter Files",
+      author: "Daniel Cruz",
+      sourceType: "Archive",
+      repositoryTitle: "Web Development References",
+      citationCount: 3,
+    }),
   },
   {
     id: "file-os-scheduling-pdf",
@@ -130,6 +221,13 @@ export const mockFiles = [
     updatedAt: "2026-05-30T10:40:00Z",
     summaryAvailable: true,
     ownerName: "Dr. Elena Rivera",
+    citation: createCitationMetadata({
+      title: "CPU Scheduling Reviewer",
+      author: "Dr. Elena Rivera",
+      sourceType: "PDF",
+      repositoryTitle: "Operating Systems Reviewer",
+      citationCount: 7,
+    }),
   },
   {
     id: "file-cyber-threats-pdf",
@@ -142,6 +240,13 @@ export const mockFiles = [
     updatedAt: "2026-06-21T15:10:00Z",
     summaryAvailable: true,
     ownerName: "College of Computing Studies",
+    citation: createCitationMetadata({
+      title: "Common Threats Reviewer",
+      author: "College of Computing Studies",
+      sourceType: "PDF",
+      repositoryTitle: "Cybersecurity Fundamentals",
+      citationCount: 9,
+    }),
   },
   {
     id: "file-cyber-defense-link",
@@ -154,6 +259,13 @@ export const mockFiles = [
     updatedAt: "2026-06-10T14:20:00Z",
     summaryAvailable: true,
     ownerName: "College of Computing Studies",
+    citation: createCitationMetadata({
+      title: "Defense-in-Depth Reading",
+      author: "College of Computing Studies",
+      sourceType: "Web resource",
+      repositoryTitle: "Cybersecurity Fundamentals",
+      citationCount: 6,
+    }),
   },
   {
     id: "file-research-survey-docx",
@@ -166,6 +278,13 @@ export const mockFiles = [
     updatedAt: "2026-06-10T16:15:00Z",
     summaryAvailable: true,
     ownerName: "Prof. Nathan Lim",
+    citation: createCitationMetadata({
+      title: "Survey Instrument Template",
+      author: "Prof. Nathan Lim",
+      sourceType: "Document",
+      repositoryTitle: "Research Methods Notes",
+      citationCount: 8,
+    }),
   },
   {
     id: "file-dsa-cheatsheet-pdf",
@@ -178,6 +297,13 @@ export const mockFiles = [
     updatedAt: "2026-06-08T12:35:00Z",
     summaryAvailable: true,
     ownerName: "Mia Santos",
+    citation: createCitationMetadata({
+      title: "DSA Cheat Sheet",
+      author: "Mia Santos",
+      sourceType: "PDF",
+      repositoryTitle: "Data Structures and Algorithms",
+      citationCount: 4,
+    }),
   },
   {
     id: "file-capstone-rubric-pdf",
@@ -190,6 +316,13 @@ export const mockFiles = [
     updatedAt: "2026-06-22T09:50:00Z",
     summaryAvailable: true,
     ownerName: "College of Computing Studies",
+    citation: createCitationMetadata({
+      title: "Capstone Rubric",
+      author: "College of Computing Studies",
+      sourceType: "PDF",
+      repositoryTitle: "Capstone Documentation Guide",
+      citationCount: 16,
+    }),
   },
   {
     id: "file-capstone-defense-pptx",
@@ -202,5 +335,12 @@ export const mockFiles = [
     updatedAt: "2026-06-20T10:10:00Z",
     summaryAvailable: true,
     ownerName: "College of Computing Studies",
+    citation: createCitationMetadata({
+      title: "Final Defense Deck",
+      author: "College of Computing Studies",
+      sourceType: "Slide deck",
+      repositoryTitle: "Capstone Documentation Guide",
+      citationCount: 8,
+    }),
   },
 ]
