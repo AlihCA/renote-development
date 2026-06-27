@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { NavLink, useLocation } from "react-router"
+import { Link, NavLink, useLocation } from "react-router"
 import {
   Bell,
   BookOpen,
@@ -166,13 +166,16 @@ function AppTopbar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                asChild
                 aria-label="Open notifications"
                 className="relative text-muted-foreground hover:text-foreground"
                 size="icon"
                 variant="ghost"
               >
-                <Bell className="size-5" />
-                <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-primary ring-2 ring-background" />
+                <Link to="/app/notifications">
+                  <Bell className="size-5" />
+                  <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-primary ring-2 ring-background" />
+                </Link>
               </Button>
             </TooltipTrigger>
             <TooltipContent>Notifications</TooltipContent>
@@ -189,8 +192,12 @@ function AppTopbar() {
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>ReNote User</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/app/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/app/profile">Settings</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

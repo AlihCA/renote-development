@@ -85,8 +85,8 @@ function SummaryTypeBadge({ mode }) {
 function DetailRow({ label, value }) {
   return (
     <div className="flex items-start justify-between gap-4 text-sm">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="text-right font-medium">{value}</dd>
+      <dt className="shrink-0 text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 break-words text-right font-medium">{value}</dd>
     </div>
   )
 }
