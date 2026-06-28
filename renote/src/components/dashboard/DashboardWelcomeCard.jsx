@@ -1,6 +1,11 @@
+import { useUser } from "@clerk/clerk-react"
 import { FileText, FolderOpen, Sparkles } from "lucide-react"
 
 function DashboardWelcomeCard({ actions }) {
+  const { user } = useUser()
+  const displayName =
+    user?.firstName ?? user?.fullName ?? user?.username ?? "there"
+
   return (
     <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-[linear-gradient(135deg,#D85EDB_0%,#B43BD1_48%,#8B5CF6_100%)] p-6 text-white shadow-lg dark:border-white/10 dark:bg-[linear-gradient(135deg,#24102F_0%,#48146E_52%,#8740A3_100%)] sm:p-7">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-white/0 via-white/60 to-white/0" />
@@ -20,9 +25,10 @@ function DashboardWelcomeCard({ actions }) {
             <Sparkles className="size-3.5" />
             Workspace overview
           </span>
+
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Welcome back, ReNote User {"\u{1F44B}"}
+              Welcome, {displayName}!
             </h2>
             <p className="max-w-xl text-sm leading-6 text-white/85 sm:text-base">
               Here's a quick snapshot of your academic workspace.

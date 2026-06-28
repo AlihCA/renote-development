@@ -76,12 +76,12 @@ function AppSidebar() {
       <div
         className={cn(
           "relative z-10 flex min-h-0 w-full flex-col",
-          isCollapsed ? "items-center px-3 py-5" : "p-5"
+          isCollapsed ? "items-center px-3 py-4" : "p-4"
         )}
       >
         <div
           className={cn(
-            "mb-7 flex w-full items-center",
+            "mb-5 flex w-full items-center",
             isCollapsed ? "flex-col gap-3" : "gap-3"
           )}
         >
@@ -118,8 +118,8 @@ function AppSidebar() {
         <nav
           className={
             isCollapsed
-              ? "flex flex-1 flex-col items-center gap-3 overflow-x-hidden overflow-y-auto"
-              : "flex w-full flex-1 flex-col items-stretch gap-4 overflow-x-hidden overflow-y-auto"
+              ? "flex flex-1 flex-col items-center gap-2.5 overflow-x-hidden overflow-y-auto"
+              : "flex w-full flex-1 flex-col items-stretch gap-3 overflow-x-hidden overflow-y-auto"
           }
         >
           {appNavSections.map((section, sectionIndex) => (
@@ -130,7 +130,7 @@ function AppSidebar() {
                 sectionIndex > 0 &&
                   (isCollapsed
                     ? "pt-1.5"
-                    : "border-t border-[#E9B8F2]/45 pt-3 dark:border-[#5D2B74]/45")
+                    : "border-t border-[#E9B8F2]/45 pt-2.5 dark:border-[#5D2B74]/45")
               )}
               key={section.title}
             >
@@ -167,7 +167,7 @@ function AppSidebar() {
                 ) : (
                   <NavLink
                     className={cn(
-                      "flex h-11 w-full items-center justify-start gap-3 rounded-2xl border px-3 py-2.5 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                      "flex h-10 w-full items-center justify-start gap-2.5 rounded-2xl border px-3 py-2 text-[0.82rem] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
                       isActive
                         ? "border-transparent bg-primary text-primary-foreground shadow-none"
                         : "border-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
@@ -175,7 +175,7 @@ function AppSidebar() {
                     key={item.href}
                     to={item.href}
                   >
-                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                    <Icon aria-hidden="true" className="size-3.5 shrink-0" />
                     <span className="truncate">{item.label}</span>
                   </NavLink>
                 )
