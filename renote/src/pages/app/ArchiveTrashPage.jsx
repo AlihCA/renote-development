@@ -280,12 +280,12 @@ function ArchiveTrashPage() {
     setArchivedItems((currentItems) =>
       currentItems.filter((item) => item.id !== itemId)
     )
-    toast("Item restored.")
+    toast("Updated locally for this demo.")
   }
 
   function confirmPermanentDelete() {
     setDeleteCandidate(null)
-    toast("Permanent deletion will be connected later.")
+    toast("Permanent deletion will be connected during backend integration.")
   }
 
   const hasActiveFilters =
@@ -298,7 +298,9 @@ function ArchiveTrashPage() {
       <PageHeader
         actions={
           <Button
-            onClick={() => toast("Permanent deletion will be connected later.")}
+            onClick={() =>
+              toast("Permanent deletion will be connected during backend integration.")
+            }
             type="button"
             variant="outline"
           >

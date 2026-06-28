@@ -42,7 +42,9 @@ function WorkspaceToolbar({
 
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
         <Button
-          onClick={() => toast("File filters will be connected later.")}
+          onClick={() =>
+            toast("File filters will be connected during backend integration.")
+          }
           size="sm"
           type="button"
           variant="outline"

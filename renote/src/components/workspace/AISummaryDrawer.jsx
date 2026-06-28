@@ -126,7 +126,7 @@ function AISummaryDrawer({
                   className="h-11 w-full rounded-2xl"
                   onClick={() =>
                     toast(
-                      `${summaryType} summary generation will be connected later.`
+                      `${summaryType} summary generation will be connected during backend integration.`
                     )
                   }
                   type="button"

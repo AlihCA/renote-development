@@ -29,8 +29,10 @@ const initialFilters = {
   sort: "newest",
   subject: "all",
   trust: "all",
-  visibility: "all",
+  visibility: "public",
 }
+
+const publicVisibilityOptions = [{ label: "Public resources", value: "public" }]
 
 function normalizeTag(value) {
   return String(value).trim().toLowerCase()
@@ -117,7 +119,10 @@ function PublicExplorePage() {
   const repositories = useMemo(
     () =>
       mockRepositories
-        .filter((repository) => repository.status === "active")
+        .filter(
+          (repository) =>
+            repository.status === "active" && repository.visibility === "public"
+        )
         .map((repository) => ({
           ...repository,
           fileTypes: getRepositoryFileTypes(repository.id),
@@ -259,6 +264,7 @@ function PublicExplorePage() {
         onRemoveTag={removeTag}
         onReset={resetFilters}
         subjectOptions={subjectOptions}
+        visibilityOptions={publicVisibilityOptions}
       />
     )
   }

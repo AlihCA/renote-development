@@ -457,7 +457,7 @@ function RepositoryWorkspacePage() {
     setFolders((currentFolders) =>
       sortByDepthAndName([...currentFolders, newFolder])
     )
-    toast("Folder created in prototype mode.")
+    toast("Updated locally for this demo.")
   }
 
   function handleUploadFile({ extension, fileName, folderId, size }) {
@@ -481,7 +481,7 @@ function RepositoryWorkspacePage() {
       },
       ...currentFiles,
     ])
-    toast("File uploaded in prototype mode.")
+    toast("Updated locally for this demo.")
   }
 
   if (!repository) {

@@ -11,6 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+const defaultVisibilityOptions = [
+  { label: "All visibility", value: "all" },
+  { label: "Public", value: "public" },
+  { label: "Restricted", value: "restricted" },
+  { label: "Private preview", value: "private" },
+]
+
 function FilterSelect({ label, onChange, options, value }) {
   return (
     <label className="block space-y-1.5">
@@ -101,38 +108,40 @@ function RepositoryFilterPanel({
   onRemoveTag,
   onReset,
   subjectOptions,
+  visibilityOptions = defaultVisibilityOptions,
 }) {
   return (
     <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-[#E9C8F2] bg-white shadow-sm dark:border-primary/25 dark:bg-card">
       <div className="shrink-0 border-b border-[#E9C8F2]/70 px-4 py-4 dark:border-border">
         <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-lg border border-[#E9C8F2] bg-[#FCF7FF] text-primary shadow-sm dark:border-primary/25 dark:bg-background/80">
-            <Filter className="size-4" />
-          </span>
-          <div>
-            <h2 className="text-base font-semibold leading-tight">Sort and Filter</h2>
-            <p className="text-xs text-muted-foreground">Refine repositories</p>
+          <div className="flex items-center gap-2">
+            <span className="grid size-8 place-items-center rounded-lg border border-[#E9C8F2] bg-[#FCF7FF] text-primary shadow-sm dark:border-primary/25 dark:bg-background/80">
+              <Filter className="size-4" />
+            </span>
+            <div>
+              <h2 className="text-base font-semibold leading-tight">
+                Sort and Filter
+              </h2>
+              <p className="text-xs text-muted-foreground">Refine repositories</p>
+            </div>
           </div>
+
+          {onClose ? (
+            <Button
+              aria-label="Collapse filters"
+              className="rounded-lg text-muted-foreground hover:text-primary"
+              onClick={onClose}
+              size="icon-xs"
+              type="button"
+              variant="ghost"
+            >
+              <X className="size-3.5" />
+            </Button>
+          ) : null}
         </div>
-
-        {onClose ? (
-          <Button
-            aria-label="Collapse filters"
-            className="rounded-lg text-muted-foreground hover:text-primary"
-            onClick={onClose}
-            size="icon-xs"
-            type="button"
-            variant="ghost"
-          >
-            <X className="size-3.5" />
-          </Button>
-        ) : null}
       </div>
-      </div>
-      
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 pr-3"> 
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 pr-3">
         <FilterSelect
           label="Sort by"
           onChange={(value) => onFilterChange("sort", value)}
@@ -166,12 +175,7 @@ function RepositoryFilterPanel({
         <FilterSelect
           label="Visibility"
           onChange={(value) => onFilterChange("visibility", value)}
-          options={[
-            { label: "All visibility", value: "all" },
-            { label: "Public", value: "public" },
-            { label: "Restricted", value: "restricted" },
-            { label: "Private preview", value: "private" },
-          ]}
+          options={visibilityOptions}
           value={filters.visibility}
         />
 

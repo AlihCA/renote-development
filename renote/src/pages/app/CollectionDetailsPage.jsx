@@ -197,8 +197,10 @@ function CollectionCoverBadge({ collection }) {
 }
 
 function AddItemDropdown({ className, variant = "default" }) {
-  function handleAddItem() {
-    toast("Adding saved items will be connected later.")
+  function handleAddItem(itemType) {
+    toast(
+      `Adding ${itemType.toLowerCase()} items will be connected during backend integration.`
+    )
   }
 
   return (
@@ -232,17 +234,27 @@ function HeaderMoreMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Collection actions</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => toast("Edit collection will be connected later.")}>
+        <DropdownMenuItem
+          onSelect={() =>
+            toast("Collection editing will be connected during backend integration.")
+          }
+        >
           <Pencil className="size-4" />
           Edit details
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => toast("Archive collection will be connected later.")}>
+        <DropdownMenuItem
+          onSelect={() =>
+            toast("Collection archiving will be connected during backend integration.")
+          }
+        >
           <Archive className="size-4" />
           Archive
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => toast("Delete collection will be connected later.")}
+          onSelect={() =>
+            toast("Collection deletion will be connected during backend integration.")
+          }
           variant="destructive"
         >
           <Trash2 className="size-4" />
@@ -283,13 +295,19 @@ function SavedItemMoreMenu({ item }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Saved item actions</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => toast("Notes will be connected later.")}>
+        <DropdownMenuItem
+          onSelect={() =>
+            toast("Saved item notes will be connected during backend integration.")
+          }
+        >
           <Pencil className="size-4" />
           Add note
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => toast("Removing saved items will be connected later.")}
+          onSelect={() =>
+            toast("Removing saved items will be connected during backend integration.")
+          }
           variant="destructive"
         >
           <Trash2 className="size-4" />
@@ -405,7 +423,9 @@ function CollectionHeader({ collection }) {
         <div className="flex flex-wrap items-center gap-2">
           <AddItemDropdown />
           <Button
-            onClick={() => toast("Collection sharing will be connected later.")}
+            onClick={() =>
+              toast("Collection sharing will be connected during backend integration.")
+            }
             type="button"
             variant="outline"
           >

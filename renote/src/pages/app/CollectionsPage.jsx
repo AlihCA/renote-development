@@ -319,7 +319,7 @@ function CollectionCoverBadge({ collection }) {
 }
 
 function handleMenuAction(label) {
-  toast(`${label} is a prototype action.`)
+  toast(`${label} will be connected during backend integration.`)
 }
 
 function CollectionActionsMenu() {
@@ -884,7 +884,7 @@ function CollectionsPage() {
       ...currentCollections,
     ])
 
-    toast("Collection created in prototype mode.")
+    toast("Updated locally for this demo.")
   }
 
   return (

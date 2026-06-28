@@ -4,24 +4,45 @@ export const publicNavItems = [
   { label: "Help", href: "/help" },
 ]
 
-export const appNavItems = [
-  { label: "Dashboard", href: "/app/dashboard" },
-  { label: "Explore", href: "/app/explore" },
+export const appNavSections = [
   {
-    label: "My Repositories",
-    href: "/app/my-repositories",
-    activeHrefs: [
-      "/app/my-repositories",
-      "/app/repositories",
-      "/app/workspace",
-      "/app/files",
+    title: "Home",
+    items: [{ label: "Home", href: "/app/dashboard" }],
+  },
+  {
+    title: "Library",
+    items: [
+      {
+        label: "Explore",
+        href: "/app/explore",
+        activeHrefs: ["/app/explore", "/app/repositories"],
+      },
     ],
   },
-  { label: "Collections", href: "/app/collections" },
-  { label: "AI Summaries", href: "/app/summaries" },
-  { label: "Access Requests", href: "/app/access-requests" },
-  { label: "Notifications", href: "/app/notifications" },
-  { label: "Archive / Trash", href: "/app/archive" },
-  { label: "Profile", href: "/app/profile" },
-  { label: "Design System", href: "/app/design-system", developmentOnly: true },
+  {
+    title: "Workspace",
+    items: [
+      {
+        label: "My Repositories",
+        href: "/app/my-repositories",
+        activeHrefs: ["/app/my-repositories", "/app/workspace", "/app/files"],
+      },
+      { label: "Collections", href: "/app/collections" },
+    ],
+  },
+  {
+    title: "Activity",
+    items: [
+      { label: "AI Summaries", href: "/app/summaries" },
+      { label: "Access Requests", href: "/app/access-requests" },
+      { label: "Notifications", href: "/app/notifications" },
+      { label: "Archive / Trash", href: "/app/archive" },
+    ],
+  },
+  {
+    title: "Account",
+    items: [{ label: "Profile", href: "/app/profile" }],
+  },
 ]
+
+export const appNavItems = appNavSections.flatMap((section) => section.items)

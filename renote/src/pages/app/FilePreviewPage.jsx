@@ -653,7 +653,9 @@ function FileHeader({ file, folder, repository }) {
 
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            onClick={() => toast("Rename will be connected later.")}
+            onClick={() =>
+              toast("Rename will be connected during backend integration.")
+            }
             size="sm"
             type="button"
             variant="outline"
@@ -662,7 +664,9 @@ function FileHeader({ file, folder, repository }) {
             Rename
           </Button>
           <Button
-            onClick={() => toast("Download will be connected later.")}
+            onClick={() =>
+              toast("Download will be connected during backend integration.")
+            }
             size="sm"
             type="button"
             variant="outline"
@@ -678,10 +682,18 @@ function FileHeader({ file, folder, repository }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>File actions</DropdownMenuLabel>
-              <DropdownMenuItem onSelect={() => toast("Move file is a prototype action.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Move file will be connected during backend integration.")
+                }
+              >
                 Move to folder
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => toast("Share file is a prototype action.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Share file will be connected during backend integration.")
+                }
+              >
                 Share
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -939,7 +951,9 @@ function PdfPreview({ currentPage, file, onPageChange, totalPages }) {
           </Button>
           <Button
             aria-label="Download file"
-            onClick={() => toast("Download will be connected later.")}
+            onClick={() =>
+              toast("Download will be connected during backend integration.")
+            }
             size="icon-sm"
             type="button"
             variant="ghost"
@@ -948,7 +962,9 @@ function PdfPreview({ currentPage, file, onPageChange, totalPages }) {
           </Button>
           <Button
             aria-label="Fullscreen preview"
-            onClick={() => toast("Fullscreen preview will be connected later.")}
+            onClick={() =>
+              toast("Fullscreen preview will be connected during backend integration.")
+            }
             size="icon-sm"
             type="button"
             variant="ghost"
@@ -962,10 +978,18 @@ function PdfPreview({ currentPage, file, onPageChange, totalPages }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => toast("Print is a prototype action.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Print will be connected during backend integration.")
+                }
+              >
                 Print
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => toast("Version history is a prototype action.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Version history will be connected during backend integration.")
+                }
+              >
                 Version history
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -1028,7 +1052,7 @@ function PlaceholderPreview({ file }) {
           <FileTypeIcon className="mx-auto" extension={file.extension} size="lg" type={file.type} />
           <h2 className="mt-4 text-lg font-semibold">{getFileTypeLabel(file)} Preview</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Preview for this file type will be connected later.
+            Preview for this file type will be connected during backend integration.
           </p>
         </div>
       </div>
@@ -1074,7 +1098,7 @@ function AskAiSection() {
 
   function handleSubmit(event) {
     event.preventDefault()
-    toast("AI file chat will be connected later.")
+    toast("AI file chat will be connected during backend integration.")
     setQuestion("")
   }
 
@@ -1155,7 +1179,9 @@ function SummaryPanel({ summary }) {
         </div>
 
         <Button
-          onClick={() => toast("New summary generation will be connected later.")}
+          onClick={() =>
+            toast("Summary generation will be connected during backend integration.")
+          }
           size="sm"
           type="button"
           variant="ghost"
@@ -1197,7 +1223,9 @@ function SummaryPanel({ summary }) {
 
       <Button
         className="w-full"
-        onClick={() => toast(`${summaryType} summary generation will be connected later.`)}
+        onClick={() =>
+          toast("Summary generation will be connected during backend integration.")
+        }
         type="button"
       >
         <Sparkles className="size-4" />
@@ -1241,7 +1269,7 @@ function CitationEditDialog({ metadata, onSave, open, onOpenChange }) {
     event.preventDefault()
     onSave(draft)
     onOpenChange(false)
-    toast("Citation metadata updated in prototype mode.")
+    toast("Updated locally for this demo.")
   }
 
   return (

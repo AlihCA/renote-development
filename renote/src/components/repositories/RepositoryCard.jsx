@@ -40,7 +40,7 @@ function toLabel(value) {
 }
 
 function handleMenuAction(label) {
-  toast(`${label} is a prototype action.`)
+  toast(`${label} will be connected during backend integration.`)
 }
 
 function RepositoryCard({ fileTypes = [], repository, view = "grid" }) {

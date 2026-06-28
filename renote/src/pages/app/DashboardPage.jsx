@@ -81,7 +81,7 @@ function RecommendationCard({ item }) {
           <Button
             className="flex-1"
             onClick={() =>
-              toast("Recommendation save action will be connected later.")
+              toast("Save recommendations will be connected during backend integration.")
             }
             size="sm"
             type="button"
@@ -114,7 +114,7 @@ function DashboardPage() {
   const recommendedItems = mockRecommendations.slice(0, 3)
 
   function handleCreateRepository() {
-    toast("Repository created in prototype mode.")
+    toast("Updated locally for this demo.")
   }
 
   return (

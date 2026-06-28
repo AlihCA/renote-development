@@ -165,7 +165,9 @@ function NotificationMoreMenu({ notification, onToggleRead }) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => toast("Archiving notifications will be connected later.")}
+          onSelect={() =>
+            toast("Archiving notifications will be connected during backend integration.")
+          }
           variant="destructive"
         >
           <Archive className="size-4" />

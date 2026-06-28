@@ -123,7 +123,7 @@ function RoleSelectionPage() {
             </div>
 
             <p className="mx-auto max-w-xl rounded-2xl border border-primary/20 bg-[#FCF5FF] px-4 py-3 text-sm text-muted-foreground dark:bg-primary/5">
-              This is a prototype role preview. Roles are used to show trust labels and credibility levels. Full role verification will be connected later.
+              This is a prototype role preview. Roles are used to show trust labels and credibility levels. Full role verification will be connected during backend integration.
             </p>
           </div>
         </PageShell>

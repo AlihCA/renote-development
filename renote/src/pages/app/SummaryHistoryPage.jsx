@@ -244,15 +244,25 @@ function SummaryCard({ summary }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Summary actions</DropdownMenuLabel>
-              <DropdownMenuItem onSelect={() => toast("Share summary will be connected later.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Share summary will be connected during backend integration.")
+                }
+              >
                 Share
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => toast("Add to collection will be connected later.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Add to collection will be connected during backend integration.")
+                }
+              >
                 Add to collection
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={() => toast("Archive summary will be connected later.")}
+                onSelect={() =>
+                  toast("Archive summary will be connected during backend integration.")
+                }
                 variant="destructive"
               >
                 Archive summary
@@ -302,7 +312,9 @@ function SummaryHistoryPage() {
       <PageHeader
         actions={
           <Button
-            onClick={() => toast("Summary generation will be connected later.")}
+            onClick={() =>
+              toast("Summary generation will be connected during backend integration.")
+            }
             type="button"
           >
             <Plus className="size-4" />

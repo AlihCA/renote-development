@@ -167,6 +167,11 @@ const faqs = [
     answer:
       "Yes. The prototype includes visibility concepts for public, restricted, and private resources so future repository workflows can support controlled access.",
   },
+  {
+    question: "Is this prototype connected to real backend services?",
+    answer:
+      "This prototype uses demo data and frontend-only interactions. Backend persistence, real file storage, AI processing, document parsing, and full authorization will be connected during the development phase.",
+  },
 ]
 
 function HelpAboutPage() {

@@ -12,7 +12,6 @@ import {
   FolderOpen,
   KeyRound,
   LayoutDashboard,
-  Palette,
   User,
 } from "lucide-react"
 
@@ -21,7 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { appNavItems } from "@/data/navigation"
+import { appNavSections } from "@/data/navigation"
 import { cn } from "@/lib/utils"
 
 const SIDEBAR_STORAGE_KEY = "renote-sidebar-collapsed"
@@ -31,9 +30,8 @@ const sidebarIcons = {
   "Access Requests": KeyRound,
   "Archive / Trash": Archive,
   Collections: FolderOpen,
-  Dashboard: LayoutDashboard,
-  "Design System": Palette,
   Explore: Compass,
+  Home: LayoutDashboard,
   "My Repositories": BookOpen,
   Notifications: Bell,
   Profile: User,
@@ -120,50 +118,70 @@ function AppSidebar() {
         <nav
           className={
             isCollapsed
-              ? "flex flex-1 flex-col items-center gap-2 overflow-x-hidden"
-              : "flex w-full flex-1 flex-col items-stretch gap-2 overflow-x-hidden"
+              ? "flex flex-1 flex-col items-center gap-3 overflow-x-hidden overflow-y-auto"
+              : "flex w-full flex-1 flex-col items-stretch gap-4 overflow-x-hidden overflow-y-auto"
           }
         >
-          {appNavItems.map((item) => {
-            const Icon = sidebarIcons[item.label] ?? Circle
-            const isActive = isActiveRoute(location.pathname, item)
+          {appNavSections.map((section, sectionIndex) => (
+            <div
+              className={cn(
+                "flex w-full flex-col",
+                isCollapsed ? "items-center gap-2" : "gap-1.5",
+                sectionIndex > 0 &&
+                  (isCollapsed
+                    ? "pt-1.5"
+                    : "border-t border-[#E9B8F2]/45 pt-3 dark:border-[#5D2B74]/45")
+              )}
+              key={section.title}
+            >
+              {!isCollapsed ? (
+                <p className="px-3 pb-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#8A5798] dark:text-[#CDB4DC]">
+                  {section.title}
+                </p>
+              ) : null}
 
-            return isCollapsed ? (
-              <Tooltip key={item.href}>
-                <TooltipTrigger asChild>
+              {section.items.map((item) => {
+                const Icon = sidebarIcons[item.label] ?? Circle
+                const isActive = isActiveRoute(location.pathname, item)
+
+                return isCollapsed ? (
+                  <Tooltip key={item.href}>
+                    <TooltipTrigger asChild>
+                      <NavLink
+                        aria-label={item.label}
+                        className={cn(
+                          "mx-auto flex h-11 w-11 items-center justify-center rounded-[14px] border border-transparent p-0 shadow-none outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
+                        )}
+                        to={item.href}
+                      >
+                        <Icon aria-hidden="true" className="size-5 shrink-0" />
+                      </NavLink>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={10}>
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
                   <NavLink
-                    aria-label={item.label}
                     className={cn(
-                      "mx-auto flex h-11 w-11 items-center justify-center rounded-[14px] border border-transparent p-0 shadow-none outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                      "flex h-11 w-full items-center justify-start gap-3 rounded-2xl border px-3 py-2.5 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
                       isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
+                        ? "border-transparent bg-primary text-primary-foreground shadow-none"
+                        : "border-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
                     )}
+                    key={item.href}
                     to={item.href}
                   >
-                    <Icon aria-hidden="true" className="size-5 shrink-0" />
+                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                    <span className="truncate">{item.label}</span>
                   </NavLink>
-                </TooltipTrigger>
-                <TooltipContent side="right" sideOffset={10}>
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <NavLink
-                className={cn(
-                  "flex h-11 w-full items-center justify-start gap-3 rounded-2xl border px-3 py-2.5 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
-                  isActive
-                    ? "border-transparent bg-primary text-primary-foreground shadow-none"
-                    : "border-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
-                )}
-                key={item.href}
-                to={item.href}
-              >
-                <Icon aria-hidden="true" className="size-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
-              </NavLink>
-            )
-          })}
+                )
+              })}
+            </div>
+          ))}
         </nav>
       </div>
     </aside>

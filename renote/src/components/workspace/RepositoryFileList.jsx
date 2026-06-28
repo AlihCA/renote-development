@@ -123,7 +123,9 @@ function FileActions({ file }) {
       </Button>
       <Button
         aria-label={`Summarize ${file.name}`}
-        onClick={() => toast("AI summary preview will be connected later.")}
+        onClick={() =>
+          toast("AI summary preview will be connected during backend integration.")
+        }
         size="icon-sm"
         type="button"
         variant="ghost"
@@ -138,15 +140,25 @@ function FileActions({ file }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>File actions</DropdownMenuLabel>
-          <DropdownMenuItem onSelect={() => toast("Rename is a prototype action.")}>
+          <DropdownMenuItem
+            onSelect={() =>
+              toast("Rename will be connected during backend integration.")
+            }
+          >
             Rename
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => toast("Move file is a prototype action.")}>
+          <DropdownMenuItem
+            onSelect={() =>
+              toast("Move file will be connected during backend integration.")
+            }
+          >
             Move to folder
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onSelect={() => toast("Delete is a prototype action.")}
+            onSelect={() =>
+              toast("Delete will be connected during backend integration.")
+            }
             variant="destructive"
           >
             <Trash2 className="size-4" />

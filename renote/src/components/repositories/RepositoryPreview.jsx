@@ -311,7 +311,7 @@ function RepositoryPreviewActions({
       </Button>
       <Button
         onClick={() =>
-          toast("Saved to collection prototype action will be connected later.")
+          toast("Save to collection will be connected during backend integration.")
         }
         size="sm"
         type="button"
@@ -322,7 +322,9 @@ function RepositoryPreviewActions({
       </Button>
       {canRequestAccess ? (
         <Button
-          onClick={() => toast("Access request will be connected later.")}
+          onClick={() =>
+            toast("Access requests will be connected during backend integration.")
+          }
           size="sm"
           type="button"
           variant="outline"
@@ -332,7 +334,9 @@ function RepositoryPreviewActions({
         </Button>
       ) : null}
       <Button
-        onClick={() => toast("Share options will be connected later.")}
+        onClick={() =>
+          toast("Share options will be connected during backend integration.")
+        }
         size="sm"
         type="button"
         variant="outline"
@@ -662,23 +666,12 @@ function SummaryStatus({ file }) {
 }
 
 function PreviewAction({ file, isPublic }) {
-  if (isPublic) {
-    return (
-      <Button
-        aria-label={`Preview ${file.name}`}
-        onClick={() => toast("Public file preview will be connected later.")}
-        size="icon-sm"
-        type="button"
-        variant="ghost"
-      >
-        <Eye className="size-4" />
-      </Button>
-    )
-  }
-
   return (
     <Button asChild size="icon-sm" variant="ghost">
-      <Link aria-label={`Preview ${file.name}`} to={`/app/files/${file.id}`}>
+      <Link
+        aria-label={`Preview ${file.name}`}
+        to={isPublic ? `/files/${file.id}` : `/app/files/${file.id}`}
+      >
         <Eye className="size-4" />
       </Link>
     </Button>
@@ -693,16 +686,12 @@ function FileCard({ file, isPublic }) {
       <div className="flex items-start gap-3">
         <FileTypeIcon extension={file.extension} size="sm" type={file.type} />
         <div className="min-w-0 flex-1">
-          {isPublic ? (
-            <h3 className="line-clamp-1 text-sm font-semibold">{file.name}</h3>
-          ) : (
-            <Link
-              className="line-clamp-1 text-sm font-semibold transition hover:text-primary"
-              to={`/app/files/${file.id}`}
-            >
-              {file.name}
-            </Link>
-          )}
+          <Link
+            className="line-clamp-1 text-sm font-semibold transition hover:text-primary"
+            to={isPublic ? `/files/${file.id}` : `/app/files/${file.id}`}
+          >
+            {file.name}
+          </Link>
           <p className="mt-1 text-xs text-muted-foreground">
             {toLabel(fileType)} / {file.size} /{" "}
             {formatDate(file.updatedAt ?? file.uploadedAt)}
@@ -745,18 +734,12 @@ function FileTable({ files, isPublic }) {
                   type={file.type}
                 />
                 <div className="min-w-0">
-                  {isPublic ? (
-                    <h3 className="line-clamp-1 text-sm font-semibold">
-                      {file.name}
-                    </h3>
-                  ) : (
-                    <Link
-                      className="line-clamp-1 text-sm font-semibold transition hover:text-primary"
-                      to={`/app/files/${file.id}`}
-                    >
-                      {file.name}
-                    </Link>
-                  )}
+                  <Link
+                    className="line-clamp-1 text-sm font-semibold transition hover:text-primary"
+                    to={isPublic ? `/files/${file.id}` : `/app/files/${file.id}`}
+                  >
+                    {file.name}
+                  </Link>
                   <p className="text-xs text-muted-foreground">
                     Read-only repository preview
                   </p>
@@ -1076,7 +1059,7 @@ function RelatedResourceCard({ isPublic, item }) {
             <Button
               className="flex-1"
               onClick={() =>
-                toast("Recommendation save action will be connected later.")
+                toast("Save recommendations will be connected during backend integration.")
               }
               size="sm"
               type="button"
@@ -1112,7 +1095,7 @@ function RelatedResourcesPanel({ isPublic, repository }) {
           <h2 className="font-semibold tracking-tight">Related Resources</h2>
           <p className="text-sm leading-6 text-muted-foreground">
             Recommendations are shown using prototype tag and subject matching.
-            Full AI recommendations will be connected later.
+            Full AI recommendations will be connected during backend integration.
           </p>
         </div>
       </div>
@@ -1322,7 +1305,7 @@ function RepositoryReviewsPanel({ feedbackItems, isPublic, repository }) {
   }
 
   function handleReport() {
-    toast("Report review workflow will be connected later.")
+    toast("Report review workflow will be connected during backend integration.")
   }
 
   function handleSubmitReview({ comment, rating }) {
@@ -1342,7 +1325,7 @@ function RepositoryReviewsPanel({ feedbackItems, isPublic, repository }) {
       },
       ...currentReviews,
     ])
-    toast("Review added locally for this prototype.")
+    toast("Updated locally for this demo.")
   }
 
   return (

@@ -222,11 +222,11 @@ function ProfilePage() {
 
   function saveProfile(event) {
     event.preventDefault()
-    toast("Profile changes will be connected later.")
+    toast("Updated locally for this demo.")
   }
 
   function savePreferences() {
-    toast("Workspace preferences saved for this prototype.")
+    toast("Updated locally for this demo.")
   }
 
   async function handleSignOut() {
@@ -267,7 +267,9 @@ function ProfilePage() {
           <SectionCard icon={Settings2} title="Account Actions">
             <div className="grid gap-2">
               <Button
-                onClick={() => toast("Prototype data export will be connected later.")}
+                onClick={() =>
+                  toast("Data export will be connected during backend integration.")
+                }
                 type="button"
                 variant="outline"
               >
@@ -283,7 +285,9 @@ function ProfilePage() {
                 Sign out
               </Button>
               <Button
-                onClick={() => toast("Delete account preview will be connected later.")}
+                onClick={() =>
+                  toast("Account deletion will be connected during backend integration.")
+                }
                 type="button"
                 variant="outline"
               >

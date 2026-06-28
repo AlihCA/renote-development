@@ -418,15 +418,25 @@ function SummaryDetailsPage() {
 
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Summary actions</DropdownMenuLabel>
-              <DropdownMenuItem onSelect={() => toast("Share summary will be connected later.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Share summary will be connected during backend integration.")
+                }
+              >
                 Share summary
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => toast("Regenerate summary will be connected later.")}>
+              <DropdownMenuItem
+                onSelect={() =>
+                  toast("Regenerate summary will be connected during backend integration.")
+                }
+              >
                 Regenerate
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={() => toast("Archive summary will be connected later.")}
+                onSelect={() =>
+                  toast("Archive summary will be connected during backend integration.")
+                }
                 variant="destructive"
               >
                 Archive summary

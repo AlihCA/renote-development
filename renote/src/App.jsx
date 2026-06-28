@@ -25,6 +25,7 @@ import NotFoundPage from "@/pages/errors/NotFoundPage"
 import HelpAboutPage from "@/pages/public/HelpAboutPage"
 import LandingPage from "@/pages/public/LandingPage"
 import PublicExplorePage from "@/pages/public/PublicExplorePage"
+import PublicFilePreviewPage from "@/pages/public/PublicFilePreviewPage"
 import PublicRepositoryPreviewPage from "@/pages/public/PublicRepositoryPreviewPage"
 import RoleSelectionPage from "@/pages/public/RoleSelectionPage"
 import SignInPage from "@/pages/public/SignInPage"
@@ -42,6 +43,7 @@ function App() {
             <Route element={<PublicLayout />}>
               <Route index element={<LandingPage />} />
               <Route path="explore-public" element={<PublicExplorePage />} />
+              <Route path="files/:fileId" element={<PublicFilePreviewPage />} />
               <Route path="help" element={<HelpAboutPage />} />
               <Route
                 path="repositories/:repositoryId"

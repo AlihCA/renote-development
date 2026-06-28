@@ -84,7 +84,9 @@ function RepositoryHeader({
 
         <div className="flex flex-wrap gap-2 xl:justify-end">
           <Button
-            onClick={() => toast("Share options will be connected later.")}
+            onClick={() =>
+              toast("Share options will be connected during backend integration.")
+            }
             size="sm"
             type="button"
             variant="outline"
@@ -109,18 +111,24 @@ function RepositoryHeader({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Repository actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onSelect={() => toast("Repository details editing is prototype-only.")}
+                onSelect={() =>
+                  toast("Repository details editing will be connected during backend integration.")
+                }
               >
                 Edit details
               </DropdownMenuItem>
               <DropdownMenuItem
-                onSelect={() => toast("Workspace export will be connected later.")}
+                onSelect={() =>
+                  toast("Workspace export will be connected during backend integration.")
+                }
               >
                 Export outline
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={() => toast("Archive is a prototype action.")}
+                onSelect={() =>
+                  toast("Archive will be connected during backend integration.")
+                }
               >
                 <Archive className="size-4" />
                 Archive

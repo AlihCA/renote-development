@@ -170,15 +170,25 @@ function RequestMoreMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Request actions</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => toast("Request notes will be connected later.")}>
+        <DropdownMenuItem
+          onSelect={() =>
+            toast("Request notes will be connected during backend integration.")
+          }
+        >
           Add note
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => toast("Sharing request context will be connected later.")}>
+        <DropdownMenuItem
+          onSelect={() =>
+            toast("Sharing request context will be connected during backend integration.")
+          }
+        >
           Share context
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => toast("Archiving requests will be connected later.")}
+          onSelect={() =>
+            toast("Archiving requests will be connected during backend integration.")
+          }
           variant="destructive"
         >
           Archive request
@@ -309,7 +319,9 @@ function SentRequestCard({ request }) {
           </Button>
           {isPending ? (
             <Button
-              onClick={() => toast("Access request cancellation will be connected later.")}
+              onClick={() =>
+                toast("Access request cancellation will be connected during backend integration.")
+              }
               size="sm"
               type="button"
               variant="outline"
@@ -365,7 +377,7 @@ function AccessRequestsPage() {
       )
     )
 
-    toast(status === "approved" ? "Access request approved." : "Access request denied.")
+    toast("Updated locally for this demo.")
   }
 
   const isReceived = filters.scope === "received"
@@ -375,7 +387,9 @@ function AccessRequestsPage() {
       <PageHeader
         actions={
           <Button
-            onClick={() => toast("Access request creation will be connected later.")}
+            onClick={() =>
+              toast("Access request creation will be connected during backend integration.")
+            }
             type="button"
           >
             <Plus className="size-4" />

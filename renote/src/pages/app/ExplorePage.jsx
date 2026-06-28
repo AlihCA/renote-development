@@ -185,7 +185,7 @@ function SignedInRepositoryCard({ fileTypes, repository }) {
           </Button>
           <Button
             onClick={() =>
-              toast("Saved to collection prototype action will be connected later.")
+              toast("Save to collection will be connected during backend integration.")
             }
             size="sm"
             type="button"
@@ -196,7 +196,9 @@ function SignedInRepositoryCard({ fileTypes, repository }) {
           </Button>
           {canRequestAccess ? (
             <Button
-              onClick={() => toast("Access request will be connected later.")}
+              onClick={() =>
+                toast("Access requests will be connected during backend integration.")
+              }
               size="sm"
               type="button"
               variant="outline"

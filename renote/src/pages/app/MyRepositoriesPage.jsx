@@ -154,7 +154,7 @@ function MyRepositoriesPage() {
       ...currentRepositories,
     ])
 
-    toast("Repository created in prototype mode.")
+    toast("Updated locally for this demo.")
   }
 
   return (
