@@ -84,7 +84,7 @@ function DashboardPage() {
             <CreateRepositoryDialog
               onCreate={handleCreateRepository}
               trigger={
-                <Button className="border-white/20 bg-white text-primary hover:bg-white/90">
+                <Button className="w-full justify-center border-white/20 bg-white text-primary shadow-sm hover:bg-white/90 sm:w-auto">
                   <Plus className="size-4" />
                   Create Repository
                 </Button>
@@ -92,7 +92,7 @@ function DashboardPage() {
             />
             <Button
               asChild
-              className="border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              className="w-full justify-center border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white sm:w-auto"
               variant="outline"
             >
               <Link to="/app/explore">

@@ -14,7 +14,7 @@ function DashboardWelcomeCard({ actions }) {
       <Sparkles className="pointer-events-none absolute right-10 top-32 hidden size-5 text-white/70 md:block" />
       <Sparkles className="pointer-events-none absolute bottom-7 right-48 hidden size-4 text-white/60 lg:block" />
 
-      <div className="relative flex max-w-5xl flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+      <div className="relative max-w-5xl">
         <div className="max-w-2xl space-y-3">
           <span className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/15 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur-sm">
             <Sparkles className="size-3.5" />
@@ -28,10 +28,13 @@ function DashboardWelcomeCard({ actions }) {
               Here's a quick snapshot of your academic workspace.
             </p>
           </div>
+
+          {actions ? (
+            <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:flex-wrap">
+              {actions}
+            </div>
+          ) : null}
         </div>
-        {actions ? (
-          <div className="flex flex-col gap-2 sm:flex-row lg:shrink-0">{actions}</div>
-        ) : null}
       </div>
     </section>
   )
