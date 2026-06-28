@@ -87,7 +87,7 @@ function PublicRepositoryCard({ fileTypes = [], repository }) {
         <Link
           aria-label="Sign in to save repository"
           className="grid size-8 shrink-0 place-items-center rounded-lg border border-[#E9C8F2] bg-white/80 text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary-soft hover:text-primary dark:border-primary/20 dark:bg-background/80"
-          to="/role-selection"
+          to="/sign-in"
         >
           <Star className="size-3.5" />
         </Link>

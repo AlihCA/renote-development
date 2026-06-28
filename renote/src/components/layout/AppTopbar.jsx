@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { UserButton, useUser } from "@clerk/clerk-react"
 import {
   Link,
   NavLink,
@@ -24,16 +25,8 @@ import {
   User,
 } from "lucide-react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { renoteUserButtonAppearance } from "@/components/auth/clerkAppearance"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Sheet,
@@ -86,10 +79,12 @@ function AppTopbar() {
   const [localSearch, setLocalSearch] = useState("")
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { user } = useUser()
   const isDark = theme === "dark"
   const isAppExplore = location.pathname === "/app/explore"
   const exploreSearchQuery = searchParams.get("q") ?? ""
   const searchValue = isAppExplore ? exploreSearchQuery : localSearch
+  const displayName = user?.firstName ?? user?.fullName ?? "ReNote User"
 
   function handleSearchChange(event) {
     const value = event.target.value
@@ -231,25 +226,15 @@ function AppTopbar() {
             <TooltipContent>Notifications</TooltipContent>
           </Tooltip>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="rounded-2xl" size="icon" variant="ghost">
-                <Avatar className="size-8">
-                  <AvatarFallback>RN</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel>ReNote User</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/app/profile">Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/app/profile">Settings</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="hidden max-w-36 text-right xl:block">
+            <p className="truncate text-sm font-medium">{displayName}</p>
+            <p className="text-xs text-muted-foreground">Signed in</p>
+          </div>
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={renoteUserButtonAppearance}
+          >
+          </UserButton>
         </div>
       </div>
     </header>

@@ -84,20 +84,20 @@ function RepositoryPreviewActions({
     return (
       <div className="flex flex-wrap gap-2 xl:justify-end">
         <Button asChild size="sm" variant="outline">
-          <Link to="/role-selection">
+          <Link to="/sign-in">
             <Star className="size-4" />
             Sign in to save
           </Link>
         </Button>
         <Button asChild size="sm" variant="outline">
-          <Link to="/role-selection">
+          <Link to="/sign-in">
             <Sparkles className="size-4" />
             Sign in to use AI Summary
           </Link>
         </Button>
         {canRequestAccess ? (
           <Button asChild size="sm" variant="outline">
-            <Link to="/role-selection">
+            <Link to="/sign-in">
               <KeyRound className="size-4" />
               Sign in to request access
             </Link>
@@ -251,7 +251,7 @@ function RepositoryPreviewSummaryLock() {
         </div>
       </div>
       <Button asChild className="w-full sm:w-fit" variant="outline">
-        <Link to="/role-selection">
+        <Link to="/sign-in">
           <Sparkles className="size-4" />
           Sign in to use AI Summary
         </Link>
@@ -643,7 +643,7 @@ function RepositoryPreviewToolbar({
 
         {isPublic ? (
           <Button asChild size="sm" variant="outline">
-            <Link to="/role-selection">
+            <Link to="/sign-in">
               <Sparkles className="size-4" />
               AI Summary
             </Link>

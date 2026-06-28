@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router"
 
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import ProtectedRoute from "@/components/auth/ProtectedRoute"
+import ReNoteClerkProvider from "@/components/auth/ReNoteClerkProvider"
 import AppLayout from "@/layouts/AppLayout"
 import PublicLayout from "@/layouts/PublicLayout"
 import AccessRequestsPage from "@/pages/app/AccessRequestsPage"
@@ -25,61 +27,81 @@ import LandingPage from "@/pages/public/LandingPage"
 import PublicExplorePage from "@/pages/public/PublicExplorePage"
 import PublicRepositoryPreviewPage from "@/pages/public/PublicRepositoryPreviewPage"
 import RoleSelectionPage from "@/pages/public/RoleSelectionPage"
+import SignInPage from "@/pages/public/SignInPage"
+import SignUpPage from "@/pages/public/SignUpPage"
 
 function App() {
   return (
     <BrowserRouter>
-      <TooltipProvider>
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="explore-public" element={<PublicExplorePage />} />
-            <Route path="help" element={<HelpAboutPage />} />
-            <Route
-              path="repositories/:repositoryId"
-              element={<PublicRepositoryPreviewPage />}
-            />
-            <Route path="role-selection" element={<RoleSelectionPage />} />
-          </Route>
+      <ReNoteClerkProvider>
+        <TooltipProvider>
+          <Routes>
+            <Route path="sign-in/*" element={<SignInPage />} />
+            <Route path="sign-up/*" element={<SignUpPage />} />
 
-          <Route path="dashboard" element={<Navigate to="/app/dashboard" replace />} />
-          <Route path="explore" element={<Navigate to="/app/explore" replace />} />
+            <Route element={<PublicLayout />}>
+              <Route index element={<LandingPage />} />
+              <Route path="explore-public" element={<PublicExplorePage />} />
+              <Route path="help" element={<HelpAboutPage />} />
+              <Route
+                path="repositories/:repositoryId"
+                element={<PublicRepositoryPreviewPage />}
+              />
+              <Route path="role-selection" element={<RoleSelectionPage />} />
+            </Route>
 
-          <Route path="app" element={<AppLayout />}>
-            <Route index element={<Navigate to="/app/dashboard" replace />} />
-            <Route path="access-requests" element={<AccessRequestsPage />} />
-            <Route path="archive" element={<ArchiveTrashPage />} />
-            <Route path="collections" element={<CollectionsPage />} />
             <Route
-              path="collections/:collectionId"
-              element={<CollectionDetailsPage />}
-            />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="design-system" element={<DesignSystemPage />} />
-            <Route path="explore" element={<ExplorePage />} />
-            <Route path="files/:fileId" element={<FilePreviewPage />} />
-            <Route path="my-repositories" element={<MyRepositoriesPage />} />
-            <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route
-              path="repositories/:repositoryId"
-              element={<RepositoryDetailsPage />}
-            />
-            <Route path="summaries" element={<SummaryHistoryPage />} />
-            <Route
-              path="summaries/:summaryId"
-              element={<SummaryDetailsPage />}
+              path="dashboard"
+              element={<Navigate to="/app/dashboard" replace />}
             />
             <Route
-              path="workspace/:repositoryId"
-              element={<RepositoryWorkspacePage />}
+              path="explore"
+              element={<Navigate to="/app/explore" replace />}
             />
-          </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-        <Toaster richColors position="top-right" />
-      </TooltipProvider>
+            <Route
+              path="app"
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="access-requests" element={<AccessRequestsPage />} />
+              <Route path="archive" element={<ArchiveTrashPage />} />
+              <Route path="collections" element={<CollectionsPage />} />
+              <Route
+                path="collections/:collectionId"
+                element={<CollectionDetailsPage />}
+              />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="design-system" element={<DesignSystemPage />} />
+              <Route path="explore" element={<ExplorePage />} />
+              <Route path="files/:fileId" element={<FilePreviewPage />} />
+              <Route path="my-repositories" element={<MyRepositoriesPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route
+                path="repositories/:repositoryId"
+                element={<RepositoryDetailsPage />}
+              />
+              <Route path="summaries" element={<SummaryHistoryPage />} />
+              <Route
+                path="summaries/:summaryId"
+                element={<SummaryDetailsPage />}
+              />
+              <Route
+                path="workspace/:repositoryId"
+                element={<RepositoryWorkspacePage />}
+              />
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+          <Toaster richColors position="top-right" />
+        </TooltipProvider>
+      </ReNoteClerkProvider>
     </BrowserRouter>
   )
 }

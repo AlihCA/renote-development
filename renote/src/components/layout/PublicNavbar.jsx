@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 import {
   Link,
   NavLink,
@@ -8,6 +9,7 @@ import {
 } from "react-router"
 import { Menu, Moon, Search, Sun } from "lucide-react"
 
+import { renoteUserButtonAppearance } from "@/components/auth/clerkAppearance"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -130,12 +132,23 @@ function PublicNavbar() {
           >
             {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
           </Button>
-          <Button asChild className="hidden md:inline-flex" variant="ghost">
-            <Link to="/role-selection">Sign In</Link>
-          </Button>
-          <Button asChild className="renote-gradient-button border-transparent hover:text-white hidden md:inline-flex">
-            <Link to="/role-selection">Sign Up</Link>
-          </Button>
+          <SignedOut>
+            <Button asChild className="hidden md:inline-flex" variant="ghost">
+              <Link to="/sign-in">Sign In</Link>
+            </Button>
+            <Button asChild className="renote-gradient-button hidden border-transparent hover:text-white md:inline-flex">
+              <Link to="/sign-up">Sign Up</Link>
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <Button asChild className="hidden md:inline-flex" variant="ghost">
+              <Link to="/app/dashboard">Dashboard</Link>
+            </Button>
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={renoteUserButtonAppearance}
+            />
+          </SignedIn>
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
@@ -184,22 +197,43 @@ function PublicNavbar() {
               </nav>
 
               <div className="mt-auto flex flex-col gap-2 border-t px-4 py-5">
-                <SheetClose asChild>
-                  <Link
-                    className="flex h-11 items-center justify-center rounded-2xl text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                    to="/role-selection"
-                  >
-                    Sign In
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link
-                    className="flex h-11 items-center justify-center rounded-2xl bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-[var(--renote-primary-hover)]"
-                    to="/role-selection"
-                  >
-                    Sign Up
-                  </Link>
-                </SheetClose>
+                <SignedOut>
+                  <SheetClose asChild>
+                    <Link
+                      className="flex h-11 items-center justify-center rounded-2xl text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                      to="/sign-in"
+                    >
+                      Sign In
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      className="flex h-11 items-center justify-center rounded-2xl bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-[var(--renote-primary-hover)]"
+                      to="/sign-up"
+                    >
+                      Sign Up
+                    </Link>
+                  </SheetClose>
+                </SignedOut>
+                <SignedIn>
+                  <SheetClose asChild>
+                    <Link
+                      className="flex h-11 items-center justify-center rounded-2xl bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-[var(--renote-primary-hover)]"
+                      to="/app/dashboard"
+                    >
+                      Dashboard
+                    </Link>
+                  </SheetClose>
+                  <div className="flex items-center justify-between rounded-2xl border bg-background/80 px-3 py-2">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Account
+                    </span>
+                    <UserButton
+                      afterSignOutUrl="/"
+                      appearance={renoteUserButtonAppearance}
+                    />
+                  </div>
+                </SignedIn>
               </div>
             </SheetContent>
           </Sheet>

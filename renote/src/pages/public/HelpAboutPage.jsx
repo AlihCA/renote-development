@@ -197,7 +197,7 @@ function HelpAboutPage() {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link to="/role-selection">
+                <Link to="/sign-up">
                   Get Started
                   <ChevronRight className="size-4" />
                 </Link>
@@ -369,7 +369,7 @@ function HelpAboutPage() {
             </div>
             <div className="flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg">
-                <Link to="/role-selection">Get Started</Link>
+                <Link to="/sign-up">Get Started</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/explore-public">Explore Public Resources</Link>

@@ -24,7 +24,7 @@ function CTASection() {
               className="renote-gradient-button border-transparent hover:text-white"
               size="lg"
             >
-              <Link to="/role-selection">
+              <Link to="/sign-up">
                 Get Started
                 <ArrowRight className="size-4" />
               </Link>

@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useClerk, useUser } from "@clerk/clerk-react"
 import {
   BookOpen,
   CalendarDays,
@@ -34,10 +35,10 @@ const currentUserId = "user-student-mia"
 
 const prototypeProfile = {
   bio: "Interested in capstone documentation, academic knowledge sharing, and practical security review materials.",
-  email: "mia.santos@renote.edu",
+  email: "abinalalihsahcanda@gmail.com",
   joinedLabel: "Prototype account since June 2026",
   trustLabel: "community",
-  username: "mia.santos",
+  username: "Alih.CA",
 }
 
 const roleDescriptions = {
@@ -53,6 +54,15 @@ const roleDescriptions = {
 
 function formatRole(role) {
   return role ? role.charAt(0).toUpperCase() + role.slice(1) : "Student"
+}
+
+function getInitials(value) {
+  return String(value ?? "ReNote User")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("")
 }
 
 function Field({ children, label }) {
@@ -156,6 +166,8 @@ function ProfileSummaryCard({ profile, user }) {
 }
 
 function ProfilePage() {
+  const { signOut } = useClerk()
+  const { isLoaded, user: clerkUser } = useUser()
   const user =
     mockUsers.find((item) => item.id === currentUserId) ?? mockUsers[0]
   const [profile, setProfile] = useState({
@@ -167,12 +179,32 @@ function ProfilePage() {
     trustLabel: user.trustLabel ?? prototypeProfile.trustLabel,
     username: prototypeProfile.username,
   })
+  const [hasSyncedClerkProfile, setHasSyncedClerkProfile] = useState(false)
   const [preferences, setPreferences] = useState({
     allowAccessRequests: true,
     defaultSummaryType: "detailed",
     defaultVisibility: "restricted",
     showPublicProfile: true,
   })
+  const profileUser = {
+    ...user,
+    avatarInitials: getInitials(profile.displayName),
+  }
+
+  useEffect(() => {
+    if (!isLoaded || !clerkUser || hasSyncedClerkProfile) {
+      return
+    }
+
+    setProfile((currentProfile) => ({
+      ...currentProfile,
+      displayName: clerkUser.fullName ?? currentProfile.displayName,
+      email:
+        clerkUser.primaryEmailAddress?.emailAddress ?? currentProfile.email,
+      username: clerkUser.username ?? currentProfile.username,
+    }))
+    setHasSyncedClerkProfile(true)
+  }, [clerkUser, hasSyncedClerkProfile, isLoaded])
 
   function updateProfile(key, value) {
     setProfile((currentProfile) => ({
@@ -197,6 +229,10 @@ function ProfilePage() {
     toast("Workspace preferences saved for this prototype.")
   }
 
+  async function handleSignOut() {
+    await signOut({ redirectUrl: "/" })
+  }
+
   return (
     <PageShell className="space-y-7">
       <PageHeader
@@ -207,7 +243,7 @@ function ProfilePage() {
 
       <div className="grid gap-6 xl:grid-cols-[24rem_minmax(0,1fr)]">
         <div className="space-y-6">
-          <ProfileSummaryCard profile={profile} user={user} />
+          <ProfileSummaryCard profile={profile} user={profileUser} />
 
           <SectionCard icon={ShieldCheck} title="Role and Trust">
             <div className="space-y-4">
@@ -239,12 +275,12 @@ function ProfilePage() {
                 Export prototype data
               </Button>
               <Button
-                onClick={() => toast("Sign out preview will be connected later.")}
+                onClick={handleSignOut}
                 type="button"
                 variant="outline"
               >
                 <LogOut className="size-4" />
-                Sign out preview
+                Sign out
               </Button>
               <Button
                 onClick={() => toast("Delete account preview will be connected later.")}
