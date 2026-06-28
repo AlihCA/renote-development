@@ -9,6 +9,7 @@ import { toast } from "sonner"
 
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -66,6 +67,7 @@ function RepositoryHeader({
             <p className="max-w-4xl text-sm leading-6 text-muted-foreground">
               {repository.description}
             </p>
+            <RepositoryMetricsRow repository={repository} showCategory={false} />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

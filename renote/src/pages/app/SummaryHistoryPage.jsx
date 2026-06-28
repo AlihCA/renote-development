@@ -33,12 +33,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { mockFiles, mockRepositories, mockSummaries } from "@/data"
+import {
+  getSummaryRefinementCount,
+  getSummaryRefinementVersions,
+  summaryRefinementOptions,
+} from "@/utils/summaryRefinements"
 
 const reviewNotice =
   "AI-generated summaries are intended for review assistance only. Users should verify summaries with the original file before using them for academic work."
 
 const initialFilters = {
   query: "",
+  refinement: "all",
   sort: "generated",
   type: "all",
 }
@@ -52,6 +58,10 @@ const summaryTypes = [
   { label: "Review Notes", value: "review-notes" },
   { label: "Important Concepts", value: "important-concepts" },
   { label: "Definitions", value: "definitions" },
+]
+const refinementTypes = [
+  { label: "All refinements", value: "all" },
+  ...summaryRefinementOptions,
 ]
 
 function formatDate(value) {
@@ -160,6 +170,7 @@ function SummaryTypeBadge({ mode }) {
 function SummaryCard({ summary }) {
   const source = getSummarySource(summary)
   const concepts = getSummaryConcepts(summary)
+  const refinementCount = getSummaryRefinementCount(summary)
 
   return (
     <article className="rounded-lg border border-[#E9C8F2]/80 bg-white p-4 shadow-sm transition-colors hover:border-primary/35 hover:bg-[#FFF8FE] dark:border-primary/20 dark:bg-card dark:hover:bg-primary/5">
@@ -177,6 +188,11 @@ function SummaryCard({ summary }) {
               {summary.title}
             </Link>
             <SummaryTypeBadge mode={summary.mode} />
+            {refinementCount > 1 ? (
+              <Badge className="rounded-lg" variant="outline">
+                {refinementCount} versions
+              </Badge>
+            ) : null}
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
@@ -258,8 +274,13 @@ function SummaryHistoryPage() {
       const matchesQuery = !query || getSearchText(summary).includes(query)
       const matchesType =
         filters.type === "all" || getModeKey(summary.mode) === filters.type
+      const matchesRefinement =
+        filters.refinement === "all" ||
+        getSummaryRefinementVersions(summary).some(
+          (version) => version.versionId === filters.refinement
+        )
 
-      return matchesQuery && matchesType
+      return matchesQuery && matchesType && matchesRefinement
     })
 
     return sortSummaries(filtered, filters.sort)
@@ -322,6 +343,22 @@ function SummaryHistoryPage() {
               </SelectTrigger>
               <SelectContent>
                 {summaryTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              onValueChange={(value) => updateFilter("refinement", value)}
+              value={filters.refinement}
+            >
+              <SelectTrigger className="w-full border-border bg-background/80 sm:w-52">
+                <SelectValue placeholder="Refinement" />
+              </SelectTrigger>
+              <SelectContent>
+                {refinementTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>

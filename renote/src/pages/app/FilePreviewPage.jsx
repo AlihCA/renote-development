@@ -53,9 +53,10 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { mockFiles, mockFolders, mockRepositories, mockSummaries } from "@/data"
 import { cn } from "@/lib/utils"
+import { getSummaryRefinementCount } from "@/utils/summaryRefinements"
 
 const summaryTypes = ["Quick", "Detailed", "Key Points", "Study Guide"]
-const citationFormats = ["APA", "MLA", "Chicago"]
+const citationFormats = ["APA", "MLA", "Chicago", "BibTeX"]
 const suggestedQuestions = [
   "What is the main idea?",
   "Summarize the key points",
@@ -511,6 +512,11 @@ function buildCitationMetadata(file, repository) {
     author: citation.author ?? file.ownerName ?? repository?.ownerName ?? "ReNote User",
     organization:
       citation.organization ?? repository?.ownerName ?? "College of Computing Studies",
+    publisher:
+      citation.publisher ??
+      citation.institution ??
+      repository?.ownerName ??
+      "College of Computing Studies",
     repositoryTitle:
       citation.repositoryTitle ?? repository?.title ?? "ReNote Repository",
     sourceType: citation.sourceType ?? getFileTypeLabel(file),
@@ -519,25 +525,70 @@ function buildCitationMetadata(file, repository) {
     year:
       citation.year ??
       new Date(file.updatedAt ?? file.uploadedAt ?? Date.now()).getFullYear(),
+    identifier: citation.identifier ?? citation.doi ?? "",
   }
 }
 
 function createCitation(format, metadata) {
   const author = metadata.author || metadata.organization || "Unknown author"
+  const publisher = metadata.publisher || metadata.organization || "ReNote"
   const title = metadata.title || "Untitled"
   const year = metadata.year || "n.d."
   const sourceType = metadata.sourceType || "File"
   const url = metadata.url || "ReNote prototype source"
+  const identifier = metadata.identifier ? ` ${metadata.identifier}.` : ""
 
   if (format === "MLA") {
-    return `${author}. "${title}." ReNote, ${year}, ${url}.`
+    return `${author}. "${title}." ${publisher}, ${year}, ${url}.${identifier}`
   }
 
   if (format === "Chicago") {
-    return `${author}. "${title}." ReNote. ${year}. ${url}.`
+    return `${author}. "${title}." ${publisher}. ${year}. ${url}.${identifier}`
   }
 
-  return `${author}. (${year}). ${title} [${sourceType}]. ReNote. ${url}`
+  if (format === "BibTeX") {
+    const key = `${String(author).split(" ")[0] || "renote"}${year}`.replace(
+      /[^a-z0-9]/gi,
+      ""
+    )
+
+    return [
+      `@misc{${key},`,
+      `  author = {${author}},`,
+      `  title = {${title}},`,
+      `  year = {${year}},`,
+      `  howpublished = {${sourceType}},`,
+      `  institution = {${publisher}},`,
+      metadata.identifier ? `  doi = {${metadata.identifier}},` : null,
+      `  url = {${url}},`,
+      `  note = {Accessed ${metadata.accessDate || "n.d."}}`,
+      "}",
+    ]
+      .filter(Boolean)
+      .join("\n")
+  }
+
+  return `${author}. (${year}). ${title} [${sourceType}]. ${publisher}. ${url}${identifier}`
+}
+
+function getMissingCitationFields(metadata) {
+  const fields = [
+    { key: "title", label: "title" },
+    { key: "year", label: "year" },
+    { key: "sourceType", label: "resource type" },
+    { key: "publisher", label: "publisher or institution" },
+    { key: "url", label: "URL" },
+    { key: "accessDate", label: "access date" },
+  ]
+  const missingFields = fields
+    .filter((field) => !String(metadata[field.key] ?? "").trim())
+    .map((field) => field.label)
+
+  if (!String(metadata.author ?? "").trim() && !String(metadata.organization ?? "").trim()) {
+    missingFields.push("author or organization")
+  }
+
+  return missingFields
 }
 
 function FileBreadcrumb({ file, folder, repository }) {
@@ -1066,6 +1117,7 @@ function AskAiSection() {
 
 function SummaryPanel({ summary }) {
   const [summaryType, setSummaryType] = useState("Quick")
+  const refinementCount = getSummaryRefinementCount(summary)
   const keyPoints =
     summary?.content?.importantConcepts ??
     summary?.content?.reviewNotes ??
@@ -1080,7 +1132,7 @@ function SummaryPanel({ summary }) {
 
             <span className="group relative inline-flex">
               <button
-                aria-label="AI-generated summaries should be verified with the original file before academic use."
+                aria-label="AI-generated summaries are intended for review assistance only. Users should verify the summary with the original file before using it for academic work."
                 className="inline-flex size-5 items-center justify-center rounded-full text-muted-foreground transition hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
                 type="button"
               >
@@ -1088,7 +1140,9 @@ function SummaryPanel({ summary }) {
               </button>
 
               <span className="pointer-events-none absolute left-1/2 top-7 z-40 hidden w-64 -translate-x-1/2 rounded-2xl border border-[#E9C8F2] bg-background px-3 py-2 text-xs leading-5 text-muted-foreground shadow-lg group-hover:block group-focus-within:block dark:border-primary/25">
-                AI-generated summary. Verify with the original file before academic use.
+                AI-generated summaries are intended for review assistance only.
+                Users should verify the summary with the original file before
+                using it for academic work.
               </span>
             </span>
           </div>
@@ -1151,12 +1205,19 @@ function SummaryPanel({ summary }) {
       </Button>
 
       {summary ? (
-        <Button asChild className="w-full" variant="outline">
-          <Link to={`/app/summaries/${summary.id}`}>
-            <BookOpen className="size-4" />
-            View full summary
-          </Link>
-        </Button>
+        <div className="space-y-2">
+          {refinementCount > 1 ? (
+            <p className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] px-3 py-2 text-xs leading-5 text-muted-foreground dark:border-primary/20 dark:bg-primary/5">
+              {refinementCount} refinement versions are available.
+            </p>
+          ) : null}
+          <Button asChild className="w-full" variant="outline">
+            <Link to={`/app/summaries/${summary.id}`}>
+              <BookOpen className="size-4" />
+              {refinementCount > 1 ? "View refinement history" : "View full summary"}
+            </Link>
+          </Button>
+        </div>
       ) : null}
     </div>
   )
@@ -1164,6 +1225,10 @@ function SummaryPanel({ summary }) {
 
 function CitationEditDialog({ metadata, onSave, open, onOpenChange }) {
   const [draft, setDraft] = useState(metadata)
+
+  useEffect(() => {
+    setDraft(metadata)
+  }, [metadata, open])
 
   function updateField(key, value) {
     setDraft((current) => ({
@@ -1176,7 +1241,7 @@ function CitationEditDialog({ metadata, onSave, open, onOpenChange }) {
     event.preventDefault()
     onSave(draft)
     onOpenChange(false)
-    toast("Citation metadata updated.")
+    toast("Citation metadata updated in prototype mode.")
   }
 
   return (
@@ -1199,7 +1264,7 @@ function CitationEditDialog({ metadata, onSave, open, onOpenChange }) {
             </label>
             <label className="space-y-1.5">
               <span className="px-1 text-xs font-medium text-muted-foreground">
-                Author
+                Author / Organization
               </span>
               <Input value={draft.author} onChange={(event) => updateField("author", event.target.value)} />
             </label>
@@ -1217,9 +1282,36 @@ function CitationEditDialog({ metadata, onSave, open, onOpenChange }) {
             </label>
             <label className="space-y-1.5">
               <span className="px-1 text-xs font-medium text-muted-foreground">
-                File type
+                Resource type
               </span>
               <Input value={draft.sourceType} onChange={(event) => updateField("sourceType", event.target.value)} />
+            </label>
+            <label className="space-y-1.5">
+              <span className="px-1 text-xs font-medium text-muted-foreground">
+                Publisher / Institution
+              </span>
+              <Input
+                value={draft.publisher ?? ""}
+                onChange={(event) => updateField("publisher", event.target.value)}
+              />
+            </label>
+            <label className="space-y-1.5">
+              <span className="px-1 text-xs font-medium text-muted-foreground">
+                Access date
+              </span>
+              <Input
+                value={draft.accessDate ?? ""}
+                onChange={(event) => updateField("accessDate", event.target.value)}
+              />
+            </label>
+            <label className="space-y-1.5 sm:col-span-2">
+              <span className="px-1 text-xs font-medium text-muted-foreground">
+                DOI or identifier
+              </span>
+              <Input
+                value={draft.identifier ?? ""}
+                onChange={(event) => updateField("identifier", event.target.value)}
+              />
             </label>
             <label className="space-y-1.5 sm:col-span-2">
               <span className="px-1 text-xs font-medium text-muted-foreground">
@@ -1250,13 +1342,19 @@ function CitationPanel({ file, repository }) {
     buildCitationMetadata(file, repository)
   )
   const citation = createCitation(format, metadata)
+  const missingFields = getMissingCitationFields(metadata)
 
   async function handleCopy() {
     try {
+      if (!globalThis.navigator?.clipboard?.writeText) {
+        toast("Citation is ready to copy.")
+        return
+      }
+
       await globalThis.navigator?.clipboard?.writeText(citation)
       toast("Citation copied.")
     } catch {
-      toast("Citation copied.")
+      toast("Citation is ready to copy.")
     }
   }
 
@@ -1266,7 +1364,7 @@ function CitationPanel({ file, repository }) {
         Generate citations from editable file metadata.
       </p>
 
-      <div className="grid grid-cols-3 rounded-2xl border border-border bg-background/80 p-1">
+      <div className="grid grid-cols-2 rounded-2xl border border-border bg-background/80 p-1 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
         {citationFormats.map((item) => (
           <button
             className={cn(
@@ -1284,8 +1382,17 @@ function CitationPanel({ file, repository }) {
         ))}
       </div>
 
+      {missingFields.length > 0 ? (
+        <div className="rounded-2xl border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900 dark:border-amber-300/20 dark:bg-amber-400/10 dark:text-amber-100">
+          Some citation fields are incomplete. Review the metadata before using
+          this citation for academic work.
+        </div>
+      ) : null}
+
       <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 dark:border-primary/20 dark:bg-primary/5">
-        <p className="text-sm leading-6 text-foreground">{citation}</p>
+        <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground">
+          {citation}
+        </pre>
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
@@ -1301,8 +1408,12 @@ function CitationPanel({ file, repository }) {
 
       <div className="space-y-2 rounded-2xl border border-border/70 bg-background/70 p-3 text-xs text-muted-foreground">
         <p>Title: {metadata.title}</p>
-        <p>Author: {metadata.author}</p>
+        <p>Author / Organization: {metadata.author || metadata.organization}</p>
+        <p>Resource type: {metadata.sourceType}</p>
+        <p>Publisher / Institution: {metadata.publisher}</p>
+        <p>Year: {metadata.year}</p>
         <p>Access date: {metadata.accessDate}</p>
+        <p>DOI or identifier: {metadata.identifier || "Not provided"}</p>
       </div>
 
       <CitationEditDialog

@@ -2,6 +2,7 @@ import { Eye, FileText, FolderOpen, Sparkles, Target } from "lucide-react"
 
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import { Badge } from "@/components/ui/badge"
 import {
   Sheet,
@@ -75,6 +76,11 @@ function RepositoryDetailsDrawer({
                 </dd>
               </div>
             </dl>
+          </section>
+
+          <section className="space-y-3 rounded-3xl border border-border bg-background/80 p-4">
+            <h3 className="font-semibold tracking-tight">Repository insights</h3>
+            <RepositoryMetricsRow repository={repository} showCategory={false} />
           </section>
 
           <section className="grid grid-cols-2 gap-2">

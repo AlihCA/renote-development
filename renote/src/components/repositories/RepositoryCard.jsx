@@ -84,7 +84,12 @@ function RepositoryCard({ fileTypes = [], repository, view = "grid" }) {
             ))}
           </div>
 
-          <RepositoryMetricsRow repository={repository} />
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Repository insights
+            </p>
+            <RepositoryMetricsRow repository={repository} showCategory={false} />
+          </div>
         </div>
 
         <DropdownMenu>

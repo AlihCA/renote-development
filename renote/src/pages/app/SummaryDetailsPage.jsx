@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react"
 import { Link, useParams } from "react-router"
 import {
   ArrowLeft,
@@ -15,6 +16,13 @@ import FileTypeIcon from "@/components/files/FileTypeIcon"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,6 +31,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { mockFiles, mockRepositories, mockSummaries } from "@/data"
+import {
+  getSummaryRefinementVersion,
+  getSummaryRefinementVersions,
+} from "@/utils/summaryRefinements"
 
 const reviewNotice =
   "AI-generated summaries are intended for review assistance only. Users should verify summaries with the original file before using them for academic work."
@@ -65,13 +77,22 @@ function getFullSummaryText(summary) {
   return sections.filter(Boolean).join("\n")
 }
 
-async function copySummary(summary) {
+async function copyText(value, successMessage, fallbackMessage = successMessage) {
   try {
-    await globalThis.navigator?.clipboard?.writeText(getFullSummaryText(summary))
-    toast("Summary copied.")
+    if (!globalThis.navigator?.clipboard?.writeText) {
+      toast(fallbackMessage)
+      return
+    }
+
+    await globalThis.navigator.clipboard.writeText(value)
+    toast(successMessage)
   } catch {
-    toast("Summary copied.")
+    toast(fallbackMessage)
   }
+}
+
+function copySummary(summary) {
+  return copyText(getFullSummaryText(summary), "Summary copied.")
 }
 
 function SummaryTypeBadge({ mode }) {
@@ -107,6 +128,150 @@ function ContentSection({ items, title }) {
           </li>
         ))}
       </ul>
+    </section>
+  )
+}
+
+function CompareVersionsDialog({ onOpenChange, open, originalVersion, selectedVersion }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[min(90vh,760px)] overflow-y-auto border-[#E9C8F2]/80 sm:max-w-4xl dark:border-primary/20">
+        <DialogHeader>
+          <DialogTitle>Compare Summary Versions</DialogTitle>
+          <DialogDescription>
+            Compare the original saved summary with the selected refinement
+            version. This prototype does not perform text diffing.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {[originalVersion, selectedVersion].map((version) => (
+            <section
+              className="rounded-lg border border-[#E9C8F2]/80 bg-white p-4 dark:border-primary/20 dark:bg-card"
+              key={`${version.versionId}-compare`}
+            >
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <Badge className="rounded-lg" variant="secondary">
+                  {version.label}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {formatDate(version.generatedAt)}
+                </span>
+              </div>
+              <p className="text-sm leading-6 text-muted-foreground">
+                {version.preview}
+              </p>
+              <pre className="mt-3 whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground">
+                {version.content}
+              </pre>
+            </section>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function SummaryRefinementPanel({
+  onCompare,
+  onSelectVersion,
+  originalVersion,
+  selectedVersion,
+  versions,
+}) {
+  function copyVersion() {
+    copyText(
+      selectedVersion.content,
+      "Summary version copied.",
+      "Summary version is ready to copy."
+    )
+  }
+
+  return (
+    <section className="renote-card space-y-4 p-4 sm:p-5">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h2 className="font-semibold tracking-tight">Refinement Versions</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            Review alternate AI summary versions for different academic study
+            workflows.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {versions.map((version) => (
+            <Button
+              className="rounded-xl"
+              key={version.versionId}
+              onClick={() => onSelectVersion(version.versionId)}
+              size="sm"
+              type="button"
+              variant={
+                selectedVersion.versionId === version.versionId ? "default" : "outline"
+              }
+            >
+              {version.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="rounded-lg border border-[#E9C8F2]/80 bg-white p-4 dark:border-primary/20 dark:bg-card">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <Badge className="rounded-lg bg-primary/10 text-primary" variant="secondary">
+              {selectedVersion.mode}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              Generated {formatDate(selectedVersion.generatedAt)}
+            </span>
+          </div>
+          <p className="text-sm leading-6 text-muted-foreground">
+            {selectedVersion.preview}
+          </p>
+          <pre className="mt-3 whitespace-pre-wrap break-words font-sans text-sm leading-6 text-foreground">
+            {selectedVersion.content}
+          </pre>
+        </div>
+
+        <aside className="space-y-4 rounded-lg border border-[#E9C8F2]/80 bg-[#FCF7FF] p-4 dark:border-primary/20 dark:bg-primary/5">
+          <dl className="space-y-3 text-sm">
+            <DetailRow label="Version" value={selectedVersion.label} />
+            <DetailRow label="Refinement" value={selectedVersion.mode} />
+            <DetailRow
+              label="Generated"
+              value={formatDate(selectedVersion.generatedAt)}
+            />
+            <DetailRow label="Changes" value={selectedVersion.changesNote} />
+          </dl>
+
+          <div className="grid gap-2">
+            <Button onClick={copyVersion} type="button">
+              <Copy className="size-4" />
+              Copy Version
+            </Button>
+            <Button
+              onClick={() =>
+                toast(
+                  "Selected summary version will be saved when backend history is connected."
+                )
+              }
+              type="button"
+              variant="outline"
+            >
+              Use This Version
+            </Button>
+            <Button
+              disabled={selectedVersion.versionId === originalVersion.versionId}
+              onClick={onCompare}
+              type="button"
+              variant="outline"
+            >
+              Compare with Original
+            </Button>
+          </div>
+        </aside>
+      </div>
     </section>
   )
 }
@@ -161,7 +326,14 @@ function SourceDetails({ source, summary }) {
 
 function SummaryDetailsPage() {
   const { summaryId } = useParams()
+  const [selectedVersionId, setSelectedVersionId] = useState("original")
+  const [isCompareOpen, setIsCompareOpen] = useState(false)
   const summary = mockSummaries.find((item) => item.id === summaryId)
+  const versions = useMemo(() => getSummaryRefinementVersions(summary), [summary])
+  const selectedVersion =
+    getSummaryRefinementVersion(summary, selectedVersionId) ?? versions[0]
+  const originalVersion =
+    getSummaryRefinementVersion(summary, "original") ?? selectedVersion
 
   if (!summary) {
     return (
@@ -192,7 +364,7 @@ function SummaryDetailsPage() {
         </Link>
       </Button>
 
-      <section className="renote-card space-y-5 p-4 sm:p-5">
+      <section className="renote-card relative space-y-5 p-4 pr-14 sm:p-5 sm:pr-16">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 items-start gap-4">
             <span className="inline-grid size-12 shrink-0 place-items-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
@@ -216,11 +388,12 @@ function SummaryDetailsPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+           <div className="flex shrink-0 flex-wrap items-center gap-2 pr-8 sm:flex-nowrap">
             <Button onClick={() => copySummary(summary)} type="button" variant="outline">
               <Copy className="size-4" />
               Copy Summary
             </Button>
+
             {source.file ? (
               <Button asChild variant="outline">
                 <Link to={`/app/files/${source.file.id}`}>
@@ -229,32 +402,57 @@ function SummaryDetailsPage() {
                 </Link>
               </Button>
             ) : null}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button aria-label="More summary actions" size="icon-sm" variant="ghost">
-                  <MoreHorizontal className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Summary actions</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={() => toast("Share summary will be connected later.")}>
-                  Share summary
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => toast("Regenerate summary will be connected later.")}>
-                  Regenerate
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={() => toast("Archive summary will be connected later.")}
-                  variant="destructive"
-                >
-                  Archive summary
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
+
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                aria-label="More summary actions"
+                className="absolute right-4 top-4 sm:right-5 sm:top-5"
+                size="icon-sm"
+                variant="ghost"
+              >
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Summary actions</DropdownMenuLabel>
+              <DropdownMenuItem onSelect={() => toast("Share summary will be connected later.")}>
+                Share summary
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => toast("Regenerate summary will be connected later.")}>
+                Regenerate
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => toast("Archive summary will be connected later.")}
+                variant="destructive"
+              >
+                Archive summary
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </section>
+
+      {selectedVersion && originalVersion ? (
+        <>
+          <SummaryRefinementPanel
+            onCompare={() => setIsCompareOpen(true)}
+            onSelectVersion={setSelectedVersionId}
+            originalVersion={originalVersion}
+            selectedVersion={selectedVersion}
+            versions={versions}
+          />
+          <CompareVersionsDialog
+            onOpenChange={setIsCompareOpen}
+            open={isCompareOpen}
+            originalVersion={originalVersion}
+            selectedVersion={selectedVersion}
+          />
+        </>
+      ) : null}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <main className="min-w-0 space-y-4">

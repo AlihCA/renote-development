@@ -82,6 +82,8 @@ const repositoryPreviewTabs = [
   },
 ]
 
+const signedInReviewerId = "user-student-mia"
+
 function formatDate(value) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
@@ -165,6 +167,34 @@ function getSharedTagCount(firstTags = [], secondTags = []) {
 
 function normalizeTag(value) {
   return String(value ?? "").trim().toLowerCase()
+}
+
+function canSignedInUserReview(repository) {
+  if (typeof repository.canReview === "boolean") {
+    return repository.canReview
+  }
+
+  if (typeof repository.hasAccess === "boolean") {
+    return repository.hasAccess
+  }
+
+  if (repository.visibility === "public") {
+    return true
+  }
+
+  return repository.ownerId === signedInReviewerId || Boolean(repository.isSaved)
+}
+
+function getReviewPermissionMessage(repository) {
+  if (repository.visibility === "restricted") {
+    return "Only approved users and collaborators can leave reviews on this restricted repository."
+  }
+
+  if (repository.visibility === "private") {
+    return "Only you and users with access can leave reviews on this repository. Change visibility to Public or approve access requests to allow more users to review it."
+  }
+
+  return "Signed-in users can leave reviews for this public repository."
 }
 
 function getRelatedResources(repository, isPublic) {
@@ -363,6 +393,7 @@ function RepositoryPreviewHeader({
               <p className="max-w-4xl text-sm leading-6 text-muted-foreground">
                 {repository.description}
               </p>
+              <RepositoryMetricsRow repository={repository} showCategory={false} />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -470,6 +501,9 @@ function RepositoryOverviewPanel({
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
             {repository.description}
           </p>
+          <div className="mt-3">
+            <RepositoryMetricsRow repository={repository} showCategory={false} />
+          </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -1247,6 +1281,26 @@ function ReviewForm({ onSubmitReview }) {
   )
 }
 
+function ReviewPermissionNote({ isLocked = false, repository }) {
+  return (
+    <section className="rounded-3xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 dark:border-primary/20 dark:bg-primary/5">
+      <div className="flex items-start gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-2xl border border-primary/20 bg-background/80 text-primary">
+          <LockKeyhole className="size-4" />
+        </span>
+        <div className="min-w-0">
+          <h3 className="font-semibold tracking-tight">
+            {isLocked ? "Review access is limited" : "Review permissions"}
+          </h3>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            {getReviewPermissionMessage(repository)}
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function RepositoryReviewsPanel({ feedbackItems, isPublic, repository }) {
   const [reviews, setReviews] = useState(feedbackItems)
 
@@ -1255,6 +1309,7 @@ function RepositoryReviewsPanel({ feedbackItems, isPublic, repository }) {
   }, [feedbackItems, repository.id])
 
   const averageRating = getAverageRating(reviews)
+  const canReview = !isPublic && canSignedInUserReview(repository)
 
   function handleHelpful(id) {
     setReviews((currentReviews) =>
@@ -1353,18 +1408,23 @@ function RepositoryReviewsPanel({ feedbackItems, isPublic, repository }) {
         {isPublic ? (
           <section className="renote-card space-y-3 p-5">
             <h2 className="font-semibold tracking-tight">
-              Sign in to leave a rating or comment.
+              Sign in to leave a rating or review.
             </h2>
             <p className="text-sm leading-6 text-muted-foreground">
-              Public users can read reviews. Writing feedback requires a ReNote
-              account.
+              Users can read reviews in this public preview. Writing feedback
+              requires a ReNote account.
             </p>
             <Button asChild variant="outline">
               <Link to="/sign-in">Sign in to review</Link>
             </Button>
           </section>
+        ) : canReview ? (
+          <>
+            <ReviewPermissionNote repository={repository} />
+            <ReviewForm onSubmitReview={handleSubmitReview} />
+          </>
         ) : (
-          <ReviewForm onSubmitReview={handleSubmitReview} />
+          <ReviewPermissionNote isLocked repository={repository} />
         )}
       </div>
     </div>

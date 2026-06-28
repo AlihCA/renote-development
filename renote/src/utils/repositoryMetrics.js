@@ -44,9 +44,9 @@ export function getRepositoryCardMetrics(repository) {
   return {
     averageRating: getRepositoryAverageRating(repository),
     category: repository.category ?? repository.subject ?? "General Study",
-    citationCount: repository.citationCount ?? 0,
+    citationCount: repository.citationCount ?? repository.citations ?? 0,
     reviewCount: getRepositoryReviewCount(repository),
     saveCount: getRepositorySaveCount(repository),
-    views: repository.views ?? 0,
+    views: repository.viewCount ?? repository.views ?? 0,
   }
 }

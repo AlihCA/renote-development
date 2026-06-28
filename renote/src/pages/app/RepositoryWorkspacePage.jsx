@@ -17,6 +17,7 @@ import EmptyState from "@/components/common/EmptyState"
 import PageShell from "@/components/common/PageShell"
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import AISummaryDrawer from "@/components/workspace/AISummaryDrawer"
 import RepositoryDetailsDrawer from "@/components/workspace/RepositoryDetailsDrawer"
 import RepositoryFileList from "@/components/workspace/RepositoryFileList"
@@ -121,6 +122,7 @@ function WorkspaceOverviewPanel({ files, folders, repository, summaries }) {
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
             {repository.description}
           </p>
+          <RepositoryMetricsRow repository={repository} showCategory={false} />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
