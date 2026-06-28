@@ -1,5 +1,11 @@
 import { useState } from "react"
-import { Link, NavLink, useLocation, useSearchParams } from "react-router"
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router"
 import { Menu, Moon, Search, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -30,6 +36,7 @@ function isActiveRoute(pathname, href) {
 
 function PublicNavbar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [localSearch, setLocalSearch] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -58,6 +65,20 @@ function PublicNavbar() {
     setSearchParams(nextSearchParams, { replace: true })
   }
 
+  function handleSearchSubmit(event) {
+    event.preventDefault()
+
+    const query = searchValue.trim()
+
+    if (!query) {
+      setLocalSearch("")
+      navigate("/explore-public")
+      return
+    }
+
+    navigate(`/explore-public?q=${encodeURIComponent(query)}`)
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
       <div className="renote-container flex min-h-16 items-center gap-4">
@@ -83,7 +104,10 @@ function PublicNavbar() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden w-full max-w-xs items-center md:flex">
+        <form
+          className="ml-auto hidden w-full max-w-xs items-center md:flex"
+          onSubmit={handleSearchSubmit}
+        >
           <div className="renote-input-shell w-full">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -94,7 +118,7 @@ function PublicNavbar() {
               value={searchValue}
             />
           </div>
-        </div>
+        </form>
 
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <Button

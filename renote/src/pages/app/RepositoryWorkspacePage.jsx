@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useParams } from "react-router"
 import {
   Activity as ActivityIcon,
+  ArrowLeft,
   CalendarClock,
   Eye,
   FileText,
@@ -500,6 +501,13 @@ function RepositoryWorkspacePage() {
 
   return (
     <PageShell className="max-w-[1500px] space-y-5 py-6 sm:py-8" size="wide">
+      <Button asChild className="w-fit" size="sm" variant="ghost">
+        <Link to="/app/my-repositories">
+          <ArrowLeft className="size-4" />
+          Back to My Repositories
+        </Link>
+      </Button>
+
       <RepositoryHeader
         onOpenDetails={() => setIsDetailsOpen(true)}
         repository={repository}

@@ -121,7 +121,7 @@ function VisibilityOptionCard({ Icon, description, isSelected, label, onSelect }
   )
 }
 
-function CreateRepositoryDialog({ onCreate }) {
+function CreateRepositoryDialog({ onCreate, trigger }) {
   const [form, setForm] = useState(initialForm)
   const [isOpen, setIsOpen] = useState(false)
   const [tagDraft, setTagDraft] = useState("")
@@ -186,10 +186,12 @@ function CreateRepositoryDialog({ onCreate }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="size-4" />
-          Create Repository
-        </Button>
+        {trigger ?? (
+          <Button>
+            <Plus className="size-4" />
+            Create Repository
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-[#E9C8F2]/80 bg-white p-6 shadow-xl dark:border-primary/20 dark:bg-popover sm:max-w-2xl sm:p-7 lg:max-w-3xl">
         <DialogHeader className="gap-2 pr-10">

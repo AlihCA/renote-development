@@ -7,7 +7,7 @@ import RepositoryPreview from "@/components/repositories/RepositoryPreview"
 import { Button } from "@/components/ui/button"
 import { mockRepositories } from "@/data"
 
-function RepositoryDetailsPage() {
+function PublicRepositoryPreviewPage() {
   const { repositoryId } = useParams()
   const repository = mockRepositories.find((item) => item.id === repositoryId)
 
@@ -17,10 +17,10 @@ function RepositoryDetailsPage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/explore">Back to Explore</Link>
+              <Link to="/explore-public">Back to Explore</Link>
             </Button>
           }
-          description="This prototype repository could not be found."
+          description="This public repository preview could not be found."
           icon={FileQuestion}
           title="Repository not found"
         />
@@ -29,15 +29,15 @@ function RepositoryDetailsPage() {
   }
 
   return (
-    <PageShell className="space-y-6" size="wide">
+    <PageShell className="space-y-6 pt-10 sm:pt-12" size="wide">
       <RepositoryPreview
-        backHref="/app/explore"
+        backHref="/explore-public"
         backLabel="Back to Explore"
-        mode="signed-in"
+        mode="public"
         repository={repository}
       />
     </PageShell>
   )
 }
 
-export default RepositoryDetailsPage
+export default PublicRepositoryPreviewPage

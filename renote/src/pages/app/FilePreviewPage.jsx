@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useParams } from "react-router"
 import {
+  ArrowLeft,
   BookOpen,
   ChevronLeft,
   ChevronRight,
@@ -1169,6 +1170,9 @@ function FilePreviewPage() {
   )
   const totalPages = file ? getFilePageCount(file) : 1
   const previewPage = clampPage(currentPage, totalPages)
+  const backToWorkspaceHref = repository?.id
+    ? `/app/workspace/${repository.id}`
+    : "/app/my-repositories"
 
   useEffect(() => {
     setCurrentPage(1)
@@ -1197,6 +1201,13 @@ function FilePreviewPage() {
 
   return (
     <PageShell className="max-w-[1500px] space-y-5 py-6 sm:py-8" size="wide">
+      <Button asChild className="w-fit" size="sm" variant="ghost">
+        <Link to={backToWorkspaceHref}>
+          <ArrowLeft className="size-4" />
+          Back to Workspace
+        </Link>
+      </Button>
+
       <FileHeader file={file} folder={folder} repository={repository} />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">

@@ -23,6 +23,7 @@ import NotFoundPage from "@/pages/errors/NotFoundPage"
 import HelpAboutPage from "@/pages/public/HelpAboutPage"
 import LandingPage from "@/pages/public/LandingPage"
 import PublicExplorePage from "@/pages/public/PublicExplorePage"
+import PublicRepositoryPreviewPage from "@/pages/public/PublicRepositoryPreviewPage"
 import RoleSelectionPage from "@/pages/public/RoleSelectionPage"
 
 function App() {
@@ -34,6 +35,10 @@ function App() {
             <Route index element={<LandingPage />} />
             <Route path="explore-public" element={<PublicExplorePage />} />
             <Route path="help" element={<HelpAboutPage />} />
+            <Route
+              path="repositories/:repositoryId"
+              element={<PublicRepositoryPreviewPage />}
+            />
             <Route path="role-selection" element={<RoleSelectionPage />} />
           </Route>
 

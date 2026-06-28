@@ -1,6 +1,5 @@
 import { Link } from "react-router"
 import { BookOpen, Eye, Quote, Star } from "lucide-react"
-import { toast } from "sonner"
 
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
@@ -33,10 +32,6 @@ function RepositoryStat({ icon: Icon, label, value }) {
 }
 
 function PublicRepositoryCard({ fileTypes = [], repository }) {
-  function handleSaveClick() {
-    toast("Sign in to save repositories.")
-  }
-
   return (
     <article className="rounded-lg border border-[#E9C8F2]/80 bg-white p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-[#FFF8FE] dark:border-primary/20 dark:bg-card dark:hover:border-primary/35 dark:hover:bg-primary/5">
       <div className="flex items-start gap-4">
@@ -44,7 +39,7 @@ function PublicRepositoryCard({ fileTypes = [], repository }) {
           <div className="flex flex-wrap items-center gap-2.5">
             <Link
               className="min-w-0 text-lg font-semibold tracking-tight transition hover:text-primary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/25"
-              to={`/app/repositories/${repository.id}`}
+              to={`/repositories/${repository.id}`}
             >
               {repository.title}
             </Link>
@@ -89,14 +84,13 @@ function PublicRepositoryCard({ fileTypes = [], repository }) {
           </div>
         </div>
 
-        <button
-          aria-label="Save repository"
+        <Link
+          aria-label="Sign in to save repository"
           className="grid size-8 shrink-0 place-items-center rounded-lg border border-[#E9C8F2] bg-white/80 text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary-soft hover:text-primary dark:border-primary/20 dark:bg-background/80"
-          onClick={handleSaveClick}
-          type="button"
+          to="/role-selection"
         >
           <Star className="size-3.5" />
-        </button>
+        </Link>
       </div>
 
       <div className="mt-4 flex flex-col gap-3 border-t border-[#E9C8F2]/70 pt-3 sm:flex-row sm:items-center sm:justify-between dark:border-border">

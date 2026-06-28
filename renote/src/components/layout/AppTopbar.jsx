@@ -1,5 +1,11 @@
 import { useState } from "react"
-import { Link, NavLink, useLocation } from "react-router"
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router"
 import {
   Bell,
   BookOpen,
@@ -75,9 +81,48 @@ function isActiveRoute(pathname, item) {
 
 function AppTopbar() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [localSearch, setLocalSearch] = useState("")
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === "dark"
+  const isAppExplore = location.pathname === "/app/explore"
+  const exploreSearchQuery = searchParams.get("q") ?? ""
+  const searchValue = isAppExplore ? exploreSearchQuery : localSearch
+
+  function handleSearchChange(event) {
+    const value = event.target.value
+
+    if (!isAppExplore) {
+      setLocalSearch(value)
+      return
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams)
+
+    if (value.trim()) {
+      nextSearchParams.set("q", value)
+    } else {
+      nextSearchParams.delete("q")
+    }
+
+    setSearchParams(nextSearchParams, { replace: true })
+  }
+
+  function handleSearchSubmit(event) {
+    event.preventDefault()
+
+    const query = searchValue.trim()
+
+    if (!query) {
+      setLocalSearch("")
+      navigate("/app/explore")
+      return
+    }
+
+    navigate(`/app/explore?q=${encodeURIComponent(query)}`)
+  }
 
   return (
     <header className="sticky top-0 z-30 flex min-h-16 shrink-0 items-center gap-3 border-b bg-background/90 px-4 shadow-sm backdrop-blur lg:px-6">
@@ -140,16 +185,21 @@ function AppTopbar() {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="hidden w-[420px] max-w-md lg:block">
+        <form
+          className="hidden w-[420px] max-w-md lg:block"
+          onSubmit={handleSearchSubmit}
+        >
           <div className="renote-input-shell">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
+              onChange={handleSearchChange}
               placeholder="Search repositories"
               type="search"
+              value={searchValue}
             />
           </div>
-        </div>
+        </form>
 
         <div className="flex items-center gap-2">
           <Button

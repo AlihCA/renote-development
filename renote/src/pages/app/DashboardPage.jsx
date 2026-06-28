@@ -1,10 +1,13 @@
 import { Link } from "react-router"
 import {
+  ArrowUpRight,
   Layers,
   Library,
+  Plus,
   Sparkles,
   TrendingUp,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import EmptyState from "@/components/common/EmptyState"
 import PageShell from "@/components/common/PageShell"
@@ -17,6 +20,7 @@ import {
 } from "@/components/dashboard/DashboardRepositoryHighlights"
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard"
 import DashboardWelcomeCard from "@/components/dashboard/DashboardWelcomeCard"
+import CreateRepositoryDialog from "@/components/repositories/CreateRepositoryDialog"
 import { Button } from "@/components/ui/button"
 import {
   mockCollections,
@@ -68,9 +72,37 @@ function DashboardPage() {
     }))
     .filter((item) => item.repository)
 
+  function handleCreateRepository() {
+    toast("Repository created in prototype mode.")
+  }
+
   return (
     <PageShell className="space-y-8">
-      <DashboardWelcomeCard />
+      <DashboardWelcomeCard
+        actions={
+          <>
+            <CreateRepositoryDialog
+              onCreate={handleCreateRepository}
+              trigger={
+                <Button className="border-white/20 bg-white text-primary hover:bg-white/90">
+                  <Plus className="size-4" />
+                  Create Repository
+                </Button>
+              }
+            />
+            <Button
+              asChild
+              className="border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              variant="outline"
+            >
+              <Link to="/app/explore">
+                Explore Resources
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </Button>
+          </>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-3">
         <DashboardStatCard
