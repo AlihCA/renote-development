@@ -1,11 +1,8 @@
 import { Link } from "react-router"
 import {
   ArrowUpRight,
-  BookOpen,
-  Eye,
   MoreHorizontal,
   Pencil,
-  Quote,
   Share2,
   Trash2,
   Archive,
@@ -15,6 +12,7 @@ import { toast } from "sonner"
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { cn, formatCount } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("en", {
@@ -39,16 +37,6 @@ function toLabel(value) {
   return String(value)
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
-}
-
-function RepositoryMetric({ icon: Icon, label, value }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-      <Icon className="size-4 text-primary/75" />
-      <span className="font-semibold text-foreground">{value}</span>
-      <span>{label}</span>
-    </span>
-  )
 }
 
 function handleMenuAction(label) {
@@ -96,23 +84,7 @@ function RepositoryCard({ fileTypes = [], repository, view = "grid" }) {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <RepositoryMetric
-              icon={BookOpen}
-              label="Category"
-              value={repository.subject}
-            />
-            <RepositoryMetric
-              icon={Eye}
-              label="Views"
-              value={formatCount(repository.views)}
-            />
-            <RepositoryMetric
-              icon={Quote}
-              label="Citations"
-              value={formatCount(repository.citationCount)}
-            />
-          </div>
+          <RepositoryMetricsRow repository={repository} />
         </div>
 
         <DropdownMenu>

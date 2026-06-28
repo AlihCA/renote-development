@@ -4,6 +4,7 @@ import {
   Layers,
   Library,
   Plus,
+  Star,
   Sparkles,
   TrendingUp,
 } from "lucide-react"
@@ -14,40 +15,85 @@ import PageShell from "@/components/common/PageShell"
 import SectionCard from "@/components/common/SectionCard"
 import DashboardCollectionCard from "@/components/dashboard/DashboardCollectionCard"
 import DashboardRecentTabs from "@/components/dashboard/DashboardRecentTabs"
-import {
-  RecommendedRepositoryRow,
-  TrendingRepositoryRow,
-} from "@/components/dashboard/DashboardRepositoryHighlights"
+import { TrendingRepositoryRow } from "@/components/dashboard/DashboardRepositoryHighlights"
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard"
 import DashboardWelcomeCard from "@/components/dashboard/DashboardWelcomeCard"
 import CreateRepositoryDialog from "@/components/repositories/CreateRepositoryDialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   mockCollections,
   mockFiles,
+  mockRecommendations,
   mockRepositories,
   mockSummaries,
 } from "@/data"
-
-const recommendationSeeds = [
-  {
-    reason: "Related to Capstone",
-    repositoryId: "repo-web-development-references",
-  },
-  {
-    reason: "Based on your saved resources",
-    repositoryId: "repo-research-methods-notes",
-  },
-  {
-    reason: "Popular in Cybersecurity",
-    repositoryId: "repo-information-assurance-reviewer",
-  },
-]
 
 function sortByDate(items, key) {
   return [...items].sort((first, second) => {
     return new Date(second[key]) - new Date(first[key])
   })
+}
+
+function toLabel(value) {
+  return String(value ?? "")
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
+function RecommendationCard({ item }) {
+  return (
+    <article className="rounded-lg border border-[#E9C8F2]/70 bg-white/85 p-4 transition-colors hover:border-primary/30 hover:bg-[#FFF8FE] dark:border-primary/20 dark:bg-background/40 dark:hover:border-primary/35 dark:hover:bg-primary/5">
+      <div className="flex h-full flex-col gap-4">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className="rounded-xl border-primary/15 bg-primary/10 text-primary shadow-none">
+              {toLabel(item.type)}
+            </Badge>
+            <Badge className="rounded-xl" variant="outline">
+              {item.similarityLabel}
+            </Badge>
+          </div>
+
+          <div className="space-y-1">
+            <h3 className="font-semibold tracking-tight">{item.title}</h3>
+            <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">
+              {item.reason}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {item.relatedTags.slice(0, 3).map((tag) => (
+              <Badge className="rounded-xl" key={tag} variant="outline">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+          <Button asChild className="flex-1" size="sm" variant="outline">
+            <Link to={item.route}>
+              Open
+              <ArrowUpRight className="size-4" />
+            </Link>
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={() =>
+              toast("Recommendation save action will be connected later.")
+            }
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            <Star className="size-4" />
+            Save
+          </Button>
+        </div>
+      </div>
+    </article>
+  )
 }
 
 function DashboardPage() {
@@ -65,12 +111,7 @@ function DashboardPage() {
   const trendingRepositories = [...activeRepositories]
     .sort((first, second) => second.views - first.views)
     .slice(0, 3)
-  const recommendedRepositories = recommendationSeeds
-    .map((item) => ({
-      reason: item.reason,
-      repository: repositoryLookup.get(item.repositoryId),
-    }))
-    .filter((item) => item.repository)
+  const recommendedItems = mockRecommendations.slice(0, 3)
 
   function handleCreateRepository() {
     toast("Repository created in prototype mode.")
@@ -148,17 +189,13 @@ function DashboardPage() {
       </SectionCard>
 
       <SectionCard
-        description="Suggested resources based on your recent workspace activity."
+        description="Prototype suggestions based on recent tags, saved materials, and summary activity."
         icon={Sparkles}
         title="Recommended for You"
       >
-        <div className="grid gap-3">
-          {recommendedRepositories.map((item) => (
-            <RecommendedRepositoryRow
-              key={item.repository.id}
-              reason={item.reason}
-              repository={item.repository}
-            />
+        <div className="grid gap-3 lg:grid-cols-3">
+          {recommendedItems.map((item) => (
+            <RecommendationCard item={item} key={item.id} />
           ))}
         </div>
       </SectionCard>

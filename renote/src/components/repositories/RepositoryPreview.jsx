@@ -1,13 +1,15 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Link } from "react-router"
 import {
   Activity as ActivityIcon,
   ArrowLeft,
   ArrowUpDown,
   ArrowUpRight,
+  BarChart3,
   CalendarClock,
   Eye,
   FileText,
+  Flag,
   Folder,
   FolderOpen,
   Info,
@@ -15,11 +17,13 @@ import {
   LayoutGrid,
   List,
   LockKeyhole,
+  MessageSquare,
   Quote,
   Search,
   Share2,
   Sparkles,
   Star,
+  ThumbsUp,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -28,6 +32,7 @@ import StatusBadge from "@/components/common/StatusBadge"
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import WorkspaceTabs from "@/components/workspace/WorkspaceTabs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -39,8 +44,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { mockFiles, mockFolders, mockSummaries } from "@/data"
+import {
+  mockFeedback,
+  mockFiles,
+  mockFolders,
+  mockRecommendations,
+  mockRepositories,
+  mockSummaries,
+} from "@/data"
 import { cn, formatCount } from "@/lib/utils"
+
+const repositoryPreviewTabs = [
+  {
+    icon: LayoutGrid,
+    label: "Overview",
+    value: "overview",
+  },
+  {
+    icon: FileText,
+    label: "Files",
+    value: "files",
+  },
+  {
+    icon: Sparkles,
+    label: "Summaries",
+    value: "summaries",
+  },
+  {
+    icon: MessageSquare,
+    label: "Reviews",
+    value: "reviews",
+  },
+  {
+    icon: ActivityIcon,
+    label: "Activity",
+    value: "activity",
+  },
+]
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("en", {
@@ -72,6 +112,130 @@ function sortByDepthAndName(folders) {
 
     return first.name.localeCompare(second.name)
   })
+}
+
+function getVisibleFeedback(repositoryId) {
+  return mockFeedback.filter(
+    (item) => item.repositoryId === repositoryId && item.status !== "hidden"
+  )
+}
+
+function getAverageRating(feedbackItems) {
+  if (feedbackItems.length === 0) {
+    return 0
+  }
+
+  const total = feedbackItems.reduce((sum, item) => sum + item.rating, 0)
+
+  return total / feedbackItems.length
+}
+
+function getRatingDistribution(feedbackItems) {
+  return [5, 4, 3, 2, 1].map((rating) => ({
+    count: feedbackItems.filter((item) => item.rating === rating).length,
+    rating,
+  }))
+}
+
+function StarRating({ rating, size = "sm" }) {
+  return (
+    <span className="inline-flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((value) => (
+        <Star
+          aria-hidden="true"
+          className={cn(
+            size === "lg" ? "size-5" : "size-4",
+            value <= Math.round(rating)
+              ? "fill-primary text-primary"
+              : "text-muted-foreground/35"
+          )}
+          key={value}
+        />
+      ))}
+    </span>
+  )
+}
+
+function getSharedTagCount(firstTags = [], secondTags = []) {
+  const normalizedSecondTags = secondTags.map((tag) => normalizeTag(tag))
+
+  return firstTags.filter((tag) => normalizedSecondTags.includes(normalizeTag(tag)))
+    .length
+}
+
+function normalizeTag(value) {
+  return String(value ?? "").trim().toLowerCase()
+}
+
+function getRelatedResources(repository, isPublic) {
+  const repositoryItems = mockRepositories
+    .filter(
+      (item) =>
+        item.id !== repository.id &&
+        item.status === "active" &&
+        (!isPublic || item.visibility === "public")
+    )
+    .map((item) => ({
+      description: item.description,
+      id: item.id,
+      reason:
+        item.subject === repository.subject
+          ? `Shares the ${repository.subject} subject area.`
+          : "Shares related tags with this repository.",
+      route: isPublic ? `/repositories/${item.id}` : `/app/repositories/${item.id}`,
+      score:
+        (item.subject === repository.subject ? 3 : 0) +
+        getSharedTagCount(repository.tags, item.tags),
+      subject: item.subject,
+      tags: item.tags,
+      title: item.title,
+      type: "repository",
+    }))
+    .filter((item) => item.score > 0)
+    .sort((first, second) => second.score - first.score)
+
+  const fileItems = isPublic
+    ? []
+    : mockFiles
+        .filter((file) => file.repositoryId === repository.id)
+        .slice(0, 2)
+        .map((file) => ({
+          description: `${toLabel(getFileType(file))} from ${repository.title}.`,
+          id: file.id,
+          reason: "From this repository and related to its current learning scope.",
+          route: `/app/files/${file.id}`,
+          score: 1,
+          subject: repository.subject,
+          tags: repository.tags ?? [],
+          title: file.name,
+          type: "file",
+        }))
+
+  return [...repositoryItems, ...fileItems].slice(0, 3)
+}
+
+function getRecommendationResources(repository, isPublic) {
+  return mockRecommendations
+    .filter(
+      (item) =>
+        item.sourceRepositoryId !== repository.id &&
+        (item.subject === repository.subject ||
+          getSharedTagCount(repository.tags, item.relatedTags) > 0)
+    )
+    .slice(0, 3)
+    .map((item) => ({
+      description: item.description,
+      id: item.id,
+      reason: item.reason,
+      route:
+        isPublic && item.type === "repository"
+          ? item.route.replace("/app/repositories", "/repositories")
+          : item.route,
+      subject: item.subject,
+      tags: item.relatedTags,
+      title: item.title,
+      type: item.type,
+    }))
 }
 
 function RepositoryPreviewActions({
@@ -822,6 +986,391 @@ function RepositorySummariesPanel({ isPublic, summaries }) {
   )
 }
 
+function RelatedResourceCard({ isPublic, item }) {
+  const route =
+    isPublic && item.type !== "repository" ? "/sign-in" : item.route
+  const actionLabel = isPublic && item.type !== "repository" ? "Sign in" : "Open"
+  const linkedRepository =
+    item.type === "repository"
+      ? mockRepositories.find((repository) => repository.id === item.id)
+      : null
+
+  return (
+    <article className="rounded-lg border border-[#E9C8F2]/70 bg-white/85 p-4 transition-colors hover:border-primary/30 hover:bg-[#FFF8FE] dark:border-primary/20 dark:bg-background/40 dark:hover:border-primary/35 dark:hover:bg-primary/5">
+      <div className="flex h-full flex-col gap-4">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className="rounded-xl border-primary/15 bg-primary/10 text-primary shadow-none">
+              {toLabel(item.type)}
+            </Badge>
+            <Badge className="rounded-xl" variant="outline">
+              {item.subject}
+            </Badge>
+          </div>
+
+          <div className="space-y-1">
+            <h3 className="font-semibold tracking-tight">{item.title}</h3>
+            <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">
+              {item.reason}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {(item.tags ?? []).slice(0, 3).map((tag) => (
+              <Badge className="rounded-xl" key={tag} variant="outline">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+
+          {linkedRepository ? (
+            <RepositoryMetricsRow
+              className="gap-x-3 text-xs sm:text-xs"
+              repository={linkedRepository}
+            />
+          ) : null}
+        </div>
+
+        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+          <Button asChild className="flex-1" size="sm" variant="outline">
+            <Link to={route}>
+              {actionLabel}
+              <ArrowUpRight className="size-4" />
+            </Link>
+          </Button>
+          {!isPublic ? (
+            <Button
+              className="flex-1"
+              onClick={() =>
+                toast("Recommendation save action will be connected later.")
+              }
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <Star className="size-4" />
+              Save
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function RelatedResourcesPanel({ isPublic, repository }) {
+  const relatedResources = [
+    ...getRelatedResources(repository, isPublic),
+    ...getRecommendationResources(repository, isPublic),
+  ].slice(0, 3)
+
+  if (relatedResources.length === 0) {
+    return null
+  }
+
+  return (
+    <section className="renote-card space-y-4 p-5">
+      <div className="flex items-start gap-3">
+        <span className="renote-icon-container">
+          <Sparkles className="size-5" />
+        </span>
+        <div className="min-w-0">
+          <h2 className="font-semibold tracking-tight">Related Resources</h2>
+          <p className="text-sm leading-6 text-muted-foreground">
+            Recommendations are shown using prototype tag and subject matching.
+            Full AI recommendations will be connected later.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-3">
+        {relatedResources.map((item) => (
+          <RelatedResourceCard
+            isPublic={isPublic}
+            item={item}
+            key={`${item.type}-${item.id}`}
+          />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function RatingDistribution({ feedbackItems }) {
+  const total = Math.max(1, feedbackItems.length)
+
+  return (
+    <div className="space-y-2">
+      {getRatingDistribution(feedbackItems).map((item) => (
+        <div className="flex items-center gap-3 text-xs" key={item.rating}>
+          <span className="w-8 font-medium text-muted-foreground">
+            {item.rating} star
+          </span>
+          <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${(item.count / total) * 100}%` }}
+            />
+          </div>
+          <span className="w-5 text-right text-muted-foreground">
+            {item.count}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ReviewCard({ item, onHelpful, onReport }) {
+  return (
+    <article className="rounded-lg border border-[#E9C8F2]/70 bg-white/85 p-4 dark:border-primary/20 dark:bg-background/40">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold tracking-tight">{item.userName}</h3>
+            <TrustBadge level={item.trustLabel}>
+              {toLabel(item.userRole)}
+            </TrustBadge>
+            {item.status === "reported" ? (
+              <Badge className="rounded-xl" variant="outline">
+                Under review
+              </Badge>
+            ) : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <StarRating rating={item.rating} />
+            <span className="text-xs text-muted-foreground">
+              {formatDate(item.createdAt)}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            onClick={() => onHelpful(item.id)}
+            size="xs"
+            type="button"
+            variant="outline"
+          >
+            <ThumbsUp className="size-3.5" />
+            Helpful ({item.usefulnessVotes})
+          </Button>
+          <Button
+            onClick={() => onReport(item.id)}
+            size="xs"
+            type="button"
+            variant="ghost"
+          >
+            <Flag className="size-3.5" />
+            Report
+          </Button>
+        </div>
+      </div>
+
+      <p className="mt-3 text-sm leading-6 text-muted-foreground">
+        {item.comment}
+      </p>
+    </article>
+  )
+}
+
+function ReviewForm({ onSubmitReview }) {
+  const [rating, setRating] = useState(5)
+  const [comment, setComment] = useState("")
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    if (!comment.trim()) {
+      toast("Add a short review comment first.")
+      return
+    }
+
+    onSubmitReview({
+      comment: comment.trim(),
+      rating,
+    })
+    setRating(5)
+    setComment("")
+  }
+
+  return (
+    <form
+      className="space-y-4 rounded-3xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 dark:border-primary/20 dark:bg-primary/5"
+      onSubmit={handleSubmit}
+    >
+      <div>
+        <h3 className="font-semibold tracking-tight">Leave a review</h3>
+        <p className="text-sm text-muted-foreground">
+          Prototype reviews stay local until feedback storage is connected.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {[1, 2, 3, 4, 5].map((value) => (
+          <button
+            aria-label={`${value} star rating`}
+            className={cn(
+              "inline-flex size-9 items-center justify-center rounded-2xl border transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/25",
+              value <= rating
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-primary"
+            )}
+            key={value}
+            onClick={() => setRating(value)}
+            type="button"
+          >
+            <Star
+              className={cn(
+                "size-4",
+                value <= rating && "fill-current"
+              )}
+            />
+          </button>
+        ))}
+      </div>
+
+      <label className="block space-y-2">
+        <span className="px-1 text-xs font-medium text-muted-foreground">
+          Comment
+        </span>
+        <textarea
+          className="min-h-24 w-full rounded-3xl border border-border bg-background/90 px-3 py-2 text-sm leading-6 outline-none transition-[color,box-shadow,background-color] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
+          onChange={(event) => setComment(event.target.value)}
+          placeholder="Share what helped, what was unclear, or how you used this resource."
+          value={comment}
+        />
+      </label>
+
+      <Button type="submit">Submit Review</Button>
+    </form>
+  )
+}
+
+function RepositoryReviewsPanel({ feedbackItems, isPublic, repository }) {
+  const [reviews, setReviews] = useState(feedbackItems)
+
+  useEffect(() => {
+    setReviews(feedbackItems)
+  }, [feedbackItems, repository.id])
+
+  const averageRating = getAverageRating(reviews)
+
+  function handleHelpful(id) {
+    setReviews((currentReviews) =>
+      currentReviews.map((item) =>
+        item.id === id
+          ? { ...item, usefulnessVotes: item.usefulnessVotes + 1 }
+          : item
+      )
+    )
+  }
+
+  function handleReport() {
+    toast("Report review workflow will be connected later.")
+  }
+
+  function handleSubmitReview({ comment, rating }) {
+    setReviews((currentReviews) => [
+      {
+        comment,
+        createdAt: new Date().toISOString(),
+        id: `feedback-local-${Date.now()}`,
+        rating,
+        reportCount: 0,
+        repositoryId: repository.id,
+        status: "visible",
+        trustLabel: "community",
+        usefulnessVotes: 0,
+        userName: "You",
+        userRole: "student",
+      },
+      ...currentReviews,
+    ])
+    toast("Review added locally for this prototype.")
+  }
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <section className="renote-card overflow-hidden">
+        <div className="border-b border-[#E9C8F2]/70 p-5 dark:border-border/70">
+          <h2 className="font-semibold tracking-tight">Comments and Ratings</h2>
+          <p className="text-sm text-muted-foreground">
+            Repository feedback from the ReNote prototype community.
+          </p>
+        </div>
+
+        <div className="space-y-3 p-4">
+          {reviews.length > 0 ? (
+            reviews.map((item) => (
+              <ReviewCard
+                item={item}
+                key={item.id}
+                onHelpful={handleHelpful}
+                onReport={handleReport}
+              />
+            ))
+          ) : (
+            <EmptyState
+              className="min-h-56"
+              description="Ratings and comments will appear here once users review this repository."
+              icon={MessageSquare}
+              title="No reviews yet"
+            />
+          )}
+        </div>
+      </section>
+
+      <div className="space-y-4">
+        <section className="renote-card space-y-4 p-5">
+          <div className="flex items-start gap-3">
+            <span className="renote-icon-container">
+              <BarChart3 className="size-5" />
+            </span>
+            <div>
+              <h2 className="font-semibold tracking-tight">Rating Summary</h2>
+              <p className="text-sm text-muted-foreground">
+                {reviews.length} review{reviews.length === 1 ? "" : "s"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-end gap-3">
+            <p className="text-4xl font-semibold tracking-tight">
+              {averageRating ? averageRating.toFixed(1) : "0.0"}
+            </p>
+            <div className="pb-1">
+              <StarRating rating={averageRating} size="lg" />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Average rating
+              </p>
+            </div>
+          </div>
+
+          <RatingDistribution feedbackItems={reviews} />
+        </section>
+
+        {isPublic ? (
+          <section className="renote-card space-y-3 p-5">
+            <h2 className="font-semibold tracking-tight">
+              Sign in to leave a rating or comment.
+            </h2>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Public users can read reviews. Writing feedback requires a ReNote
+              account.
+            </p>
+            <Button asChild variant="outline">
+              <Link to="/sign-in">Sign in to review</Link>
+            </Button>
+          </section>
+        ) : (
+          <ReviewForm onSubmitReview={handleSubmitReview} />
+        )}
+      </div>
+    </div>
+  )
+}
+
 function RepositoryActivityPanel({ files, folders, repository, summaries }) {
   const latestFile = [...files].sort(
     (first, second) =>
@@ -950,6 +1499,10 @@ function RepositoryPreview({
     () => mockSummaries.filter((summary) => summary.repositoryId === repository.id),
     [repository.id]
   )
+  const feedbackItems = useMemo(
+    () => getVisibleFeedback(repository.id),
+    [repository.id]
+  )
   const visibleFiles = useMemo(
     () =>
       selectedFolderId === "all"
@@ -993,17 +1546,24 @@ function RepositoryPreview({
         repository={repository}
       />
 
-      <WorkspaceTabs onValueChange={setActiveTab} value={activeTab} />
+      <WorkspaceTabs
+        onValueChange={setActiveTab}
+        tabs={repositoryPreviewTabs}
+        value={activeTab}
+      />
 
       {activeTab === "overview" ? (
-        <RepositoryOverviewPanel
-          files={files}
-          folders={folders}
-          isPublic={isPublic}
-          onViewContents={() => setActiveTab("files")}
-          repository={repository}
-          summaries={summaries}
-        />
+        <div className="space-y-5">
+          <RepositoryOverviewPanel
+            files={files}
+            folders={folders}
+            isPublic={isPublic}
+            onViewContents={() => setActiveTab("files")}
+            repository={repository}
+            summaries={summaries}
+          />
+          <RelatedResourcesPanel isPublic={isPublic} repository={repository} />
+        </div>
       ) : null}
 
       {activeTab === "files" ? (
@@ -1026,6 +1586,14 @@ function RepositoryPreview({
 
       {activeTab === "summaries" ? (
         <RepositorySummariesPanel isPublic={isPublic} summaries={summaries} />
+      ) : null}
+
+      {activeTab === "reviews" ? (
+        <RepositoryReviewsPanel
+          feedbackItems={feedbackItems}
+          isPublic={isPublic}
+          repository={repository}
+        />
       ) : null}
 
       {activeTab === "activity" ? (

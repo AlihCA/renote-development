@@ -2,12 +2,9 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router"
 import {
   ArrowUpRight,
-  BookOpen,
-  Eye,
   Filter,
   KeyRound,
   Library,
-  Quote,
   Search,
   Star,
 } from "lucide-react"
@@ -21,7 +18,7 @@ import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
 import Pagination from "@/components/repositories/Pagination"
 import RepositoryFilterPanel from "@/components/repositories/RepositoryFilterPanel"
-import SearchModeControl from "@/components/search/SearchModeControl"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,7 +31,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { mockFiles, mockRepositories } from "@/data"
-import { cn, formatCount } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { matchesRepositorySearch } from "@/utils/semanticSearch"
 
 const pageSize = 5
@@ -48,6 +45,12 @@ const initialFilters = {
   trust: "all",
   visibility: "all",
 }
+
+const suggestedSearches = [
+  "Thesis documentation",
+  "Cybersecurity reviewers",
+  "Database normalization",
+]
 
 function normalizeTag(value) {
   return String(value).trim().toLowerCase()
@@ -118,16 +121,6 @@ function getResultRange(currentPage, totalResults) {
   return `Showing ${start}-${end} of ${totalResults} repositories`
 }
 
-function RepositoryStat({ icon: Icon, label, value }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
-      <Icon className="size-3.5 text-primary/75" />
-      <span className="font-medium text-foreground">{value}</span>
-      <span>{label}</span>
-    </span>
-  )
-}
-
 function SignedInRepositoryCard({ fileTypes, repository }) {
   const canRequestAccess = ["private", "restricted"].includes(repository.visibility)
 
@@ -164,15 +157,7 @@ function SignedInRepositoryCard({ fileTypes, repository }) {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <RepositoryStat icon={BookOpen} label="Category" value={repository.subject} />
-            <RepositoryStat icon={Eye} label="Views" value={formatCount(repository.views)} />
-            <RepositoryStat
-              icon={Quote}
-              label="Citations"
-              value={formatCount(repository.citationCount)}
-            />
-          </div>
+          <RepositoryMetricsRow repository={repository} />
         </div>
       </div>
 
@@ -235,7 +220,6 @@ function ExplorePage() {
     query: urlQuery,
   })
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(true)
-  const [searchMode, setSearchMode] = useState("keyword")
   const repositories = useMemo(
     () =>
       mockRepositories
@@ -261,7 +245,7 @@ function ExplorePage() {
       const matchesQuery = matchesRepositorySearch(
         repository,
         filters.query,
-        searchMode
+        "semantic"
       )
       const matchesSubject =
         filters.subject === "all" || repository.subject === filters.subject
@@ -291,7 +275,7 @@ function ExplorePage() {
     })
 
     return sortRepositories(filtered, filters.sort)
-  }, [filters, repositories, searchMode])
+  }, [filters, repositories])
   const totalPages = Math.max(1, Math.ceil(filteredRepositories.length / pageSize))
   const safeCurrentPage = Math.min(currentPage, totalPages)
   const paginatedRepositories = filteredRepositories.slice(
@@ -323,9 +307,9 @@ function ExplorePage() {
     setSearchParams(nextSearchParams, { replace: true })
   }
 
-  function updateSearchMode(mode) {
+  function handleSuggestedSearch(value) {
     setCurrentPage(1)
-    setSearchMode(mode)
+    updateSearchQuery(value)
   }
 
   function updateFilter(key, value) {
@@ -367,7 +351,6 @@ function ExplorePage() {
 
   function resetFilters() {
     setCurrentPage(1)
-    setSearchMode("keyword")
     setFilters(initialFilters)
     const nextSearchParams = new URLSearchParams(searchParams)
     nextSearchParams.delete("q")
@@ -388,12 +371,12 @@ function ExplorePage() {
     )
   }
 
-  const hasSemanticQuery = searchMode === "semantic" && filters.query.trim()
-  const emptyStateTitle = hasSemanticQuery
-    ? "No semantic matches found"
+  const hasSearchQuery = Boolean(filters.query.trim())
+  const emptyStateTitle = hasSearchQuery
+    ? "No matching repositories found"
     : "No repositories found"
-  const emptyStateDescription = hasSemanticQuery
-    ? "Try searching by subject, learning goal, or related academic concept."
+  const emptyStateDescription = hasSearchQuery
+    ? "Try another title, owner, subject, tag, or related academic topic."
     : "Try adjusting your search, include tags, exclude tags, or filters."
 
   return (
@@ -420,23 +403,18 @@ function ExplorePage() {
                   <Input
                     className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
                     onChange={(event) => updateFilter("query", event.target.value)}
-                    placeholder={
-                      searchMode === "semantic"
-                        ? "Try: reviewers for cybersecurity"
-                        : "Search by title, owner, subject, or tag"
-                    }
+                    placeholder="Search by title, owner, subject, tag, or topic"
                     type="search"
                     value={filters.query}
                   />
                 </div>
+                <p className="mt-2 px-1 text-xs leading-5 text-muted-foreground">
+                  Smart search prototype uses titles, tags, subjects, and
+                  descriptions.
+                </p>
               </label>
 
               <div className="flex flex-col gap-3 sm:flex-row lg:items-start">
-                <SearchModeControl
-                  mode={searchMode}
-                  onModeChange={updateSearchMode}
-                />
-
                 <Sheet>
                   <SheetTrigger asChild>
                     <Button className="w-full sm:w-fit xl:hidden" variant="outline">
@@ -465,15 +443,29 @@ function ExplorePage() {
             </p>
           </section>
 
-          {searchMode === "semantic" ? (
-            <div className="rounded-2xl border border-primary/15 bg-[#FFF7FD] px-4 py-3 text-sm leading-6 text-muted-foreground dark:bg-primary/5">
-              <span className="mr-2 inline-flex rounded-full border border-primary/20 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary">
-                Semantic prototype search
-              </span>
-              Results are matched using prototype tags, subjects, descriptions,
-              and learning objectives.
+          <section className="rounded-2xl border border-[#E9C8F2]/70 bg-white/80 p-3 dark:border-primary/20 dark:bg-card/70">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold">Recommended topics</p>
+                <p className="text-xs text-muted-foreground">
+                  Quick prototype searches based on common academic activity.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {suggestedSearches.map((suggestion) => (
+                  <Button
+                    key={suggestion}
+                    onClick={() => handleSuggestedSearch(suggestion)}
+                    size="xs"
+                    type="button"
+                    variant="outline"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
             </div>
-          ) : null}
+          </section>
 
           {paginatedRepositories.length > 0 ? (
             <>

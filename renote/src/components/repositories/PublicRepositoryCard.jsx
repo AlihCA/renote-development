@@ -1,11 +1,11 @@
 import { Link } from "react-router"
-import { BookOpen, Eye, Quote, Star } from "lucide-react"
+import { Star } from "lucide-react"
 
 import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
+import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import { Badge } from "@/components/ui/badge"
-import { formatCount } from "@/lib/utils"
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("en", {
@@ -19,16 +19,6 @@ function toLabel(value) {
   return String(value)
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
-}
-
-function RepositoryStat({ icon: Icon, label, value }) {
-  return (
-    <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
-      <Icon className="size-3.5 text-primary/75" />
-      <span className="font-medium text-foreground">{value}</span>
-      <span>{label}</span>
-    </div>
-  )
 }
 
 function PublicRepositoryCard({ fileTypes = [], repository }) {
@@ -65,23 +55,7 @@ function PublicRepositoryCard({ fileTypes = [], repository }) {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <RepositoryStat
-              icon={BookOpen}
-              label="Category"
-              value={repository.subject}
-            />
-            <RepositoryStat
-              icon={Eye}
-              label="Views"
-              value={formatCount(repository.views)}
-            />
-            <RepositoryStat
-              icon={Quote}
-              label="Citations"
-              value={formatCount(repository.citationCount)}
-            />
-          </div>
+          <RepositoryMetricsRow repository={repository} />
         </div>
 
         <Link

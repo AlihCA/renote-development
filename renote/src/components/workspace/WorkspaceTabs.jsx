@@ -2,7 +2,7 @@ import { Activity, Files, LayoutDashboard, Sparkles } from "lucide-react"
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-const tabs = [
+const defaultTabs = [
   {
     icon: LayoutDashboard,
     label: "Overview",
@@ -25,7 +25,7 @@ const tabs = [
   },
 ]
 
-function WorkspaceTabs({ onValueChange, value = "files" }) {
+function WorkspaceTabs({ onValueChange, tabs = defaultTabs, value = "files" }) {
   return (
     <Tabs
       className="overflow-x-auto"

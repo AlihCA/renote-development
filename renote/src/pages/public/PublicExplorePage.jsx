@@ -6,7 +6,6 @@ import EmptyState from "@/components/common/EmptyState"
 import Pagination from "@/components/repositories/Pagination"
 import PublicRepositoryCard from "@/components/repositories/PublicRepositoryCard"
 import RepositoryFilterPanel from "@/components/repositories/RepositoryFilterPanel"
-import SearchModeControl from "@/components/search/SearchModeControl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -114,7 +113,6 @@ function PublicExplorePage() {
     query: urlQuery,
   })
   const [isFilterOpen, setIsFilterOpen] = useState(true)
-  const [searchMode, setSearchMode] = useState("keyword")
 
   const repositories = useMemo(
     () =>
@@ -143,7 +141,7 @@ function PublicExplorePage() {
       const matchesQuery = matchesRepositorySearch(
         repository,
         filters.query,
-        searchMode
+        "semantic"
       )
       const matchesSubject =
         filters.subject === "all" || repository.subject === filters.subject
@@ -173,7 +171,7 @@ function PublicExplorePage() {
     })
 
     return sortRepositories(filtered, filters.sort)
-  }, [filters, repositories, searchMode])
+  }, [filters, repositories])
 
   const totalPages = Math.max(1, Math.ceil(filteredRepositories.length / PAGE_SIZE))
   const safeCurrentPage = Math.min(currentPage, totalPages)
@@ -204,11 +202,6 @@ function PublicExplorePage() {
     }
 
     setSearchParams(nextSearchParams, { replace: true })
-  }
-
-  function updateSearchMode(mode) {
-    setCurrentPage(1)
-    setSearchMode(mode)
   }
 
   function updateFilter(key, value) {
@@ -250,7 +243,6 @@ function PublicExplorePage() {
 
   function resetFilters() {
     setCurrentPage(1)
-    setSearchMode("keyword")
     setFilters(initialFilters)
     const nextSearchParams = new URLSearchParams(searchParams)
     nextSearchParams.delete("q")
@@ -271,12 +263,12 @@ function PublicExplorePage() {
     )
   }
 
-  const hasSemanticQuery = searchMode === "semantic" && filters.query.trim()
-  const emptyStateTitle = hasSemanticQuery
-    ? "No semantic matches found"
+  const hasSearchQuery = Boolean(filters.query.trim())
+  const emptyStateTitle = hasSearchQuery
+    ? "No matching public resources found"
     : "No public resources found"
-  const emptyStateDescription = hasSemanticQuery
-    ? "Try searching by subject, learning goal, or related academic concept."
+  const emptyStateDescription = hasSearchQuery
+    ? "Try another title, owner, subject, tag, or related academic topic."
     : "Try adjusting your search, include tags, exclude tags, or filters."
 
   return (
@@ -335,35 +327,18 @@ function PublicExplorePage() {
                   <Input
                     className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
                     onChange={(event) => updateFilter("query", event.target.value)}
-                    placeholder={
-                      searchMode === "semantic"
-                        ? "Try: resources about thesis documentation"
-                        : "Search by title, owner, subject, or tag"
-                    }
+                    placeholder="Search by title, owner, subject, tag, or topic"
                     type="search"
                     value={filters.query}
                   />
                 </div>
+                <p className="px-1 text-xs leading-5 text-muted-foreground">
+                  Smart search prototype uses titles, tags, subjects, and
+                  descriptions.
+                </p>
               </label>
-
-              <div className="lg:justify-self-end">
-                <SearchModeControl
-                  mode={searchMode}
-                  onModeChange={updateSearchMode}
-                />
-              </div>
             </div>
           </div>
-
-          {searchMode === "semantic" ? (
-            <div className="rounded-2xl border border-primary/15 bg-[#FFF7FD] px-4 py-3 text-sm leading-6 text-muted-foreground dark:bg-primary/5">
-              <span className="mr-2 inline-flex rounded-full border border-primary/20 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary">
-                Semantic prototype search
-              </span>
-              Results are matched using prototype tags, subjects, descriptions,
-              and learning objectives.
-            </div>
-          ) : null}
 
           {paginatedRepositories.length > 0 ? (
             <>
