@@ -18,6 +18,7 @@ import {
   Plus,
   Quote,
   RefreshCw,
+  Search,
   Send,
   Sparkles,
   Tag,
@@ -95,6 +96,10 @@ function getFileTypeLabel(file) {
   if (["url", "link"].includes(kind)) return "External link"
 
   return toTitleCase(kind)
+}
+
+function canSearchInsideFile(file) {
+  return ["pdf", "doc", "docx"].includes(getFileKind(file))
 }
 
 function toPositiveInteger(value) {
@@ -213,6 +218,285 @@ function getMockDocumentPage(file, pageNumber) {
     title: pageNumber % 2 === 0 ? "Academic Content" : "Review Notes",
     variant: "academic",
   }
+}
+
+const insideDocumentSearchResults = {
+  "file-capstone-rubric-pdf": [
+    {
+      context:
+        "Evaluation notes connect the rubric indicators to observable capstone evidence.",
+      pageNumber: 2,
+      sectionTitle: "Introduction",
+      snippet:
+        "The capstone rubric helps reviewers assess problem statements, objectives, documentation, and defense readiness.",
+    },
+    {
+      context:
+        "This page clarifies how reviewer scores should reflect implementation and written evidence.",
+      pageNumber: 3,
+      sectionTitle: "Evaluation Criteria",
+      snippet:
+        "Evaluation criteria include technical implementation, research alignment, usability evidence, and academic formatting.",
+    },
+    {
+      context:
+        "Documentation requirements are grouped by chapter output and supporting artifacts.",
+      pageNumber: 4,
+      sectionTitle: "Documentation Requirements",
+      snippet:
+        "Required documentation includes chapter files, diagrams, tables, citations, appendices, and revision history.",
+    },
+  ],
+  "file-cyber-threats-pdf": [
+    {
+      context:
+        "Threat review materials connect attack examples to prevention and detection controls.",
+      pageNumber: 2,
+      sectionTitle: "Threat Overview",
+      snippet:
+        "Common cybersecurity threats include phishing, malware, credential attacks, and insecure configuration.",
+    },
+    {
+      context:
+        "Defense notes explain how layered controls reduce risk across systems.",
+      pageNumber: 5,
+      sectionTitle: "Defense-in-Depth",
+      snippet:
+        "Defense-in-depth uses layered safeguards, access controls, monitoring, and user awareness to reduce exposure.",
+    },
+  ],
+  "file-db-normalization-pdf": [
+    {
+      context:
+        "Normalization guidance starts with dependency checks before table redesign.",
+      pageNumber: 3,
+      sectionTitle: "Evaluation Criteria",
+      snippet:
+        "Database normalization identifies partial dependencies, transitive dependencies, and repeating groups.",
+    },
+    {
+      context:
+        "Schema examples show how each table should represent one clear entity.",
+      pageNumber: 6,
+      sectionTitle: "Academic Content",
+      snippet:
+        "A normalized schema separates entities, relationships, and attributes to reduce update anomalies.",
+    },
+  ],
+  "file-ia-controls-pdf": [
+    {
+      context:
+        "The reviewer introduces assurance as confidence in security objectives.",
+      pageNumber: 2,
+      sectionTitle: "Introduction",
+      snippet:
+        "Information assurance principles help map controls to confidentiality, integrity, availability, and risk treatment.",
+    },
+    {
+      context:
+        "Control review connects safeguards to likely threats and audit evidence.",
+      pageNumber: 3,
+      sectionTitle: "Evaluation Criteria",
+      snippet:
+        "Security controls should be selected based on risk, audit trails, incident response, and access control needs.",
+    },
+  ],
+  "file-os-scheduling-pdf": [
+    {
+      context:
+        "Scheduling notes compare algorithms by waiting time and turnaround time.",
+      pageNumber: 4,
+      sectionTitle: "Scheduling Criteria",
+      snippet:
+        "CPU scheduling algorithms such as FCFS, SJF, priority, and round robin affect process response time.",
+    },
+  ],
+  "file-thesis-template-docx": [
+    {
+      context:
+        "The chapter template guides students through early research structure.",
+      pageNumber: 2,
+      sectionTitle: "Chapter Structure",
+      snippet:
+        "Thesis documentation should include background, problem statement, objectives, scope, and significance.",
+    },
+    {
+      context:
+        "Methodology sections connect instruments, respondents, and analysis plans.",
+      pageNumber: 7,
+      sectionTitle: "Methodology",
+      snippet:
+        "Research methods describe data gathering, survey instruments, validation, and ethical handling of responses.",
+    },
+  ],
+  "file-research-survey-docx": [
+    {
+      context:
+        "Survey templates align questions with measurable research objectives.",
+      pageNumber: 3,
+      sectionTitle: "Survey Design",
+      snippet:
+        "Survey questions should align with research objectives and avoid leading or double-barreled wording.",
+    },
+  ],
+}
+
+function getFallbackInsideDocumentResults(file, totalPages) {
+  return [1, Math.min(3, totalPages), Math.min(5, totalPages)]
+    .filter((pageNumber, index, pages) => pages.indexOf(pageNumber) === index)
+    .map((pageNumber) => {
+      const page = getMockDocumentPage(file, pageNumber)
+
+      return {
+        context:
+          "Generated from the mock academic page text used by the prototype preview.",
+        pageNumber,
+        sectionTitle: page.heading ?? page.title,
+        snippet: `${page.title}: ${page.body}`,
+      }
+    })
+}
+
+function getInsideDocumentResults(file, totalPages) {
+  const results =
+    insideDocumentSearchResults[file.id] ??
+    getFallbackInsideDocumentResults(file, totalPages)
+
+  return results.map((result) => ({
+    ...result,
+    pageNumber: clampPage(result.pageNumber, totalPages),
+  }))
+}
+
+function getSearchTokens(query) {
+  return String(query ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(" ")
+    .filter((token) => token.length > 2)
+}
+
+function searchInsideDocument(file, totalPages, query) {
+  const tokens = getSearchTokens(query)
+
+  if (tokens.length === 0) {
+    return []
+  }
+
+  return getInsideDocumentResults(file, totalPages).filter((result) => {
+    const searchText = [
+      result.context,
+      result.sectionTitle,
+      result.snippet,
+      `page ${result.pageNumber}`,
+    ]
+      .join(" ")
+      .toLowerCase()
+
+    return tokens.some((token) => searchText.includes(token))
+  })
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function HighlightedSnippet({ query, text }) {
+  const tokens = [...new Set(getSearchTokens(query))].slice(0, 5)
+
+  if (tokens.length === 0) {
+    return text
+  }
+
+  const pattern = new RegExp(`(${tokens.map(escapeRegExp).join("|")})`, "gi")
+  const parts = String(text).split(pattern)
+
+  return parts.map((part, index) =>
+    tokens.some((token) => token === part.toLowerCase()) ? (
+      <mark
+        className="rounded bg-primary/15 px-0.5 font-medium text-primary"
+        key={`${part}-${index}`}
+      >
+        {part}
+      </mark>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
+  )
+}
+
+function InsideDocumentSearchPanel({ file, onJumpToPage, totalPages }) {
+  const [query, setQuery] = useState("")
+  const results = useMemo(
+    () => searchInsideDocument(file, totalPages, query),
+    [file, query, totalPages]
+  )
+  const hasQuery = query.trim().length > 0
+
+  return (
+    <div className="border-b border-[#E9C8F2]/70 bg-white/80 p-3 dark:border-border dark:bg-background/60">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <label className="min-w-0">
+          <span className="sr-only">Search inside this file</span>
+          <div className="renote-input-shell bg-background">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search inside this file"
+              type="search"
+              value={query}
+            />
+          </div>
+        </label>
+
+        <p className="max-w-md text-xs leading-5 text-muted-foreground">
+          Prototype search uses mock extracted text. Full search will require
+          document parsing and indexing.
+        </p>
+      </div>
+
+      {hasQuery ? (
+        <div className="mt-3 space-y-2">
+          {results.length > 0 ? (
+            results.map((result) => (
+              <article
+                className="flex flex-col gap-3 rounded-2xl border border-[#E9C8F2]/80 bg-[#FCF7FF] p-3 dark:border-primary/20 dark:bg-primary/5 sm:flex-row sm:items-start sm:justify-between"
+                key={`${result.pageNumber}-${result.sectionTitle}-${result.snippet}`}
+              >
+                <div className="min-w-0 space-y-1">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+                    Page {result.pageNumber} - {result.sectionTitle}
+                  </p>
+                  <p className="text-sm leading-6 text-foreground">
+                    <HighlightedSnippet query={query} text={result.snippet} />
+                  </p>
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {result.context}
+                  </p>
+                </div>
+
+                <Button
+                  className="w-full sm:w-fit"
+                  onClick={() => onJumpToPage(result.pageNumber)}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Jump to page
+                </Button>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-[#E9C8F2]/80 bg-background/80 p-4 text-sm text-muted-foreground dark:border-primary/20">
+              No mock matches found in this file. Try a section, topic, or page
+              phrase.
+            </div>
+          )}
+        </div>
+      ) : null}
+    </div>
+  )
 }
 
 function buildSourceUrl(file) {
@@ -638,6 +922,12 @@ function PdfPreview({ currentPage, file, onPageChange, totalPages }) {
         </div>
       </div>
 
+      <InsideDocumentSearchPanel
+        file={file}
+        onJumpToPage={goToPage}
+        totalPages={totalPages}
+      />
+
       <div className="flex min-h-[560px] bg-[#F7F1FA] dark:bg-background/40">
         {isThumbnailRailOpen ? (
           <PageThumbnailRail
@@ -696,16 +986,36 @@ function PlaceholderPreview({ file }) {
 }
 
 function FilePreviewPanel({ currentPage, file, onPageChange, totalPages }) {
-  return getFileKind(file) === "pdf" ? (
-    <PdfPreview
-      currentPage={currentPage}
-      file={file}
-      onPageChange={onPageChange}
-      totalPages={totalPages}
-    />
-  ) : (
-    <PlaceholderPreview file={file} />
-  )
+  if (getFileKind(file) === "pdf") {
+    return (
+      <PdfPreview
+        currentPage={currentPage}
+        file={file}
+        onPageChange={onPageChange}
+        totalPages={totalPages}
+      />
+    )
+  }
+
+  if (canSearchInsideFile(file)) {
+    return (
+      <div className="space-y-3">
+        <section className="renote-card overflow-hidden">
+          <InsideDocumentSearchPanel
+            file={file}
+            onJumpToPage={(pageNumber) => {
+              onPageChange(clampPage(pageNumber, totalPages))
+              toast("Jump to page will be connected to real document rendering later.")
+            }}
+            totalPages={totalPages}
+          />
+        </section>
+        <PlaceholderPreview file={file} />
+      </div>
+    )
+  }
+
+  return <PlaceholderPreview file={file} />
 }
 
 function AskAiSection() {

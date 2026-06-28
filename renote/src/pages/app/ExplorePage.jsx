@@ -21,6 +21,7 @@ import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
 import Pagination from "@/components/repositories/Pagination"
 import RepositoryFilterPanel from "@/components/repositories/RepositoryFilterPanel"
+import SearchModeControl from "@/components/search/SearchModeControl"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/sheet"
 import { mockFiles, mockRepositories } from "@/data"
 import { cn, formatCount } from "@/lib/utils"
+import { matchesRepositorySearch } from "@/utils/semanticSearch"
 
 const pageSize = 5
 
@@ -75,21 +77,6 @@ function getRepositoryFileTypes(repositoryId) {
         .map((file) => normalizeFileType(file.extension ?? file.type))
     ),
   ]
-}
-
-function getRepositorySearchText(repository) {
-  return [
-    repository.title,
-    repository.description,
-    repository.ownerName,
-    repository.ownerRole,
-    repository.subject,
-    repository.trustLabel,
-    repository.visibility,
-    ...repository.tags,
-  ]
-    .join(" ")
-    .toLowerCase()
 }
 
 function sortRepositories(repositories, sort) {
@@ -248,6 +235,7 @@ function ExplorePage() {
     query: urlQuery,
   })
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(true)
+  const [searchMode, setSearchMode] = useState("keyword")
   const repositories = useMemo(
     () =>
       mockRepositories
@@ -269,9 +257,12 @@ function ExplorePage() {
     [repositories]
   )
   const filteredRepositories = useMemo(() => {
-    const query = filters.query.trim().toLowerCase()
     const filtered = repositories.filter((repository) => {
-      const matchesQuery = !query || getRepositorySearchText(repository).includes(query)
+      const matchesQuery = matchesRepositorySearch(
+        repository,
+        filters.query,
+        searchMode
+      )
       const matchesSubject =
         filters.subject === "all" || repository.subject === filters.subject
       const matchesTrust =
@@ -300,7 +291,7 @@ function ExplorePage() {
     })
 
     return sortRepositories(filtered, filters.sort)
-  }, [filters, repositories])
+  }, [filters, repositories, searchMode])
   const totalPages = Math.max(1, Math.ceil(filteredRepositories.length / pageSize))
   const safeCurrentPage = Math.min(currentPage, totalPages)
   const paginatedRepositories = filteredRepositories.slice(
@@ -330,6 +321,11 @@ function ExplorePage() {
     }
 
     setSearchParams(nextSearchParams, { replace: true })
+  }
+
+  function updateSearchMode(mode) {
+    setCurrentPage(1)
+    setSearchMode(mode)
   }
 
   function updateFilter(key, value) {
@@ -371,6 +367,7 @@ function ExplorePage() {
 
   function resetFilters() {
     setCurrentPage(1)
+    setSearchMode("keyword")
     setFilters(initialFilters)
     const nextSearchParams = new URLSearchParams(searchParams)
     nextSearchParams.delete("q")
@@ -391,6 +388,14 @@ function ExplorePage() {
     )
   }
 
+  const hasSemanticQuery = searchMode === "semantic" && filters.query.trim()
+  const emptyStateTitle = hasSemanticQuery
+    ? "No semantic matches found"
+    : "No repositories found"
+  const emptyStateDescription = hasSemanticQuery
+    ? "Try searching by subject, learning goal, or related academic concept."
+    : "Try adjusting your search, include tags, exclude tags, or filters."
+
   return (
     <PageShell
       className={cn(
@@ -407,7 +412,7 @@ function ExplorePage() {
       <div className="w-full min-w-0">
         <main className="min-w-0 space-y-5">
           <section className="space-y-3">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
               <label className="min-w-0 flex-1">
                 <span className="sr-only">Search repositories</span>
                 <div className="renote-input-shell">
@@ -415,39 +420,60 @@ function ExplorePage() {
                   <Input
                     className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
                     onChange={(event) => updateFilter("query", event.target.value)}
-                    placeholder="Search by title, owner, subject, or tag"
+                    placeholder={
+                      searchMode === "semantic"
+                        ? "Try: reviewers for cybersecurity"
+                        : "Search by title, owner, subject, or tag"
+                    }
                     type="search"
                     value={filters.query}
                   />
                 </div>
               </label>
 
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button className="w-full sm:w-fit xl:hidden" variant="outline">
-                    <Filter className="size-4" />
-                    Filters
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-y-auto p-0"
-                  side="right"
-                >
-                  <SheetHeader className="border-b px-5 py-5 text-left">
-                    <SheetTitle>Sort and Filter</SheetTitle>
-                    <SheetDescription>
-                      Refine signed-in repository results.
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="p-4">{renderFilterPanel()}</div>
-                </SheetContent>
-              </Sheet>
+              <div className="flex flex-col gap-3 sm:flex-row lg:items-start">
+                <SearchModeControl
+                  mode={searchMode}
+                  onModeChange={updateSearchMode}
+                />
+
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button className="w-full sm:w-fit xl:hidden" variant="outline">
+                      <Filter className="size-4" />
+                      Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    className="w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-y-auto p-0"
+                    side="right"
+                  >
+                    <SheetHeader className="border-b px-5 py-5 text-left">
+                      <SheetTitle>Sort and Filter</SheetTitle>
+                      <SheetDescription>
+                        Refine signed-in repository results.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="p-4">{renderFilterPanel()}</div>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
 
             <p className="text-sm text-muted-foreground">
               {getResultRange(safeCurrentPage, filteredRepositories.length)}
             </p>
           </section>
+
+          {searchMode === "semantic" ? (
+            <div className="rounded-2xl border border-primary/15 bg-[#FFF7FD] px-4 py-3 text-sm leading-6 text-muted-foreground dark:bg-primary/5">
+              <span className="mr-2 inline-flex rounded-full border border-primary/20 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary">
+                Semantic prototype search
+              </span>
+              Results are matched using prototype tags, subjects, descriptions,
+              and learning objectives.
+            </div>
+          ) : null}
 
           {paginatedRepositories.length > 0 ? (
             <>
@@ -474,9 +500,9 @@ function ExplorePage() {
                   Clear filters
                 </Button>
               }
-              description="Try adjusting your search, include tags, exclude tags, or filters."
+              description={emptyStateDescription}
               icon={Library}
-              title="No repositories found"
+              title={emptyStateTitle}
             />
           )}
         </main>

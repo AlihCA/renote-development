@@ -1,6 +1,4 @@
 const primary = "#B43BD1"
-const primaryHover = "#9F2CC2"
-const softBorder = "#E9C8F2"
 
 export const renoteClerkAppearance = {
   elements: {

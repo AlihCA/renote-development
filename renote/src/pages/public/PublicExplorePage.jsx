@@ -6,6 +6,7 @@ import EmptyState from "@/components/common/EmptyState"
 import Pagination from "@/components/repositories/Pagination"
 import PublicRepositoryCard from "@/components/repositories/PublicRepositoryCard"
 import RepositoryFilterPanel from "@/components/repositories/RepositoryFilterPanel"
+import SearchModeControl from "@/components/search/SearchModeControl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/sheet"
 import { mockFiles, mockRepositories } from "@/data"
 import { cn } from "@/lib/utils"
+import { matchesRepositorySearch } from "@/utils/semanticSearch"
 
 const PAGE_SIZE = 5
 
@@ -78,21 +80,6 @@ function getRepositoryFileTypes(repositoryId) {
   ]
 }
 
-function getRepositorySearchText(repository) {
-  return [
-    repository.title,
-    repository.description,
-    repository.ownerName,
-    repository.ownerRole,
-    repository.subject,
-    repository.trustLabel,
-    repository.visibility,
-    ...repository.tags,
-  ]
-    .join(" ")
-    .toLowerCase()
-}
-
 function sortRepositories(repositories, sort) {
   return [...repositories].sort((first, second) => {
     if (sort === "views") {
@@ -127,6 +114,7 @@ function PublicExplorePage() {
     query: urlQuery,
   })
   const [isFilterOpen, setIsFilterOpen] = useState(true)
+  const [searchMode, setSearchMode] = useState("keyword")
 
   const repositories = useMemo(
     () =>
@@ -151,9 +139,12 @@ function PublicExplorePage() {
   )
 
   const filteredRepositories = useMemo(() => {
-    const query = filters.query.trim().toLowerCase()
     const filtered = repositories.filter((repository) => {
-      const matchesQuery = !query || getRepositorySearchText(repository).includes(query)
+      const matchesQuery = matchesRepositorySearch(
+        repository,
+        filters.query,
+        searchMode
+      )
       const matchesSubject =
         filters.subject === "all" || repository.subject === filters.subject
       const matchesTrust =
@@ -182,7 +173,7 @@ function PublicExplorePage() {
     })
 
     return sortRepositories(filtered, filters.sort)
-  }, [filters, repositories])
+  }, [filters, repositories, searchMode])
 
   const totalPages = Math.max(1, Math.ceil(filteredRepositories.length / PAGE_SIZE))
   const safeCurrentPage = Math.min(currentPage, totalPages)
@@ -213,6 +204,11 @@ function PublicExplorePage() {
     }
 
     setSearchParams(nextSearchParams, { replace: true })
+  }
+
+  function updateSearchMode(mode) {
+    setCurrentPage(1)
+    setSearchMode(mode)
   }
 
   function updateFilter(key, value) {
@@ -254,6 +250,7 @@ function PublicExplorePage() {
 
   function resetFilters() {
     setCurrentPage(1)
+    setSearchMode("keyword")
     setFilters(initialFilters)
     const nextSearchParams = new URLSearchParams(searchParams)
     nextSearchParams.delete("q")
@@ -273,6 +270,14 @@ function PublicExplorePage() {
       />
     )
   }
+
+  const hasSemanticQuery = searchMode === "semantic" && filters.query.trim()
+  const emptyStateTitle = hasSemanticQuery
+    ? "No semantic matches found"
+    : "No public resources found"
+  const emptyStateDescription = hasSemanticQuery
+    ? "Try searching by subject, learning goal, or related academic concept."
+    : "Try adjusting your search, include tags, exclude tags, or filters."
 
   return (
     <div className="bg-muted/25">
@@ -320,22 +325,45 @@ function PublicExplorePage() {
               </Sheet>
             </div>
 
-            <label className="block max-w-2xl space-y-2 md:hidden">
-              <span className="px-1 text-xs font-medium text-muted-foreground">
-                Search repositories
-              </span>
-              <div className="renote-input-shell bg-background/90">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
-                  onChange={(event) => updateFilter("query", event.target.value)}
-                  placeholder="Search by title, owner, subject, or tag"
-                  type="search"
-                  value={filters.query}
+            <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+              <label className="block min-w-0 max-w-2xl space-y-2">
+                <span className="px-1 text-xs font-medium text-muted-foreground">
+                  Search repositories
+                </span>
+                <div className="renote-input-shell bg-background/90">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
+                    onChange={(event) => updateFilter("query", event.target.value)}
+                    placeholder={
+                      searchMode === "semantic"
+                        ? "Try: resources about thesis documentation"
+                        : "Search by title, owner, subject, or tag"
+                    }
+                    type="search"
+                    value={filters.query}
+                  />
+                </div>
+              </label>
+
+              <div className="lg:justify-self-end">
+                <SearchModeControl
+                  mode={searchMode}
+                  onModeChange={updateSearchMode}
                 />
               </div>
-            </label>
+            </div>
           </div>
+
+          {searchMode === "semantic" ? (
+            <div className="rounded-2xl border border-primary/15 bg-[#FFF7FD] px-4 py-3 text-sm leading-6 text-muted-foreground dark:bg-primary/5">
+              <span className="mr-2 inline-flex rounded-full border border-primary/20 bg-background/80 px-2.5 py-1 text-xs font-semibold text-primary">
+                Semantic prototype search
+              </span>
+              Results are matched using prototype tags, subjects, descriptions,
+              and learning objectives.
+            </div>
+          ) : null}
 
           {paginatedRepositories.length > 0 ? (
             <>
@@ -357,9 +385,9 @@ function PublicExplorePage() {
             </>
           ) : (
             <EmptyState
-              description="Try adjusting your search, include tags, exclude tags, or filters."
+              description={emptyStateDescription}
               icon={Library}
-              title="No public resources found"
+              title={emptyStateTitle}
             />
           )}
         </div>
