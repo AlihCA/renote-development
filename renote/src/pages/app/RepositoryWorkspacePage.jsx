@@ -28,6 +28,7 @@ import {
   mockRepositories,
   mockSummaries,
 } from "@/data"
+import { APP_ROLES } from "@/lib/roles"
 
 function sortByDepthAndName(folders) {
   return [...folders].sort((first, second) => {
@@ -361,7 +362,7 @@ function RepositoryWorkspacePage() {
   const repository = mockRepositories.find(
     (item) =>
       item.id === repositoryId &&
-      item.ownerRole === "faculty" &&
+      item.ownerRole === APP_ROLES.FACULTY &&
       item.status === "active"
   )
   const baseFolders = useMemo(
@@ -439,12 +440,12 @@ function RepositoryWorkspacePage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/my-repositories">Back to materials</Link>
+              <Link to="/app/courses">Back to My Courses</Link>
             </Button>
           }
           description="This material space could not be found in the prototype."
           icon={Library}
-          title="Materials not found"
+          title="Course not found"
         />
       </PageShell>
     )
@@ -453,9 +454,9 @@ function RepositoryWorkspacePage() {
   return (
     <PageShell className="max-w-[1500px] space-y-5 py-6 sm:py-8" size="wide">
       <Button asChild className="w-fit" size="sm" variant="ghost">
-        <Link to="/app/my-repositories">
+        <Link to="/app/courses">
           <ArrowLeft className="size-4" />
-          Back to Materials
+          Back to My Courses
         </Link>
       </Button>
 

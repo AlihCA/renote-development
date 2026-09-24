@@ -54,7 +54,7 @@ const initialFilters = {
 
 const archiveTabs = [
   { label: "All", value: "all" },
-  { label: "Materials", value: "repository" },
+  { label: "Courses", value: "repository" },
   { label: "Files", value: "file" },
 ]
 
@@ -71,7 +71,7 @@ function getArchivedDate(item) {
 }
 
 function getTypeLabel(type) {
-  if (type === "repository") return "Repository"
+  if (type === "repository") return "Course"
   if (type === "collection") return "Collection"
   if (type === "summary") return "Summary"
   if (type === "file") return "File"

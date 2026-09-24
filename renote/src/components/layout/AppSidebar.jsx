@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react"
 import { NavLink, useLocation } from "react-router"
 import {
-  Archive,
-  Bell,
-  BookOpen,
   ChevronLeft,
   ChevronRight,
   Circle,
-  LayoutDashboard,
-  User,
 } from "lucide-react"
 
 import {
@@ -17,18 +12,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import renoteLogo from "@/assets/brand/renote-logo.png"
-import { appNavSections } from "@/data/navigation"
+import { appNavIcons } from "@/components/layout/appNavIcons"
+import { getAppNavSections } from "@/data/navigation"
+import useApplicationUser from "@/hooks/useApplicationUser"
 import { cn } from "@/lib/utils"
 
 const SIDEBAR_STORAGE_KEY = "renote-sidebar-collapsed"
-
-const sidebarIcons = {
-  "Archive / Trash": Archive,
-  Home: LayoutDashboard,
-  Materials: BookOpen,
-  Notifications: Bell,
-  Profile: User,
-}
 
 function getStoredSidebarState() {
   try {
@@ -53,7 +42,9 @@ function isActiveRoute(pathname, item) {
 
 function AppSidebar() {
   const location = useLocation()
+  const { appUser } = useApplicationUser()
   const [isCollapsed, setIsCollapsed] = useState(getStoredSidebarState)
+  const appNavSections = getAppNavSections(appUser?.role)
 
   useEffect(() => {
     window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isCollapsed))
@@ -89,7 +80,7 @@ function AppSidebar() {
             <div className="min-w-0">
               <p className="font-semibold leading-none tracking-tight text-primary">ReNote</p>
               <p className="mt-1 truncate text-xs text-muted-foreground">
-                Workspace
+                {appNavSections[0]?.title ?? "Workspace"}
               </p>
             </div>
           ) : null}
@@ -138,7 +129,7 @@ function AppSidebar() {
               ) : null}
 
               {section.items.map((item) => {
-                const Icon = sidebarIcons[item.label] ?? Circle
+                const Icon = appNavIcons[item.id] ?? Circle
                 const isActive = isActiveRoute(location.pathname, item)
 
                 return isCollapsed ? (

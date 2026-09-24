@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { mockFiles, mockNotifications, mockRepositories } from "@/data"
+import { APP_ROLES } from "@/lib/roles"
 import { cn } from "@/lib/utils"
 
 const initialFilters = {
@@ -62,7 +63,7 @@ function getNotificationLink(notification) {
   if (notification.relatedType === "file") {
     const file = mockFiles.find((item) => item.id === notification.relatedId)
     const repository = mockRepositories.find((item) => item.id === file?.repositoryId)
-    return file && repository?.ownerRole === "faculty" && repository.status === "active"
+    return file && repository?.ownerRole === APP_ROLES.FACULTY && repository.status === "active"
       ? `/app/files/${file.id}`
       : null
   }

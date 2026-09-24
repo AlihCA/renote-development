@@ -1,11 +1,14 @@
 import { useAuth } from "@clerk/clerk-react"
 import { Navigate, useLocation } from "react-router"
 
+import useApplicationUser from "@/hooks/useApplicationUser"
+
 function ProtectedRoute({ children }) {
   const { isLoaded, isSignedIn } = useAuth()
+  const { appUser, isLoaded: isApplicationUserLoaded } = useApplicationUser()
   const location = useLocation()
 
-  if (!isLoaded) {
+  if (!isLoaded || (isSignedIn && (!isApplicationUserLoaded || !appUser))) {
     return (
       <main className="renote-page grid min-h-svh place-items-center bg-muted/30 p-5">
         <section className="renote-card flex w-full max-w-sm items-center gap-3 p-5">

@@ -7,13 +7,19 @@ import PageShell from "@/components/common/PageShell"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { mockRepositories } from "@/data"
+import { APP_ROLES } from "@/lib/roles"
 
-function MyRepositoriesPage() {
+function MyRepositoriesPage({
+  description = "Browse sample faculty course spaces. Membership and course management will be connected later.",
+  emptyTitle = "No courses found",
+  openLabel = "Open course",
+  title = "My Courses",
+}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get("q") ?? ""
   const normalizedQuery = query.trim().toLowerCase()
   const materials = mockRepositories.filter((repository) => {
-    if (repository.ownerRole !== "faculty" || repository.status !== "active") {
+    if (repository.ownerRole !== APP_ROLES.FACULTY || repository.status !== "active") {
       return false
     }
 
@@ -39,8 +45,8 @@ function MyRepositoriesPage() {
   return (
     <PageShell className="space-y-7">
       <PageHeader
-        description="Browse faculty-provided sample resources. Course access will be connected later."
-        title="Materials"
+        description={description}
+        title={title}
       />
 
       <label className="relative block max-w-lg">
@@ -73,7 +79,7 @@ function MyRepositoriesPage() {
               </p>
               <Button asChild className="mt-auto w-fit" size="sm" variant="outline">
                 <Link to={`/app/workspace/${repository.id}`}>
-                  Open materials
+                  {openLabel}
                   <ArrowUpRight className="size-4" />
                 </Link>
               </Button>
@@ -84,7 +90,7 @@ function MyRepositoriesPage() {
         <EmptyState
           description="Try a different title or subject."
           icon={Search}
-          title="No materials found"
+          title={emptyTitle}
         />
       )}
     </PageShell>

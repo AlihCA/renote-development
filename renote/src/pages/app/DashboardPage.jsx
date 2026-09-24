@@ -1,15 +1,16 @@
 import { Link } from "react-router"
-import { ArrowUpRight, BookOpen, FileText } from "lucide-react"
+import { ArrowUpRight, BookOpen, FileText, Search } from "lucide-react"
 
 import PageHeader from "@/components/common/PageHeader"
 import PageShell from "@/components/common/PageShell"
 import SectionCard from "@/components/common/SectionCard"
 import { Button } from "@/components/ui/button"
 import { mockFiles, mockRepositories } from "@/data"
+import { APP_ROLES } from "@/lib/roles"
 
 function DashboardPage() {
   const facultyMaterials = mockRepositories.filter(
-    (repository) => repository.ownerRole === "faculty" && repository.status === "active"
+    (repository) => repository.ownerRole === APP_ROLES.FACULTY && repository.status === "active"
   )
   const facultyRepositoryIds = new Set(facultyMaterials.map((repository) => repository.id))
   const resourceCount = mockFiles.filter((file) =>
@@ -19,14 +20,19 @@ function DashboardPage() {
   return (
     <PageShell className="space-y-7">
       <PageHeader
-        description="A preview of faculty-provided academic materials at PUP Parañaque."
-        title="Workspace"
+        actions={
+          <Button asChild size="sm" variant="outline">
+            <Link to="/app/search"><Search className="size-4" />Search materials</Link>
+          </Button>
+        }
+        description="Find your course spaces and faculty-provided learning materials at PUP Parañaque. Course membership will be connected later."
+        title="Student Dashboard"
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <SectionCard icon={BookOpen} title="Faculty material spaces">
+        <SectionCard icon={BookOpen} title="Sample courses">
           <p className="text-2xl font-semibold">{facultyMaterials.length}</p>
-          <p className="mt-1 text-muted-foreground">Sample spaces in this prototype</p>
+          <p className="mt-1 text-muted-foreground">Faculty course spaces in this prototype</p>
         </SectionCard>
         <SectionCard icon={FileText} title="Available resources">
           <p className="text-2xl font-semibold">{resourceCount}</p>
@@ -37,15 +43,15 @@ function DashboardPage() {
       <SectionCard
         action={
           <Button asChild size="sm" variant="outline">
-            <Link to="/app/my-repositories">
-              View all materials
+            <Link to="/app/courses">
+              View My Courses
               <ArrowUpRight className="size-4" />
             </Link>
           </Button>
         }
         description="Browse sample materials organized by faculty."
         icon={BookOpen}
-        title="Faculty materials"
+        title="Course materials"
       >
         <div className="grid gap-3 md:grid-cols-2">
           {facultyMaterials.slice(0, 4).map((repository) => (

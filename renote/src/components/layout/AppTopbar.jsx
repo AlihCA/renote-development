@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { UserButton, useUser } from "@clerk/clerk-react"
+import { UserButton } from "@clerk/clerk-react"
 import {
   Link,
   NavLink,
@@ -9,19 +9,16 @@ import {
 } from "react-router"
 import {
   Bell,
-  BookOpen,
   Circle,
-  LayoutDashboard,
   Menu,
   Moon,
   Search,
   Sun,
-  Archive,
-  User,
 } from "lucide-react"
 
 import renoteLogo from "@/assets/brand/renote-logo.png"
 import { renoteUserButtonAppearance } from "@/components/auth/clerkAppearance"
+import { appNavIcons } from "@/components/layout/appNavIcons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -38,17 +35,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { appNavItems } from "@/data/navigation"
+import { appSearchDestinations, getAppNavSections } from "@/data/navigation"
+import useApplicationUser from "@/hooks/useApplicationUser"
 import useTheme from "@/hooks/useTheme"
+import { getRoleLabel } from "@/lib/roles"
 import { cn } from "@/lib/utils"
-
-const mobileNavIcons = {
-  "Archive / Trash": Archive,
-  Home: LayoutDashboard,
-  Materials: BookOpen,
-  Notifications: Bell,
-  Profile: User,
-}
 
 function isActivePath(pathname, href) {
   const currentPath = pathname.replace(/\/+$/, "")
@@ -70,17 +61,22 @@ function AppTopbar() {
   const [localSearch, setLocalSearch] = useState("")
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
-  const { user } = useUser()
+  const { appUser } = useApplicationUser()
+  const appNavSections = getAppNavSections(appUser?.role)
+  const appNavItems = appNavSections.flatMap((section) => section.items)
+  const workspaceLabel = appNavSections[0]?.title ?? "Workspace"
+  const searchDestination = appSearchDestinations[appUser?.role]
+  const showsNotifications = appNavItems.some((item) => item.id === "notifications")
   const isDark = theme === "dark"
-  const isMaterialsPage = location.pathname === "/app/my-repositories"
-  const exploreSearchQuery = searchParams.get("q") ?? ""
-  const searchValue = isMaterialsPage ? exploreSearchQuery : localSearch
-  const displayName = user?.firstName ?? user?.fullName ?? "ReNote User"
+  const isSearchDestination = location.pathname === searchDestination
+  const searchQuery = searchParams.get("q") ?? ""
+  const searchValue = isSearchDestination ? searchQuery : localSearch
+  const displayName = appUser?.displayName ?? "ReNote User"
 
   function handleSearchChange(event) {
     const value = event.target.value
 
-    if (!isMaterialsPage) {
+    if (!isSearchDestination) {
       setLocalSearch(value)
       return
     }
@@ -98,16 +94,17 @@ function AppTopbar() {
 
   function handleSearchSubmit(event) {
     event.preventDefault()
+    if (!searchDestination) return
 
     const query = searchValue.trim()
 
     if (!query) {
       setLocalSearch("")
-      navigate("/app/my-repositories")
+      navigate(searchDestination)
       return
     }
 
-    navigate(`/app/my-repositories?q=${encodeURIComponent(query)}`)
+    navigate(`${searchDestination}?q=${encodeURIComponent(query)}`)
   }
 
   return (
@@ -138,12 +135,12 @@ function AppTopbar() {
               </span>
               <span className="text-primary">ReNote</span>
             </SheetTitle>
-            <SheetDescription>Workspace navigation</SheetDescription>
+            <SheetDescription>{workspaceLabel} navigation</SheetDescription>
           </SheetHeader>
 
           <nav className="flex min-h-0 flex-col gap-1 overflow-y-auto px-4 py-5">
             {appNavItems.map((item) => {
-              const Icon = mobileNavIcons[item.label] ?? Circle
+              const Icon = appNavIcons[item.id] ?? Circle
               const isActive = isActiveRoute(location.pathname, item)
 
               return (
@@ -169,27 +166,29 @@ function AppTopbar() {
 
       <div className="min-w-0">
         <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-          Workspace
+          {workspaceLabel}
         </p>
         <h1 className="truncate text-lg font-semibold leading-tight tracking-tight text-primary">ReNote</h1>
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <form
-          className="hidden w-[min(28vw,420px)] lg:block"
-          onSubmit={handleSearchSubmit}
-        >
-          <div className="renote-input-shell">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="border-0 bg-transparent pl-9 shadow-none focus-visible:border-0 focus-visible:ring-0"
-              onChange={handleSearchChange}
-              placeholder="Search materials"
-              type="search"
-              value={searchValue}
-            />
-          </div>
-        </form>
+        {searchDestination ? (
+          <form
+            className="hidden w-[min(28vw,420px)] lg:block"
+            onSubmit={handleSearchSubmit}
+          >
+            <div className="renote-input-shell">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="border-0 bg-transparent pl-9 shadow-none focus-visible:border-0 focus-visible:ring-0"
+                onChange={handleSearchChange}
+                placeholder="Search course materials"
+                type="search"
+                value={searchValue}
+              />
+            </div>
+          </form>
+        ) : null}
 
         <div className="flex items-center gap-2">
           <Button
@@ -203,27 +202,31 @@ function AppTopbar() {
             {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
           </Button>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                asChild
-                aria-label="Open notifications"
-                className="relative text-muted-foreground hover:text-foreground"
-                size="icon"
-                variant="ghost"
-              >
-                <Link to="/app/notifications">
-                  <Bell className="size-5" />
-                  <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-primary ring-2 ring-background" />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Notifications</TooltipContent>
-          </Tooltip>
+          {showsNotifications ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  asChild
+                  aria-label="Open notifications"
+                  className="relative text-muted-foreground hover:text-foreground"
+                  size="icon"
+                  variant="ghost"
+                >
+                  <Link to="/app/notifications">
+                    <Bell className="size-5" />
+                    <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-primary ring-2 ring-background" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Notifications</TooltipContent>
+            </Tooltip>
+          ) : null}
 
           <div className="hidden max-w-36 text-right xl:block">
             <p className="truncate text-sm font-medium">{displayName}</p>
-            <p className="text-xs text-muted-foreground">Signed in</p>
+            <p className="text-xs text-muted-foreground">
+              {getRoleLabel(appUser?.role)} preview
+            </p>
           </div>
           <UserButton
             afterSignOutUrl="/"

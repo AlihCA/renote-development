@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { useClerk, useUser } from "@clerk/clerk-react"
+import { useClerk } from "@clerk/clerk-react"
+import { Link } from "react-router"
 import {
   BookOpen,
   CalendarDays,
@@ -19,27 +20,22 @@ import PageShell from "@/components/common/PageShell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { mockUsers } from "@/data"
+import useApplicationUser from "@/hooks/useApplicationUser"
+import { APP_ROLES, getRoleLabel } from "@/lib/roles"
 import { cn } from "@/lib/utils"
 
-const currentUserId = "user-student-mia"
-
 const prototypeProfile = {
-  bio: "Interested in capstone documentation, academic knowledge sharing, and practical security review materials.",
-  email: "abinalalihsahcanda@gmail.com",
-  joinedLabel: "Prototype account since June 2026",
-  username: "Alih.CA",
+  bio: "",
+  joinedLabel: "Prototype account",
 }
 
 const roleDescriptions = {
-  faculty:
+  [APP_ROLES.FACULTY]:
     "Faculty course management and publishing controls are planned for a later step.",
-  student:
+  [APP_ROLES.STUDENT]:
     "Students will access materials made available to their courses.",
-}
-
-function formatRole(role) {
-  return role ? role.charAt(0).toUpperCase() + role.slice(1) : "Student"
+  [APP_ROLES.ADMIN]:
+    "Admin user and content management controls are planned for a later step.",
 }
 
 function getInitials(value) {
@@ -107,7 +103,7 @@ function ProfileSummaryCard({ profile, user }) {
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge className="rounded-lg bg-primary/10 text-primary" variant="secondary">
-              {formatRole(user.role)}
+              {getRoleLabel(user.role)}
             </Badge>
           </div>
         </div>
@@ -119,37 +115,34 @@ function ProfileSummaryCard({ profile, user }) {
 
 function ProfilePage() {
   const { signOut } = useClerk()
-  const { isLoaded, user: clerkUser } = useUser()
-  const user =
-    mockUsers.find((item) => item.id === currentUserId) ?? mockUsers[0]
+  const { appUser } = useApplicationUser()
   const [profile, setProfile] = useState({
     bio: prototypeProfile.bio,
-    course: user.course ?? "BS Information Technology",
-    displayName: user.name,
-    email: prototypeProfile.email,
+    course: "",
+    displayName: appUser?.displayName ?? "",
+    email: appUser?.email ?? "",
     joinedLabel: prototypeProfile.joinedLabel,
-    username: prototypeProfile.username,
+    username: appUser?.username ?? "",
   })
-  const [hasSyncedClerkProfile, setHasSyncedClerkProfile] = useState(false)
+  const [syncedUserId, setSyncedUserId] = useState(appUser?.id ?? null)
   const profileUser = {
-    ...user,
+    ...appUser,
     avatarInitials: getInitials(profile.displayName),
   }
 
   useEffect(() => {
-    if (!isLoaded || !clerkUser || hasSyncedClerkProfile) {
+    if (!appUser || syncedUserId === appUser.id) {
       return
     }
 
     setProfile((currentProfile) => ({
       ...currentProfile,
-      displayName: clerkUser.fullName ?? currentProfile.displayName,
-      email:
-        clerkUser.primaryEmailAddress?.emailAddress ?? currentProfile.email,
-      username: clerkUser.username ?? currentProfile.username,
+      displayName: appUser.displayName,
+      email: appUser.email,
+      username: appUser.username,
     }))
-    setHasSyncedClerkProfile(true)
-  }, [clerkUser, hasSyncedClerkProfile, isLoaded])
+    setSyncedUserId(appUser.id)
+  }, [appUser, syncedUserId])
 
   function updateProfile(key, value) {
     setProfile((currentProfile) => ({
@@ -170,9 +163,9 @@ function ProfilePage() {
   return (
     <PageShell className="space-y-7">
       <PageHeader
-        description="Review your prototype account details."
+        description="Review your account details and prototype preferences."
         icon={UserRound}
-        title="Profile"
+        title="Settings"
       />
 
       <div className="grid gap-6 xl:grid-cols-[24rem_minmax(0,1fr)]">
@@ -183,15 +176,18 @@ function ProfilePage() {
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 <Badge className="rounded-lg bg-primary/10 text-primary" variant="secondary">
-                  Current role: {formatRole(user.role)}
+                  Current role: {getRoleLabel(appUser?.role)}
                 </Badge>
               </div>
               <p className="text-sm leading-6 text-muted-foreground">
-                {roleDescriptions[user.role] ?? roleDescriptions.student}
+                {roleDescriptions[appUser?.role] ?? roleDescriptions[APP_ROLES.STUDENT]}
               </p>
-              <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 text-sm leading-6 text-muted-foreground dark:border-primary/20 dark:bg-primary/5">
-                This mock profile does not assign or verify a production role.
+              <div className="rounded-xl border border-primary/20 bg-accent/60 p-4 text-sm leading-6 text-muted-foreground dark:bg-primary/5">
+                This role is saved only in your browser for the prototype. It does not grant production access.
               </div>
+              <Button asChild size="sm" variant="ghost">
+                <Link to="/role-selection">Switch demo role</Link>
+              </Button>
             </div>
           </SectionCard>
 

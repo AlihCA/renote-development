@@ -57,7 +57,7 @@ function getSummarySource(summary) {
     fileName: file?.name ?? summary.fileName ?? "Unknown source",
     repository,
     repositoryTitle:
-      repository?.title ?? summary.repositoryTitle ?? "Repository source unavailable",
+      repository?.title ?? summary.repositoryTitle ?? "Course source unavailable",
   }
 }
 
@@ -303,7 +303,7 @@ function SourceDetails({ source, summary }) {
 
       <dl className="space-y-3">
         <DetailRow label="Source file" value={source.fileName} />
-        <DetailRow label="Repository" value={source.repositoryTitle} />
+        <DetailRow label="Course" value={source.repositoryTitle} />
         <DetailRow
           label="Type"
           value={
@@ -340,7 +340,7 @@ function SummaryDetailsPage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/my-repositories">Back to Materials</Link>
+              <Link to="/app/courses">Back to My Courses</Link>
             </Button>
           }
           description="This prototype summary could not be found."
@@ -357,9 +357,9 @@ function SummaryDetailsPage() {
   return (
     <PageShell className="space-y-7">
       <Button asChild className="w-fit" variant="ghost">
-        <Link to={source.file ? `/app/files/${source.file.id}` : "/app/my-repositories"}>
+        <Link to={source.file ? `/app/files/${source.file.id}` : "/app/courses"}>
           <ArrowLeft className="size-4" />
-          Back to Materials
+          Back to My Courses
         </Link>
       </Button>
 

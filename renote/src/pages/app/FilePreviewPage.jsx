@@ -47,6 +47,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { mockFiles, mockFolders, mockRepositories, mockSummaries } from "@/data"
+import { APP_ROLES } from "@/lib/roles"
 import { cn } from "@/lib/utils"
 
 const summaryTypes = ["Quick", "Detailed", "Key Points", "Study Guide"]
@@ -512,7 +513,7 @@ function buildCitationMetadata(file, repository) {
       repository?.ownerName ??
       "College of Computing Studies",
     repositoryTitle:
-      citation.repositoryTitle ?? repository?.title ?? "ReNote Repository",
+      citation.repositoryTitle ?? repository?.title ?? "ReNote Course",
     sourceType: citation.sourceType ?? getFileTypeLabel(file),
     title: citation.title ?? stripExtension(file.name),
     url: citation.url ?? buildSourceUrl(file),
@@ -591,8 +592,8 @@ function FileBreadcrumb({ file, folder, repository }) {
       aria-label="File location"
       className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
     >
-      <Link className="transition hover:text-primary" to="/app/my-repositories">
-        Materials
+      <Link className="transition hover:text-primary" to="/app/courses">
+        My Courses
       </Link>
       <span>/</span>
       <Link
@@ -1436,7 +1437,7 @@ function DetailsPanel({ file, folder, repository }) {
 function ActivityPanel({ file, summary }) {
   const activities = [
     {
-      detail: `${file.name} was added to the repository workspace.`,
+      detail: `${file.name} was added to the course space.`,
       icon: FileQuestion,
       title: "Uploaded file",
       when: file.uploadedAt,
@@ -1462,7 +1463,7 @@ function ActivityPanel({ file, summary }) {
       when: file.updatedAt ?? file.uploadedAt,
     },
     {
-      detail: "Academic tags were associated through the repository metadata.",
+      detail: "Academic tags were associated with the course materials.",
       icon: Tag,
       title: "Added tag",
       when: file.updatedAt ?? file.uploadedAt,
@@ -1543,7 +1544,7 @@ function FilePreviewPage() {
     ? mockRepositories.find(
         (item) =>
           item.id === file.repositoryId &&
-          item.ownerRole === "faculty" &&
+          item.ownerRole === APP_ROLES.FACULTY &&
           item.status === "active"
       )
     : null
@@ -1558,7 +1559,7 @@ function FilePreviewPage() {
   const previewPage = clampPage(currentPage, totalPages)
   const backToWorkspaceHref = repository?.id
     ? `/app/workspace/${repository.id}`
-    : "/app/my-repositories"
+    : "/app/courses"
 
   useEffect(() => {
     setCurrentPage(1)
@@ -1574,7 +1575,7 @@ function FilePreviewPage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/my-repositories">Back to Materials</Link>
+              <Link to="/app/courses">Back to My Courses</Link>
             </Button>
           }
           description="This prototype file could not be found."

@@ -18,8 +18,8 @@ function RepositoryHeader({ repository }) {
         aria-label="Material location"
         className="flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground"
       >
-        <Link className="transition hover:text-primary" to="/app/my-repositories">
-          Materials
+        <Link className="transition hover:text-primary" to="/app/courses">
+          My Courses
         </Link>
         <span>/</span>
         <span className="truncate text-foreground">{repository.title}</span>
