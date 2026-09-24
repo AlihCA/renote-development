@@ -13,11 +13,11 @@ function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b pb-7 sm:flex-row sm:items-end sm:justify-between",
+        "flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6",
         className
       )}
     >
-      <div className="max-w-3xl space-y-3">
+      <div className="max-w-3xl space-y-2.5">
         {eyebrow ? (
           <Badge className="w-fit" variant="secondary">
             {eyebrow}
@@ -30,7 +30,7 @@ function PageHeader({
             </span>
           ) : null}
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+            <h1 className="text-2xl font-semibold tracking-tight text-balance sm:text-[1.875rem]">
               {title}
             </h1>
             {description ? (

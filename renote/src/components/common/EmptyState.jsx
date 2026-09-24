@@ -13,7 +13,7 @@ function EmptyState({
   return (
     <div
       className={cn(
-        "flex min-h-64 flex-col items-center justify-center rounded-3xl border border-dashed bg-card/75 px-6 py-10 text-center shadow-sm",
+        "flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed bg-card px-6 py-10 text-center",
         className
       )}
     >

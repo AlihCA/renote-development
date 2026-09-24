@@ -10,7 +10,7 @@ function PageShell({ children, className, size = "default" }) {
   return (
     <section
       className={cn(
-        "renote-container py-8 sm:py-10",
+        "renote-container py-6 sm:py-8 lg:py-9",
         widths[size] ?? widths.default,
         className
       )}

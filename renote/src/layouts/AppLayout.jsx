@@ -9,7 +9,7 @@ function AppLayout() {
       <AppSidebar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <AppTopbar />
-        <main className="min-h-0 flex-1 overflow-y-auto bg-muted/30">
+        <main className="min-h-0 flex-1 overflow-y-auto bg-background">
           <Outlet />
         </main>
       </div>

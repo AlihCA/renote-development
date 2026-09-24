@@ -9,6 +9,7 @@ import {
 } from "react-router"
 import { Menu, Moon, Search, Sun } from "lucide-react"
 
+import renoteLogo from "@/assets/brand/renote-logo.png"
 import { renoteUserButtonAppearance } from "@/components/auth/clerkAppearance"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -85,8 +86,12 @@ function PublicNavbar() {
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
       <div className="renote-container flex min-h-16 items-center gap-4">
         <Link className="mr-2 flex items-center gap-2 font-semibold" to="/">
-          <span className="grid size-9 place-items-center rounded-2xl bg-primary text-primary-foreground">
-            R
+          <span className="flex size-9 shrink-0 items-center justify-center">
+            <img
+              alt="ReNote logo"
+              className="size-9 object-contain"
+              src={renoteLogo}
+            />
           </span>
           <span>ReNote</span>
         </Link>
@@ -166,8 +171,12 @@ function PublicNavbar() {
             >
               <SheetHeader className="border-b px-5 py-5 text-left">
                 <SheetTitle className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-2xl bg-primary text-primary-foreground">
-                    R
+                  <span className="flex size-10 shrink-0 items-center justify-center">
+                    <img
+                      alt="ReNote logo"
+                      className="size-9 object-contain"
+                      src={renoteLogo}
+                    />
                   </span>
                   ReNote
                 </SheetTitle>

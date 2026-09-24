@@ -385,17 +385,6 @@ function AccessRequestsPage() {
   return (
     <PageShell className="space-y-7">
       <PageHeader
-        actions={
-          <Button
-            onClick={() =>
-              toast("Access request creation will be connected during backend integration.")
-            }
-            type="button"
-          >
-            <Plus className="size-4" />
-            Request Access
-          </Button>
-        }
         description="Review and manage requests to access restricted or private repositories."
         title="Access Requests"
       />

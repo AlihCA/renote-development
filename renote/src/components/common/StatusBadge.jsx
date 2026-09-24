@@ -9,13 +9,15 @@ const statusStyles = {
   archived:
     "border-border/80 bg-muted text-muted-foreground dark:bg-muted/60",
   destructive:
-    "border-destructive/20 bg-destructive/10 text-destructive",
+    "border-destructive/20 bg-destructive/10 text-destructive dark:text-red-300",
   draft:
-    "border-primary/15 bg-primary/10 text-primary dark:border-primary/25",
+    "border-border bg-muted text-muted-foreground",
   muted: "border-border/80 bg-muted text-muted-foreground dark:bg-muted/60",
   pending:
     "border-amber-200/90 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300",
-  rejected: "border-destructive/20 bg-destructive/10 text-destructive",
+  published:
+    "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+  rejected: "border-destructive/20 bg-destructive/10 text-destructive dark:text-red-300",
   success:
     "border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
   warning:

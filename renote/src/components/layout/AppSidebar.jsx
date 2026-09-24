@@ -20,6 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import renoteLogo from "@/assets/brand/renote-logo.png"
 import { appNavSections } from "@/data/navigation"
 import { cn } from "@/lib/utils"
 
@@ -69,8 +70,8 @@ function AppSidebar() {
   return (
     <aside
       className={cn(
-        "sidebar-gradient relative hidden h-svh shrink-0 overflow-hidden border-r border-[#E9B8F2] text-[#32103F] transition-[width] duration-300 ease-out dark:border-[#5D2B74] dark:text-white lg:flex",
-        isCollapsed ? "w-[4.75rem]" : "w-[17rem]"
+        "sidebar-gradient relative hidden h-svh shrink-0 overflow-hidden border-r border-sidebar-border text-sidebar-foreground transition-[width] duration-300 ease-out lg:flex",
+        isCollapsed ? "w-[4.75rem]" : "w-[16.5rem]"
       )}
     >
       <div
@@ -85,13 +86,17 @@ function AppSidebar() {
             isCollapsed ? "flex-col gap-3" : "gap-3"
           )}
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-2xl border border-[#E9B8F2] bg-primary font-semibold text-primary-foreground shadow-sm shadow-fuchsia-200/60 dark:border-primary/40 dark:bg-primary dark:shadow-none">
-            R
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-sidebar-accent">
+            <img
+              alt="ReNote logo"
+              className="size-9 object-contain"
+              src={renoteLogo}
+            />
           </span>
           {!isCollapsed ? (
             <div className="min-w-0">
-              <p className="font-semibold leading-none">ReNote</p>
-              <p className="mt-1 truncate text-sm text-[#6F3A7D] dark:text-[#D8C7E3]">
+              <p className="font-semibold leading-none tracking-tight text-primary">ReNote</p>
+              <p className="mt-1 truncate text-xs text-muted-foreground">
                 Workspace
               </p>
             </div>
@@ -100,7 +105,7 @@ function AppSidebar() {
             aria-expanded={!isCollapsed}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             className={cn(
-              "grid shrink-0 place-items-center rounded-xl border border-[#E9B8F2] bg-white/55 text-[#32103F] shadow-sm transition hover:border-[#E9B8F2] hover:bg-[#F8D7FF] hover:text-[#32103F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 dark:border-[#5D2B74] dark:bg-[#32103F] dark:text-[#F8EFFC] dark:shadow-none dark:hover:border-primary/60 dark:hover:bg-[#48146E] dark:hover:text-white dark:focus-visible:ring-primary/45",
+              "grid shrink-0 place-items-center rounded-lg border border-sidebar-border bg-card text-muted-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/40",
               isCollapsed ? "size-10" : "size-9",
               !isCollapsed && "ml-auto"
             )}
@@ -130,12 +135,12 @@ function AppSidebar() {
                 sectionIndex > 0 &&
                   (isCollapsed
                     ? "pt-1.5"
-                    : "border-t border-[#E9B8F2]/45 pt-2.5 dark:border-[#5D2B74]/45")
+                    : "border-t border-sidebar-border pt-2.5")
               )}
               key={section.title}
             >
               {!isCollapsed ? (
-                <p className="px-3 pb-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#8A5798] dark:text-[#CDB4DC]">
+                <p className="px-3 pb-1 text-[0.67rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   {section.title}
                 </p>
               ) : null}
@@ -150,10 +155,10 @@ function AppSidebar() {
                       <NavLink
                         aria-label={item.label}
                         className={cn(
-                          "mx-auto flex h-11 w-11 items-center justify-center rounded-[14px] border border-transparent p-0 shadow-none outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                          "relative mx-auto flex h-11 w-11 items-center justify-center rounded-lg border border-transparent p-0 outline-none transition focus-visible:ring-2 focus-visible:ring-sidebar-ring/40",
                           isActive
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary"
+                            : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )}
                         to={item.href}
                       >
@@ -167,10 +172,10 @@ function AppSidebar() {
                 ) : (
                   <NavLink
                     className={cn(
-                      "flex h-10 w-full items-center justify-start gap-2.5 rounded-2xl border px-3 py-2 text-[0.82rem] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/35",
+                      "relative flex h-10 w-full items-center justify-start gap-2.5 rounded-lg border px-3 py-2 text-[0.82rem] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-sidebar-ring/40",
                       isActive
-                        ? "border-transparent bg-primary text-primary-foreground shadow-none"
-                        : "border-transparent text-[#5E216F] hover:bg-[#F8D7FF] hover:text-[#9F2CC2] dark:text-[#E7D3EF] dark:hover:bg-white/10 dark:hover:text-white"
+                        ? "border-transparent bg-sidebar-accent text-sidebar-accent-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary"
+                        : "border-transparent text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     )}
                     key={item.href}
                     to={item.href}

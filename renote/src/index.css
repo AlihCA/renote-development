@@ -8,89 +8,89 @@
 :root {
   color-scheme: light;
 
-  --background: oklch(0.99 0.012 300);
-  --foreground: oklch(0.18 0.03 293);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.03 293);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 293);
-  --primary: #b43bd1;
+  --background: #fafafa;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --primary: #800000;
   --primary-foreground: #ffffff;
-  --secondary: #f8d7ff;
-  --secondary-foreground: oklch(0.28 0.07 294);
-  --muted: oklch(0.96 0.018 292);
-  --muted-foreground: oklch(0.48 0.04 292);
-  --accent: #f8d7ff;
-  --accent-foreground: oklch(0.28 0.09 295);
-  --destructive: oklch(0.58 0.22 28);
-  --border: oklch(0.9 0.02 292);
-  --input: oklch(0.9 0.02 292);
-  --ring: #b43bd1;
-  --chart-1: oklch(0.65 0.2 296);
-  --chart-2: oklch(0.7 0.16 265);
-  --chart-3: oklch(0.74 0.14 325);
-  --chart-4: oklch(0.78 0.13 190);
-  --chart-5: oklch(0.82 0.13 85);
-  --radius: 0.875rem;
-  --sidebar: #ffcfee;
-  --sidebar-foreground: #32103f;
-  --sidebar-primary: #b43bd1;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #27272a;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #fff5f5;
+  --accent-foreground: #800000;
+  --destructive: #b42318;
+  --border: #e4e4e7;
+  --input: #d4d4d8;
+  --ring: #800000;
+  --chart-1: #800000;
+  --chart-2: #2563eb;
+  --chart-3: #15803d;
+  --chart-4: #d97706;
+  --chart-5: #7c3aed;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #27272a;
+  --sidebar-primary: #800000;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f8d7ff;
-  --sidebar-accent-foreground: #32103f;
-  --sidebar-border: #e9b8f2;
-  --sidebar-ring: #b43bd1;
+  --sidebar-accent: #fff5f5;
+  --sidebar-accent-foreground: #800000;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #800000;
 
-  --renote-purple-50: #fbf7ff;
-  --renote-purple-100: #f8d7ff;
-  --renote-purple-500: #b43bd1;
-  --renote-purple-700: #9f2cc2;
-  --renote-primary: #b43bd1;
-  --renote-primary-hover: #9f2cc2;
-  --renote-primary-dark: #8721a8;
-  --renote-primary-soft: #f8d7ff;
-  --renote-primary-soft-border: #e9b8f2;
-  --renote-accent-pink: #ec4899;
-  --renote-dark-accent: #b43bd1;
-  --renote-ink: #251b33;
-  --renote-soft-shadow: 0 16px 40px rgb(39 18 68 / 7%);
-  --renote-glow-shadow: 0 18px 44px rgb(180 59 209 / 10%);
+  --renote-primary: var(--primary);
+  --renote-primary-hover: #6b0000;
+  --renote-primary-dark: #520000;
+  --renote-primary-soft: #fff5f5;
+  --renote-primary-soft-border: #e8caca;
+  --renote-soft-shadow: 0 6px 24px rgb(24 24 27 / 5%);
+  --renote-glow-shadow: 0 10px 26px rgb(128 0 0 / 9%);
 }
 
 .dark {
   color-scheme: dark;
 
-  --background: oklch(0.16 0.035 292);
-  --foreground: oklch(0.94 0.015 300);
-  --card: oklch(0.2 0.045 292);
-  --card-foreground: oklch(0.94 0.015 300);
-  --popover: oklch(0.2 0.045 292);
-  --popover-foreground: oklch(0.94 0.015 300);
-  --primary: #b43bd1;
-  --primary-foreground: #ffffff;
-  --secondary: oklch(0.28 0.055 292);
-  --secondary-foreground: oklch(0.94 0.015 300);
-  --muted: oklch(0.28 0.045 292);
-  --muted-foreground: oklch(0.74 0.035 292);
-  --accent: oklch(0.32 0.08 298);
-  --accent-foreground: oklch(0.94 0.015 300);
-  --destructive: oklch(0.7 0.18 24);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: #b43bd1;
-  --chart-1: oklch(0.76 0.15 300);
-  --chart-2: oklch(0.72 0.14 260);
-  --chart-3: oklch(0.74 0.14 330);
-  --chart-4: oklch(0.76 0.12 190);
-  --chart-5: oklch(0.82 0.12 85);
-  --sidebar: #24102f;
-  --sidebar-foreground: oklch(0.98 0.01 300);
-  --sidebar-primary: #b43bd1;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #48146e;
-  --sidebar-accent-foreground: oklch(0.98 0.01 300);
-  --sidebar-border: oklch(1 0 0 / 14%);
-  --sidebar-ring: #b43bd1;
+  --background: #141417;
+  --foreground: #f4f4f5;
+  --card: #202024;
+  --card-foreground: #f4f4f5;
+  --popover: #242428;
+  --popover-foreground: #f4f4f5;
+  --primary: #c76767;
+  --primary-foreground: #18181b;
+  --secondary: #303035;
+  --secondary-foreground: #f4f4f5;
+  --muted: #2c2c31;
+  --muted-foreground: #a1a1aa;
+  --accent: #39282b;
+  --accent-foreground: #f8dddd;
+  --destructive: #c6372b;
+  --border: #3b3b40;
+  --input: #52525b;
+  --ring: #d97979;
+  --chart-1: #d97979;
+  --chart-2: #60a5fa;
+  --chart-3: #4ade80;
+  --chart-4: #fbbf24;
+  --chart-5: #a78bfa;
+  --sidebar: #1c1c20;
+  --sidebar-foreground: #e4e4e7;
+  --sidebar-primary: #c76767;
+  --sidebar-primary-foreground: #18181b;
+  --sidebar-accent: #39282b;
+  --sidebar-accent-foreground: #f8dddd;
+  --sidebar-border: #3b3b40;
+  --sidebar-ring: #d97979;
+
+  --renote-primary-hover: #d97979;
+  --renote-primary-dark: #702626;
+  --renote-primary-soft: #39282b;
+  --renote-primary-soft-border: #654044;
+  --renote-soft-shadow: 0 6px 24px rgb(0 0 0 / 14%);
+  --renote-glow-shadow: 0 10px 26px rgb(0 0 0 / 18%);
 }
 
 @theme inline {
@@ -114,6 +114,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-primary-soft: var(--renote-primary-soft);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -164,7 +165,7 @@
   }
 
   .renote-container {
-    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10;
   }
 
   .renote-section {
@@ -172,12 +173,12 @@
   }
 
   .renote-card {
-    @apply rounded-3xl border bg-card text-card-foreground shadow-sm transition-shadow;
+    @apply rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow;
     box-shadow: var(--renote-soft-shadow);
   }
 
   .renote-muted-card {
-    @apply rounded-3xl border bg-card/85 text-card-foreground shadow-sm transition-shadow;
+    @apply rounded-xl border bg-card/85 text-card-foreground shadow-sm transition-shadow;
     box-shadow: var(--renote-soft-shadow);
   }
 
@@ -201,73 +202,72 @@
   }
 
   .renote-icon-container-glow {
-    background: color-mix(in oklch, var(--renote-primary-soft), var(--renote-accent-pink) 8%);
+    background: var(--renote-primary-soft);
     border-color: color-mix(in oklch, var(--renote-primary-soft-border), var(--renote-primary) 18%);
     box-shadow:
-      0 10px 26px rgb(180 59 209 / 11%),
+      var(--renote-glow-shadow),
       inset 0 1px 0 rgb(255 255 255 / 74%);
   }
 
   .renote-input-shell {
-    @apply relative flex items-center rounded-2xl border bg-background/80 shadow-sm transition focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20;
+    @apply relative flex items-center rounded-lg border border-input bg-card shadow-sm transition focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20;
   }
 
   .renote-preview-tile {
-    @apply rounded-3xl border bg-card/80 p-5 shadow-sm;
+    @apply rounded-xl border bg-card/80 p-5 shadow-sm;
     box-shadow: var(--renote-soft-shadow);
   }
 
   .renote-gradient-button {
-    @apply text-white shadow-sm transition;
-    background-image: linear-gradient(135deg, #d85edb 0%, #b43bd1 52%, #8b5cf6 100%);
-    box-shadow: 0 14px 32px rgb(180 59 209 / 24%);
+    @apply text-primary-foreground shadow-sm transition;
+    background: var(--primary);
+    box-shadow: 0 8px 22px rgb(128 0 0 / 14%);
   }
 
   .renote-gradient-button:hover {
-    background-image: linear-gradient(135deg, #c34ad4 0%, #9f2cc2 52%, #7c3aed 100%);
-    box-shadow: 0 16px 38px rgb(180 59 209 / 30%);
-    filter: saturate(1.06) brightness(1.02);
+    background: var(--renote-primary-hover);
+    box-shadow: 0 10px 26px rgb(128 0 0 / 18%);
   }
 
   .hero-bg {
-    background-color: var(--renote-purple-50);
+    background-color: var(--renote-primary-soft);
     background-image:
-      linear-gradient(120deg, rgb(255 255 255 / 60%), rgb(242 232 255 / 0%)),
+      linear-gradient(120deg, rgb(255 255 255 / 60%), transparent),
       url("./assets/images/hero-light.png");
     background-position: center;
     background-size: cover;
   }
 
   .dark .hero-bg {
-    background-color: oklch(0.18 0.04 292);
+    background-color: var(--background);
     background-image:
-      linear-gradient(120deg, rgb(24 18 35 / 40%), rgb(65 39 110 / 0%)),
+      linear-gradient(120deg, rgb(20 20 23 / 55%), transparent),
       url("./assets/images/hero-dark.png");
   }
 
   .sidebar-gradient {
-    background:
-      radial-gradient(circle at 18% 10%, rgb(255 255 255 / 36%), transparent 30%),
-      radial-gradient(circle at 88% 28%, rgb(255 255 255 / 18%), transparent 26%),
-      linear-gradient(160deg, #ffcfee 0%, #e6a6e6 48%, #c36bd7 100%);
+    background: var(--sidebar);
   }
 
   .dark .sidebar-gradient {
-    background:
-      linear-gradient(160deg, #24102f 0%, #48146e 50%, #8740a3 100%);
+    background: var(--sidebar);
   }
 
   .dark .renote-icon-container {
-    background: #2d173a;
-    border-color: #5d2b74;
-    color: #e8b8f2;
+    background: var(--renote-primary-soft);
+    border-color: var(--renote-primary-soft-border);
+    color: var(--accent-foreground);
     box-shadow: none;
   }
 
   .dark .renote-icon-container-glow {
-    background: #3b1850;
-    border-color: #b43bd1;
-    color: #f1c7fb;
+    background: var(--renote-primary-soft);
+    border-color: var(--renote-primary-soft-border);
+    color: var(--accent-foreground);
     box-shadow: none;
   }
+}
+
+.dark .renote-gradient-button:hover {
+  color: var(--primary-foreground);
 }

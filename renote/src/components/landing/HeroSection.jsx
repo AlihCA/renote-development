@@ -22,7 +22,7 @@ function HeroSection() {
               ReNote
             </h1>
             <p className="max-w-2xl text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-              Organize academic resources without the overload.
+              Organize academic resources.
             </p>
             <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
               ReNote helps students and educators manage repositories, organize

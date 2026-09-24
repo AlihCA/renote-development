@@ -235,14 +235,6 @@ function NotificationCard({ notification, onToggleRead }) {
           >
             {notification.isRead ? "Mark unread" : "Mark read"}
           </Button>
-          {relatedUrl ? (
-            <Button asChild size="sm" variant="outline">
-              <Link to={relatedUrl}>
-                Open
-                <ArrowUpRight className="size-4" />
-              </Link>
-            </Button>
-          ) : null}
           <NotificationMoreMenu
             notification={notification}
             onToggleRead={onToggleRead}

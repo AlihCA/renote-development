@@ -1,6 +1,8 @@
 import { Link } from "react-router"
 import { ArrowLeft } from "lucide-react"
 
+import renoteLogo from "@/assets/brand/renote-logo.png"
+
 function AuthLayout({ children }) {
   return (
     <main className="hero-bg relative min-h-svh overflow-hidden">
@@ -20,8 +22,12 @@ function AuthLayout({ children }) {
             className="mx-auto flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-background/85 px-3 py-2 text-sm font-semibold text-foreground shadow-sm backdrop-blur transition hover:border-primary/35 hover:text-primary"
             to="/"
           >
-            <span className="grid size-8 place-items-center rounded-2xl bg-primary text-primary-foreground">
-              R
+            <span className="flex size-8 shrink-0 items-center justify-center">
+              <img
+                alt="ReNote logo"
+                className="size-8 object-contain"
+                src={renoteLogo}
+              />
             </span>
             ReNote
           </Link>
