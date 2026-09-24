@@ -5,17 +5,18 @@ import PageHeader from "@/components/common/PageHeader"
 import PageShell from "@/components/common/PageShell"
 import SectionCard from "@/components/common/SectionCard"
 import { Button } from "@/components/ui/button"
-import { mockFiles, mockRepositories } from "@/data"
-import { APP_ROLES } from "@/lib/roles"
+import { selectCourseResources, selectCoursesForUser } from "@/data/prototypeDomain"
+import useApplicationUser from "@/hooks/useApplicationUser"
+import usePrototypeData from "@/hooks/usePrototypeData"
 
 function DashboardPage() {
-  const facultyMaterials = mockRepositories.filter(
-    (repository) => repository.ownerRole === APP_ROLES.FACULTY && repository.status === "active"
+  const { appUser } = useApplicationUser()
+  const { state } = usePrototypeData()
+  const courses = selectCoursesForUser(state, appUser)
+  const resourceCount = courses.reduce(
+    (count, course) => count + selectCourseResources(state, course.id, appUser).length,
+    0
   )
-  const facultyRepositoryIds = new Set(facultyMaterials.map((repository) => repository.id))
-  const resourceCount = mockFiles.filter((file) =>
-    facultyRepositoryIds.has(file.repositoryId)
-  ).length
 
   return (
     <PageShell className="space-y-7">
@@ -25,18 +26,18 @@ function DashboardPage() {
             <Link to="/app/search"><Search className="size-4" />Search materials</Link>
           </Button>
         }
-        description="Find your course spaces and faculty-provided learning materials at PUP Parañaque. Course membership will be connected later."
+        description="Find materials in the courses you joined at PUP Parañaque. Enrollment-code joining arrives in the next step."
         title="Student Dashboard"
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <SectionCard icon={BookOpen} title="Sample courses">
-          <p className="text-2xl font-semibold">{facultyMaterials.length}</p>
-          <p className="mt-1 text-muted-foreground">Faculty course spaces in this prototype</p>
+        <SectionCard icon={BookOpen} title="Joined courses">
+          <p className="text-2xl font-semibold">{courses.length}</p>
+          <p className="mt-1 text-muted-foreground">From your prototype course memberships</p>
         </SectionCard>
         <SectionCard icon={FileText} title="Available resources">
           <p className="text-2xl font-semibold">{resourceCount}</p>
-          <p className="mt-1 text-muted-foreground">Files and links in these spaces</p>
+          <p className="mt-1 text-muted-foreground">Published files and links in joined courses</p>
         </SectionCard>
       </div>
 
@@ -49,21 +50,21 @@ function DashboardPage() {
             </Link>
           </Button>
         }
-        description="Browse sample materials organized by faculty."
+        description="Open a joined course to browse its topics and published resources."
         icon={BookOpen}
         title="Course materials"
       >
         <div className="grid gap-3 md:grid-cols-2">
-          {facultyMaterials.slice(0, 4).map((repository) => (
+          {courses.slice(0, 4).map((course) => (
             <Link
               className="rounded-lg border bg-card p-4 transition-colors hover:border-primary/30 hover:bg-accent"
-              key={repository.id}
-              to={`/app/workspace/${repository.id}`}
+              key={course.id}
+              to={`/app/workspace/${course.id}`}
             >
-              <p className="font-semibold">{repository.title}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{repository.subject}</p>
+              <p className="font-semibold">{course.title}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{course.courseCode} · {course.subject}</p>
               <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                {repository.description}
+                {course.description}
               </p>
             </Link>
           ))}
@@ -71,7 +72,7 @@ function DashboardPage() {
       </SectionCard>
 
       <p className="text-sm text-muted-foreground">
-        Course membership, publishing, and faculty editing are planned for a later step.
+        Membership and publication states are represented in this frontend prototype; joining and publishing controls come next.
       </p>
     </PageShell>
   )

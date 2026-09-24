@@ -37,7 +37,7 @@ function FacultyDashboardPage() {
               </Link>
             </Button>
           }
-          description="Browse the existing resource listing while faculty management is prepared."
+          description="Browse Draft and Published resources in courses you manage."
           icon={FileText}
           title="Materials"
         />
@@ -46,7 +46,7 @@ function FacultyDashboardPage() {
       <Button asChild className="w-fit text-muted-foreground" size="sm" variant="ghost">
         <Link to="/app/archive">
           <Archive className="size-4" />
-          Archive / Trash
+          Archive
         </Link>
       </Button>
     </PageShell>
