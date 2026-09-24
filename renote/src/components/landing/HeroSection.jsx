@@ -1,5 +1,5 @@
 import { Link } from "react-router"
-import { ArrowRight, Compass, Sparkles } from "lucide-react"
+import { ArrowRight, Sparkles } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ function HeroSection() {
             variant="outline"
           >
             <Sparkles className="size-3.5" />
-            Academic resource workspace
+            Faculty-managed course materials
           </Badge>
 
           <div className="space-y-4">
@@ -22,12 +22,11 @@ function HeroSection() {
               ReNote
             </h1>
             <p className="max-w-2xl text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-              Organize academic resources.
+              Course materials in one place.
             </p>
             <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              ReNote helps students and educators manage repositories, organize
-              learning materials, and review academic content with AI-assisted
-              summaries.
+              ReNote brings faculty-provided learning materials into a clear
+              workspace for students and educators at PUP Parañaque.
             </p>
           </div>
 
@@ -43,10 +42,7 @@ function HeroSection() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/explore-public">
-                <Compass className="size-4" />
-                Explore Public Resources
-              </Link>
+              <Link to="/sign-in">Sign In</Link>
             </Button>
           </div>
         </div>

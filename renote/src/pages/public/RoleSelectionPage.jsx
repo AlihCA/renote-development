@@ -2,8 +2,6 @@ import { Link } from "react-router"
 import {
   ArrowRight,
   BookOpen,
-  Building2,
-  Compass,
   GraduationCap,
   Home,
   Sparkles,
@@ -15,44 +13,24 @@ import { Button } from "@/components/ui/button"
 
 const roles = [
   {
-    buttonLabel: "Continue as Student",
+    buttonLabel: "Open student preview",
     description:
-      "Create repositories, organize class materials, browse resources, and review academic summaries.",
+      "Find faculty-provided course materials and review available resources.",
     href: "/app/dashboard",
     icon: GraduationCap,
-    identity: "Community contributor",
+    identity: "Learner",
     name: "Student",
-    note: "Student-created resources help classmates discover reviewers, notes, and shared learning materials.",
+    note: "Student access will follow course membership in the revised platform.",
   },
   {
-    buttonLabel: "Continue as Faculty",
+    buttonLabel: "Open faculty preview",
     description:
-      "Create repositories and share academic resources with stronger credibility through faculty trust labels.",
+      "Organize course materials for students in a faculty-managed workspace.",
     href: "/app/dashboard",
     icon: BookOpen,
-    identity: "Faculty trusted source",
+    identity: "Course manager",
     name: "Faculty",
-    note: "Faculty labels help users identify learning materials shared by verified academic contributors.",
-  },
-  {
-    buttonLabel: "Continue as Institution",
-    description:
-      "Publish official repositories and maintain trusted institutional academic materials.",
-    href: "/app/dashboard",
-    icon: Building2,
-    identity: "Official institutional source",
-    name: "Institution",
-    note: "Institution labels help highlight official resources, verified references, and school-published materials.",
-  },
-  {
-    buttonLabel: "Explore as Guest",
-    description:
-      "Explore public academic resources before creating an account.",
-    href: "/explore-public",
-    icon: Compass,
-    identity: "Public browsing only",
-    name: "Guest",
-    note: "Guests can browse public repositories, while creating, saving, and requesting access require signing in.",
+    note: "Faculty course management and publishing controls are planned for a later step.",
   },
 ]
 
@@ -117,20 +95,19 @@ function RoleSelectionPage() {
                 How would you like to continue?
               </h1>
               <p className="mx-auto max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                Select a role to preview how ReNote uses badges and trust labels to support different users 
-                in creating, browsing, and reviewing academic resources.
+                Preview the student and faculty directions for course materials.
               </p>
             </div>
 
             <p className="mx-auto max-w-xl rounded-2xl border border-primary/20 bg-[#FCF5FF] px-4 py-3 text-sm text-muted-foreground dark:bg-primary/5">
-              This is a prototype role preview. Roles are used to show trust labels and credibility levels. Full role verification will be connected during backend integration.
+              This page is a prototype preview. Choosing a card does not assign or verify a role.
             </p>
           </div>
         </PageShell>
       </section>
 
       <PageShell className="space-y-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2">
           {roles.map((role) => (
             <RoleCard key={role.name} role={role} />
           ))}
@@ -140,7 +117,7 @@ function RoleSelectionPage() {
           <div className="flex-1 space-y-1">
             <h2 className="font-semibold">Not sure where to start?</h2>
             <p className="text-sm text-muted-foreground">
-              You can return home or browse the public academic library first.
+              You can return to the landing page before opening the workspace.
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
@@ -149,9 +126,6 @@ function RoleSelectionPage() {
                 <Home className="size-4" />
                 Back to Home
               </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/explore-public">Explore Public Resources</Link>
             </Button>
           </div>
         </div>

@@ -9,7 +9,7 @@ function NotFoundPage() {
         <p className="text-sm font-medium text-primary">404</p>
         <h1 className="text-3xl font-semibold">Page not found</h1>
         <p className="text-muted-foreground">
-          This route is not part of the Phase 0 ReNote foundation.
+          This page is not part of the current ReNote prototype.
         </p>
         <Button asChild>
           <Link to="/">Go Home</Link>

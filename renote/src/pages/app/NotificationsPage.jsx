@@ -4,14 +4,10 @@ import {
   Archive,
   ArrowUpRight,
   Bell,
-  BookOpen,
   CheckCheck,
   FileQuestion,
-  FolderOpen,
-  KeyRound,
   MoreHorizontal,
   RotateCcw,
-  Sparkles,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -36,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { mockFiles, mockNotifications } from "@/data"
+import { mockFiles, mockNotifications, mockRepositories } from "@/data"
 import { cn } from "@/lib/utils"
 
 const initialFilters = {
@@ -47,11 +43,7 @@ const initialFilters = {
 const notificationTabs = [
   { label: "All", value: "all" },
   { label: "Unread", value: "unread" },
-  { label: "Access", value: "access" },
-  { label: "Repository", value: "repository" },
-  { label: "Summary", value: "summary" },
-  { label: "Collection", value: "collection" },
-  { label: "System", value: "system" },
+  { label: "Resources", value: "resource" },
 ]
 
 function formatDate(value) {
@@ -63,57 +55,29 @@ function formatDate(value) {
 }
 
 function getNotificationCategory(notification) {
-  const type = notification.type ?? ""
-
-  if (type.includes("access")) return "access"
-  if (type.includes("repository") || notification.relatedType === "repository") {
-    return "repository"
-  }
-  if (type.includes("summary") || notification.relatedType === "summary") {
-    return "summary"
-  }
-  if (type.includes("collection") || notification.relatedType === "collection") {
-    return "collection"
-  }
-
-  return "system"
+  return notification.relatedType === "file" ? "resource" : "system"
 }
 
 function getNotificationLink(notification) {
-  if (notification.relatedType === "repository") {
-    return `/app/repositories/${notification.relatedId}`
-  }
-
-  if (notification.relatedType === "summary") {
-    return `/app/summaries/${notification.relatedId}`
-  }
-
-  if (notification.relatedType === "collection") {
-    return `/app/collections/${notification.relatedId}`
-  }
-
   if (notification.relatedType === "file") {
     const file = mockFiles.find((item) => item.id === notification.relatedId)
-    return file ? `/app/files/${file.id}` : null
+    const repository = mockRepositories.find((item) => item.id === file?.repositoryId)
+    return file && repository?.ownerRole === "faculty" && repository.status === "active"
+      ? `/app/files/${file.id}`
+      : null
   }
 
   return null
 }
 
 function getCategoryLabel(category) {
-  if (category === "access") return "Access"
-  if (category === "repository") return "Repository"
-  if (category === "summary") return "Summary"
-  if (category === "collection") return "Collection"
+  if (category === "resource") return "Resource"
 
   return "System"
 }
 
 function getCategoryIcon(category) {
-  if (category === "access") return KeyRound
-  if (category === "repository") return BookOpen
-  if (category === "summary") return Sparkles
-  if (category === "collection") return FolderOpen
+  if (category === "resource") return FileQuestion
 
   return Bell
 }
@@ -227,6 +191,14 @@ function NotificationCard({ notification, onToggleRead }) {
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+          {relatedUrl ? (
+            <Button asChild size="sm" variant="outline">
+              <Link to={relatedUrl}>
+                Open resource
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </Button>
+          ) : null}
           <Button
             onClick={() => onToggleRead(notification.id)}
             size="sm"
@@ -247,7 +219,9 @@ function NotificationCard({ notification, onToggleRead }) {
 
 function NotificationsPage() {
   const [filters, setFilters] = useState(initialFilters)
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const [notifications, setNotifications] = useState(() =>
+    mockNotifications.filter((notification) => Boolean(getNotificationLink(notification)))
+  )
 
   const filteredNotifications = useMemo(() => {
     const filtered = notifications.filter((notification) => {
@@ -333,7 +307,7 @@ function NotificationsPage() {
             </DropdownMenu>
           </>
         }
-        description="Track repository updates, access activity, AI summary events, and study board changes."
+        description="Review resource notifications in the prototype."
         title="Notifications"
       />
 
@@ -400,7 +374,7 @@ function NotificationsPage() {
               Clear filters
             </Button>
           }
-          description="Repository updates, access activity, and AI summary events will appear here."
+          description="Resource notifications will appear here when available."
           icon={FileQuestion}
           title="No notifications found"
         />

@@ -1,12 +1,9 @@
 import {
   Bell,
   Bot,
-  Clock3,
-  FolderOpen,
-  KeyRound,
-  Layers,
+  BookOpen,
+  FileText,
   LayoutDashboard,
-  ShieldCheck,
 } from "lucide-react"
 
 import PageShell from "@/components/common/PageShell"
@@ -15,43 +12,28 @@ import SectionCard from "@/components/common/SectionCard"
 const features = [
   {
     icon: LayoutDashboard,
-    title: "Repository Management",
-    description: "Create academic spaces for course modules, projects, and shared materials.",
+    title: "Academic Workspace",
+    description: "A focused place to find materials for teaching and learning.",
   },
   {
-    icon: FolderOpen,
-    title: "Nested Folders",
-    description: "Arrange readings, files, and links into a structure that stays easy to scan.",
+    icon: BookOpen,
+    title: "Faculty Materials",
+    description: "Course resources are organized around faculty-provided content.",
+  },
+  {
+    icon: FileText,
+    title: "Resource Preview",
+    description: "Open files and links from a clear materials workspace.",
   },
   {
     icon: Bot,
-    title: "AI Summary Panel",
-    description: "Open a focused review area for summaries, key points, and study prompts.",
-  },
-  {
-    icon: Clock3,
-    title: "Summary History",
-    description: "Return to previous AI-assisted reviews without losing learning context.",
-  },
-  {
-    icon: Layers,
-    title: "Collections / Study Boards",
-    description: "Build selected sets of resources for classes, reports, or exam review.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Trust Labels",
-    description: "Mark resources by source quality, visibility, and review status.",
-  },
-  {
-    icon: KeyRound,
-    title: "Access Requests",
-    description: "Keep private resources controlled while still supporting collaboration.",
+    title: "AI Assistant Preview",
+    description: "Explore the interface planned for questions and summaries.",
   },
   {
     icon: Bell,
     title: "Notifications",
-    description: "Track resource updates, access activity, and review events in one place.",
+    description: "See updates in one place as the course platform develops.",
   },
 ]
 
@@ -65,7 +47,7 @@ function KeyFeaturesSection() {
               Key features
             </p>
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Built to organize, review, and share academic resources.
+              A focused foundation for course materials.
             </h2>
           </div>
         </div>

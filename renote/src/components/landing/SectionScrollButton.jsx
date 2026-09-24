@@ -9,21 +9,11 @@ const sectionFlow = [
   },
   {
     id: "problem",
-    label: "See the solution",
-    nextId: "solution",
-  },
-  {
-    id: "solution",
     label: "Explore features",
     nextId: "features",
   },
   {
     id: "features",
-    label: "View preview",
-    nextId: "preview",
-  },
-  {
-    id: "preview",
     label: "Get started",
     nextId: "cta",
   },

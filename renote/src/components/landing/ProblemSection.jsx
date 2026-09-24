@@ -18,9 +18,9 @@ const problems = [
   },
   {
     icon: ShieldAlert,
-    title: "Unreliable learning resources",
+    title: "Unclear course sources",
     description:
-      "Students need clearer signals for source quality, access level, and whether a resource is ready to use.",
+      "Students need a clear place to find the materials their faculty provides for class.",
   },
 ]
 
@@ -37,7 +37,7 @@ function ProblemSection() {
           </h2>
           <p className="text-muted-foreground">
             ReNote starts from the everyday friction of school work: files are
-            scattered, resources are dense, and trust is not always obvious.
+            scattered, resources are dense, and course materials are hard to find.
           </p>
         </div>
 

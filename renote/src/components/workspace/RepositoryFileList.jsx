@@ -1,38 +1,20 @@
-import { useState } from "react"
 import { Link } from "react-router"
 import {
   Eye,
   FileText,
   Folder,
   FolderOpen,
-  FolderPlus,
-  MoreHorizontal,
-  Plus,
   Sparkles,
-  Trash2,
-  Upload,
 } from "lucide-react"
 import { toast } from "sonner"
 
 import EmptyState from "@/components/common/EmptyState"
 import StatusBadge from "@/components/common/StatusBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
-import NewFolderDialog from "@/components/workspace/NewFolderDialog"
-import UploadFileDialog from "@/components/workspace/UploadFileDialog"
 import WorkspaceToolbar from "@/components/workspace/WorkspaceToolbar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-
-const MAX_FOLDER_DEPTH = 5
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("en", {
@@ -65,7 +47,7 @@ function FolderStrip({ files, folders, onSelectFolder, selectedFolderId }) {
       name: "All Files",
       type: "all",
     },
-    ...folders.map((folder) => ({
+    ...folders.filter((folder) => folder.depth === 0).map((folder) => ({
       ...folder,
       count: getFolderFileCount(files, folder.id),
       type: "folder",
@@ -99,7 +81,6 @@ function FolderStrip({ files, folders, onSelectFolder, selectedFolderId }) {
             </span>
             <span className="min-w-0 flex-1">
               <span className="line-clamp-1 text-sm font-semibold">
-                {"- ".repeat(folder.depth)}
                 {folder.name}
               </span>
               <span className="mt-0.5 block text-xs text-muted-foreground">
@@ -132,40 +113,6 @@ function FileActions({ file }) {
       >
         <Sparkles className="size-4" />
       </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-label="More file actions" size="icon-sm" variant="ghost">
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>File actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onSelect={() =>
-              toast("Rename will be connected during backend integration.")
-            }
-          >
-            Rename
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() =>
-              toast("Move file will be connected during backend integration.")
-            }
-          >
-            Move to folder
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onSelect={() =>
-              toast("Delete will be connected during backend integration.")
-            }
-            variant="destructive"
-          >
-            <Trash2 className="size-4" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   )
 }
@@ -269,12 +216,9 @@ function RepositoryFileList({
   allFiles,
   files,
   folders,
-  onCreateFolder,
   onOpenAi,
   onSelectFolder,
-  onUploadFile,
   query,
-  selectedFolderDepth = 0,
   selectedFolderId = "all",
   selectedFolderName,
   setQuery,
@@ -283,14 +227,8 @@ function RepositoryFileList({
   sortBy,
   viewMode = "list",
 }) {
-  const [isUploadOpen, setIsUploadOpen] = useState(false)
-  const [isNewFolderOpen, setIsNewFolderOpen] = useState(false)
   const repositoryFiles = allFiles ?? files
-  const defaultFolderId = selectedFolderId === "all" ? "none" : selectedFolderId
-  const defaultParentId = selectedFolderId === "all" ? "root" : selectedFolderId
-  const canCreateFolder =
-    selectedFolderId === "all" || selectedFolderDepth < MAX_FOLDER_DEPTH - 1
-  const folderCount = folders.length
+  const folderCount = folders.filter((folder) => folder.depth === 0).length
 
   return (
     <section className="renote-card min-w-0 overflow-hidden">
@@ -304,62 +242,6 @@ function RepositoryFileList({
               {folderCount} folder{folderCount === 1 ? "" : "s"}{" \u00b7 "}
               {files.length} file{files.length === 1 ? "" : "s"} shown
             </p>
-          </div>
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" type="button">
-                  <Plus className="size-4" />
-                  Add
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-56">
-                <DropdownMenuLabel>
-                  Add to {selectedFolderName ?? "All Files"}
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  onSelect={(event) => {
-                    event.preventDefault()
-                    setIsUploadOpen(true)
-                  }}
-                >
-                  <Upload className="size-4" />
-                  Upload File
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  disabled={!canCreateFolder}
-                  onSelect={(event) => {
-                    event.preventDefault()
-                    setIsNewFolderOpen(true)
-                  }}
-                >
-                  <FolderPlus className="size-4" />
-                  New Folder
-                </DropdownMenuItem>
-                {!canCreateFolder ? (
-                  <DropdownMenuLabel className="py-1.5 text-[11px] leading-4">
-                    Maximum folder depth has been reached.
-                  </DropdownMenuLabel>
-                ) : null}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <UploadFileDialog
-              defaultFolderId={defaultFolderId}
-              folders={folders}
-              onOpenChange={setIsUploadOpen}
-              onUploadFile={onUploadFile}
-              open={isUploadOpen}
-            />
-            <NewFolderDialog
-              defaultParentId={defaultParentId}
-              folders={folders}
-              onCreateFolder={onCreateFolder}
-              onOpenChange={setIsNewFolderOpen}
-              open={isNewFolderOpen}
-              showDefaultTrigger={false}
-            />
           </div>
         </div>
 
@@ -401,7 +283,7 @@ function RepositoryFileList({
       ) : (
         <EmptyState
           className="min-h-72"
-          description="Upload files, adjust search, or select another folder."
+          description="Try a different search or select another material group."
           icon={FileText}
           title="No files found"
         />

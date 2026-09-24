@@ -4,13 +4,9 @@ import {
   Archive,
   Bell,
   BookOpen,
-  Bot,
   ChevronLeft,
   ChevronRight,
   Circle,
-  Compass,
-  FolderOpen,
-  KeyRound,
   LayoutDashboard,
   User,
 } from "lucide-react"
@@ -27,13 +23,9 @@ import { cn } from "@/lib/utils"
 const SIDEBAR_STORAGE_KEY = "renote-sidebar-collapsed"
 
 const sidebarIcons = {
-  "AI Summaries": Bot,
-  "Access Requests": KeyRound,
   "Archive / Trash": Archive,
-  Collections: FolderOpen,
-  Explore: Compass,
   Home: LayoutDashboard,
-  "My Repositories": BookOpen,
+  Materials: BookOpen,
   Notifications: Bell,
   Profile: User,
 }

@@ -11,7 +11,6 @@ import {
   Quote,
   Sparkles,
 } from "lucide-react"
-import { toast } from "sonner"
 
 import EmptyState from "@/components/common/EmptyState"
 import PageShell from "@/components/common/PageShell"
@@ -19,10 +18,8 @@ import TrustBadge from "@/components/common/TrustBadge"
 import VisibilityBadge from "@/components/common/VisibilityBadge"
 import RepositoryMetricsRow from "@/components/repositories/RepositoryMetricsRow"
 import AISummaryDrawer from "@/components/workspace/AISummaryDrawer"
-import RepositoryDetailsDrawer from "@/components/workspace/RepositoryDetailsDrawer"
 import RepositoryFileList from "@/components/workspace/RepositoryFileList"
 import RepositoryHeader from "@/components/workspace/RepositoryHeader"
-import WorkspaceTabs from "@/components/workspace/WorkspaceTabs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -40,13 +37,6 @@ function sortByDepthAndName(folders) {
 
     return first.name.localeCompare(second.name)
   })
-}
-
-function createSlug(value) {
-  return String(value ?? "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
 }
 
 function getFolderName(selectedFolderId, folders) {
@@ -368,7 +358,12 @@ function WorkspaceActivityPanel({ files, folders, repository, summaries }) {
 
 function RepositoryWorkspacePage() {
   const { repositoryId } = useParams()
-  const repository = mockRepositories.find((item) => item.id === repositoryId)
+  const repository = mockRepositories.find(
+    (item) =>
+      item.id === repositoryId &&
+      item.ownerRole === "faculty" &&
+      item.status === "active"
+  )
   const baseFolders = useMemo(
     () =>
       sortByDepthAndName(
@@ -384,26 +379,24 @@ function RepositoryWorkspacePage() {
     () => mockSummaries.filter((summary) => summary.repositoryId === repositoryId),
     [repositoryId]
   )
-  const [folders, setFolders] = useState(baseFolders)
-  const [files, setFiles] = useState(baseFiles)
+  const folders = baseFolders
+  const files = baseFiles
   const [selectedFolderId, setSelectedFolderId] = useState("all")
   const [fileQuery, setFileQuery] = useState("")
   const [sortBy, setSortBy] = useState("updated")
   const [viewMode, setViewMode] = useState("list")
+  // Legacy overview, summary-history, and activity panels remain below for later review.
+  // No active control switches away from the resource list in this cleanup step.
   const [activeTab, setActiveTab] = useState("files")
   const [isAiOpen, setIsAiOpen] = useState(false)
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
   useEffect(() => {
-    setFolders(baseFolders)
-    setFiles(baseFiles)
     setSelectedFolderId("all")
     setFileQuery("")
     setSortBy("updated")
     setViewMode("list")
     setActiveTab("files")
     setIsAiOpen(false)
-    setIsDetailsOpen(false)
   }, [baseFiles, baseFolders])
 
   const visibleFiles = useMemo(
@@ -439,50 +432,6 @@ function RepositoryWorkspacePage() {
     })
   }, [fileQuery, sortBy, visibleFiles])
   const selectedFolderName = getFolderName(selectedFolderId, folders)
-  const selectedFolder = folders.find((folder) => folder.id === selectedFolderId)
-  const selectedFolderDepth = selectedFolder?.depth ?? 0
-
-  function handleCreateFolder({ name, parentId }) {
-    const parentFolder = folders.find((folder) => folder.id === parentId)
-    const createdAt = new Date().toISOString()
-    const newFolder = {
-      createdAt,
-      depth: parentFolder ? parentFolder.depth + 1 : 0,
-      id: `folder-${createSlug(name) || "prototype"}-${Date.now()}`,
-      name,
-      parentId: parentId ?? null,
-      repositoryId,
-    }
-
-    setFolders((currentFolders) =>
-      sortByDepthAndName([...currentFolders, newFolder])
-    )
-    toast("Updated locally for this demo.")
-  }
-
-  function handleUploadFile({ extension, fileName, folderId, size }) {
-    const now = new Date().toISOString()
-    const normalizedExtension = extension === "url" ? undefined : extension
-    const fileType = extension === "url" ? "url" : undefined
-
-    setFiles((currentFiles) => [
-      {
-        extension: normalizedExtension,
-        folderId,
-        id: `file-${createSlug(fileName) || "prototype"}-${Date.now()}`,
-        name: fileName,
-        ownerName: repository?.ownerName ?? "ReNote User",
-        repositoryId,
-        size: size || "Prototype file",
-        summaryAvailable: false,
-        type: fileType,
-        updatedAt: now,
-        uploadedAt: now,
-      },
-      ...currentFiles,
-    ])
-    toast("Updated locally for this demo.")
-  }
 
   if (!repository) {
     return (
@@ -490,12 +439,12 @@ function RepositoryWorkspacePage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/my-repositories">Back to repositories</Link>
+              <Link to="/app/my-repositories">Back to materials</Link>
             </Button>
           }
-          description="The repository route does not match any mock repository."
+          description="This material space could not be found in the prototype."
           icon={Library}
-          title="Repository not found"
+          title="Materials not found"
         />
       </PageShell>
     )
@@ -506,16 +455,11 @@ function RepositoryWorkspacePage() {
       <Button asChild className="w-fit" size="sm" variant="ghost">
         <Link to="/app/my-repositories">
           <ArrowLeft className="size-4" />
-          Back to My Repositories
+          Back to Materials
         </Link>
       </Button>
 
-      <RepositoryHeader
-        onOpenDetails={() => setIsDetailsOpen(true)}
-        repository={repository}
-      />
-
-      <WorkspaceTabs onValueChange={setActiveTab} value={activeTab} />
+      <RepositoryHeader repository={repository} />
 
       {activeTab === "overview" ? (
         <WorkspaceOverviewPanel
@@ -531,12 +475,9 @@ function RepositoryWorkspacePage() {
           allFiles={files}
           files={displayedFiles}
           folders={folders}
-          onCreateFolder={handleCreateFolder}
           onOpenAi={() => setIsAiOpen(true)}
           onSelectFolder={setSelectedFolderId}
-          onUploadFile={handleUploadFile}
           query={fileQuery}
-          selectedFolderDepth={selectedFolderDepth}
           selectedFolderId={selectedFolderId}
           selectedFolderName={selectedFolderName}
           setQuery={setFileQuery}
@@ -568,14 +509,6 @@ function RepositoryWorkspacePage() {
         summaries={summaries}
       />
 
-      <RepositoryDetailsDrawer
-        files={files}
-        folders={folders}
-        isOpen={isDetailsOpen}
-        onOpenChange={setIsDetailsOpen}
-        repository={repository}
-        summaries={summaries}
-      />
     </PageShell>
   )
 }

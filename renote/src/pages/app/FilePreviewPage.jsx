@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useParams } from "react-router"
 import {
   ArrowLeft,
-  BookOpen,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -27,8 +26,6 @@ import { toast } from "sonner"
 
 import EmptyState from "@/components/common/EmptyState"
 import PageShell from "@/components/common/PageShell"
-import TrustBadge from "@/components/common/TrustBadge"
-import VisibilityBadge from "@/components/common/VisibilityBadge"
 import FileTypeIcon from "@/components/files/FileTypeIcon"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -45,15 +42,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { mockFiles, mockFolders, mockRepositories, mockSummaries } from "@/data"
 import { cn } from "@/lib/utils"
-import { getSummaryRefinementCount } from "@/utils/summaryRefinements"
 
 const summaryTypes = ["Quick", "Detailed", "Key Points", "Study Guide"]
 const citationFormats = ["APA", "MLA", "Chicago", "BibTeX"]
@@ -598,7 +592,7 @@ function FileBreadcrumb({ file, folder, repository }) {
       className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
     >
       <Link className="transition hover:text-primary" to="/app/my-repositories">
-        My Repositories
+        Materials
       </Link>
       <span>/</span>
       <Link
@@ -654,17 +648,6 @@ function FileHeader({ file, folder, repository }) {
         <div className="flex flex-wrap items-center gap-2">
           <Button
             onClick={() =>
-              toast("Rename will be connected during backend integration.")
-            }
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            <Pencil className="size-4" />
-            Rename
-          </Button>
-          <Button
-            onClick={() =>
               toast("Download will be connected during backend integration.")
             }
             size="sm"
@@ -674,34 +657,6 @@ function FileHeader({ file, folder, repository }) {
             <Download className="size-4" />
             Download
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button aria-label="More file actions" size="icon-sm" variant="ghost">
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>File actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onSelect={() =>
-                  toast("Move file will be connected during backend integration.")
-                }
-              >
-                Move to folder
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() =>
-                  toast("Share file will be connected during backend integration.")
-                }
-              >
-                Share
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive">
-                Archive file
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </section>
@@ -1141,7 +1096,6 @@ function AskAiSection() {
 
 function SummaryPanel({ summary }) {
   const [summaryType, setSummaryType] = useState("Quick")
-  const refinementCount = getSummaryRefinementCount(summary)
   const keyPoints =
     summary?.content?.importantConcepts ??
     summary?.content?.reviewNotes ??
@@ -1232,21 +1186,6 @@ function SummaryPanel({ summary }) {
         Generate Summary
       </Button>
 
-      {summary ? (
-        <div className="space-y-2">
-          {refinementCount > 1 ? (
-            <p className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] px-3 py-2 text-xs leading-5 text-muted-foreground dark:border-primary/20 dark:bg-primary/5">
-              {refinementCount} refinement versions are available.
-            </p>
-          ) : null}
-          <Button asChild className="w-full" variant="outline">
-            <Link to={`/app/summaries/${summary.id}`}>
-              <BookOpen className="size-4" />
-              {refinementCount > 1 ? "View refinement history" : "View full summary"}
-            </Link>
-          </Button>
-        </div>
-      ) : null}
     </div>
   )
 }
@@ -1473,18 +1412,11 @@ function DetailsPanel({ file, folder, repository }) {
         <DetailRow label="Type" value={getFileTypeLabel(file)} />
         <DetailRow label="Size" value={file.size} />
         {metric ? <DetailRow label={metric.label} value={metric.value} /> : null}
-        <DetailRow label="Repository" value={repository.title} />
-        <DetailRow label="Folder" value={folder?.name ?? "Root level"} />
+        <DetailRow label="Material space" value={repository.title} />
+        <DetailRow label="Group" value={folder?.name ?? "All files"} />
         <DetailRow label="Uploaded" value={formatDate(file.uploadedAt)} />
         <DetailRow label="Updated" value={formatDate(file.updatedAt ?? file.uploadedAt)} />
       </dl>
-
-      <div className="flex flex-wrap gap-2">
-        <VisibilityBadge visibility={repository.visibility} />
-        <TrustBadge level={repository.trustLabel}>
-          {toTitleCase(repository.trustLabel)}
-        </TrustBadge>
-      </div>
 
       <div className="space-y-2">
         <p className="text-xs font-medium text-muted-foreground">Tags</p>
@@ -1608,7 +1540,12 @@ function FilePreviewPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const file = mockFiles.find((item) => item.id === fileId)
   const repository = file
-    ? mockRepositories.find((item) => item.id === file.repositoryId)
+    ? mockRepositories.find(
+        (item) =>
+          item.id === file.repositoryId &&
+          item.ownerRole === "faculty" &&
+          item.status === "active"
+      )
     : null
   const folder = file
     ? mockFolders.find((item) => item.id === file.folderId)
@@ -1637,7 +1574,7 @@ function FilePreviewPage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/my-repositories">Back to My Repositories</Link>
+              <Link to="/app/my-repositories">Back to Materials</Link>
             </Button>
           }
           description="This prototype file could not be found."

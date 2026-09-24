@@ -1,5 +1,5 @@
 import { Link } from "react-router"
-import { ArrowRight, Compass } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
@@ -10,11 +10,10 @@ function CTASection() {
         <div className="mx-auto max-w-3xl space-y-6 text-center">
           <div className="space-y-3">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Start organizing academic resources with ReNote.
+              Keep course materials easy to find with ReNote.
             </h2>
             <p className="text-muted-foreground">
-              Bring repositories, folders, summaries, collections, and access
-              workflows into one clean academic workspace.
+              A focused workspace for faculty materials and student learning.
             </p>
           </div>
 
@@ -30,10 +29,7 @@ function CTASection() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/explore-public">
-                <Compass className="size-4" />
-                Explore Public Resources
-              </Link>
+              <Link to="/sign-in">Sign In</Link>
             </Button>
           </div>
         </div>

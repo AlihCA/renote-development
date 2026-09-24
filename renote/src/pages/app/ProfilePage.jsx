@@ -4,7 +4,6 @@ import {
   BookOpen,
   CalendarDays,
   Download,
-  Eye,
   LogOut,
   Mail,
   Save,
@@ -17,17 +16,9 @@ import { toast } from "sonner"
 
 import PageHeader from "@/components/common/PageHeader"
 import PageShell from "@/components/common/PageShell"
-import TrustBadge from "@/components/common/TrustBadge"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { mockUsers } from "@/data"
 import { cn } from "@/lib/utils"
 
@@ -37,19 +28,14 @@ const prototypeProfile = {
   bio: "Interested in capstone documentation, academic knowledge sharing, and practical security review materials.",
   email: "abinalalihsahcanda@gmail.com",
   joinedLabel: "Prototype account since June 2026",
-  trustLabel: "community",
   username: "Alih.CA",
 }
 
 const roleDescriptions = {
   faculty:
-    "Faculty accounts can publish trusted learning resources, review repositories, and guide students through curated academic materials.",
-  guest:
-    "Guest accounts can preview shared materials and request access where repository owners allow it.",
-  institution:
-    "Institution accounts can publish official repositories, templates, and verified study resources for the academic community.",
+    "Faculty course management and publishing controls are planned for a later step.",
   student:
-    "Student accounts can create repositories, organize resources, save collections, request access, and review AI summaries.",
+    "Students will access materials made available to their courses.",
 }
 
 function formatRole(role) {
@@ -102,25 +88,6 @@ function SectionCard({ children, className, description, icon: Icon, title }) {
   )
 }
 
-function PreferenceToggle({ checked, description, label, onChange }) {
-  return (
-    <label className="flex cursor-pointer items-start justify-between gap-4 rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 transition-colors hover:border-primary/30 dark:border-primary/20 dark:bg-primary/5">
-      <span className="min-w-0">
-        <span className="block text-sm font-medium">{label}</span>
-        <span className="mt-1 block text-sm leading-6 text-muted-foreground">
-          {description}
-        </span>
-      </span>
-      <input
-        checked={checked}
-        className="mt-1 size-4 accent-primary"
-        onChange={(event) => onChange(event.target.checked)}
-        type="checkbox"
-      />
-    </label>
-  )
-}
-
 function ProfileSummaryCard({ profile, user }) {
   return (
     <SectionCard description={profile.joinedLabel} icon={UserRound} title="Profile Summary">
@@ -142,25 +109,10 @@ function ProfileSummaryCard({ profile, user }) {
             <Badge className="rounded-lg bg-primary/10 text-primary" variant="secondary">
               {formatRole(user.role)}
             </Badge>
-            <TrustBadge level={profile.trustLabel}>Community</TrustBadge>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-3 text-center dark:border-primary/20 dark:bg-primary/5">
-          <p className="text-lg font-semibold">{user.stats.repositories}</p>
-          <p className="text-xs text-muted-foreground">Repositories</p>
-        </div>
-        <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-3 text-center dark:border-primary/20 dark:bg-primary/5">
-          <p className="text-lg font-semibold">{user.stats.collections}</p>
-          <p className="text-xs text-muted-foreground">Collections</p>
-        </div>
-        <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-3 text-center dark:border-primary/20 dark:bg-primary/5">
-          <p className="text-lg font-semibold">{user.stats.summaries}</p>
-          <p className="text-xs text-muted-foreground">Summaries</p>
-        </div>
-      </div>
     </SectionCard>
   )
 }
@@ -176,16 +128,9 @@ function ProfilePage() {
     displayName: user.name,
     email: prototypeProfile.email,
     joinedLabel: prototypeProfile.joinedLabel,
-    trustLabel: user.trustLabel ?? prototypeProfile.trustLabel,
     username: prototypeProfile.username,
   })
   const [hasSyncedClerkProfile, setHasSyncedClerkProfile] = useState(false)
-  const [preferences, setPreferences] = useState({
-    allowAccessRequests: true,
-    defaultSummaryType: "detailed",
-    defaultVisibility: "restricted",
-    showPublicProfile: true,
-  })
   const profileUser = {
     ...user,
     avatarInitials: getInitials(profile.displayName),
@@ -213,19 +158,8 @@ function ProfilePage() {
     }))
   }
 
-  function updatePreference(key, value) {
-    setPreferences((currentPreferences) => ({
-      ...currentPreferences,
-      [key]: value,
-    }))
-  }
-
   function saveProfile(event) {
     event.preventDefault()
-    toast("Updated locally for this demo.")
-  }
-
-  function savePreferences() {
     toast("Updated locally for this demo.")
   }
 
@@ -236,7 +170,7 @@ function ProfilePage() {
   return (
     <PageShell className="space-y-7">
       <PageHeader
-        description="Manage your ReNote identity, role preview, and workspace preferences."
+        description="Review your prototype account details."
         icon={UserRound}
         title="Profile"
       />
@@ -245,21 +179,18 @@ function ProfilePage() {
         <div className="space-y-6">
           <ProfileSummaryCard profile={profile} user={profileUser} />
 
-          <SectionCard icon={ShieldCheck} title="Role and Trust">
+          <SectionCard icon={ShieldCheck} title="Role preview">
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 <Badge className="rounded-lg bg-primary/10 text-primary" variant="secondary">
                   Current role: {formatRole(user.role)}
                 </Badge>
-                <TrustBadge level={profile.trustLabel}>Community</TrustBadge>
               </div>
               <p className="text-sm leading-6 text-muted-foreground">
-                {roleDescriptions[user.role] ?? roleDescriptions.student} Trust labels
-                help viewers understand the source credibility of shared materials.
+                {roleDescriptions[user.role] ?? roleDescriptions.student}
               </p>
               <div className="rounded-2xl border border-[#E9C8F2]/70 bg-[#FCF7FF] p-4 text-sm leading-6 text-muted-foreground dark:border-primary/20 dark:bg-primary/5">
-                Role verification and institutional trust labels will be connected
-                during full authentication and administrative setup.
+                This mock profile does not assign or verify a production role.
               </div>
             </div>
           </SectionCard>
@@ -358,67 +289,6 @@ function ProfilePage() {
             </form>
           </SectionCard>
 
-          <SectionCard
-            description="Set the defaults ReNote should use when creating and sharing study resources."
-            icon={Eye}
-            title="Workspace Preferences"
-          >
-            <div className="space-y-4">
-              <PreferenceToggle
-                checked={preferences.allowAccessRequests}
-                description="Let other users request access to restricted or private repositories."
-                label="Allow access requests"
-                onChange={(value) => updatePreference("allowAccessRequests", value)}
-              />
-              <PreferenceToggle
-                checked={preferences.showPublicProfile}
-                description="Show your basic profile details beside shared public materials."
-                label="Show public profile"
-                onChange={(value) => updatePreference("showPublicProfile", value)}
-              />
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Default repository visibility">
-                  <Select
-                    onValueChange={(value) => updatePreference("defaultVisibility", value)}
-                    value={preferences.defaultVisibility}
-                  >
-                    <SelectTrigger className="w-full border-border bg-background/80">
-                      <SelectValue placeholder="Choose visibility" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="restricted">Restricted</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field label="Default summary type">
-                  <Select
-                    onValueChange={(value) => updatePreference("defaultSummaryType", value)}
-                    value={preferences.defaultSummaryType}
-                  >
-                    <SelectTrigger className="w-full border-border bg-background/80">
-                      <SelectValue placeholder="Choose summary type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="quick">Quick Summary</SelectItem>
-                      <SelectItem value="detailed">Detailed Summary</SelectItem>
-                      <SelectItem value="concepts">Important Concepts</SelectItem>
-                      <SelectItem value="review">Review Notes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
-
-              <div className="flex justify-end border-t border-[#E9C8F2]/70 pt-5 dark:border-primary/20">
-                <Button onClick={savePreferences} type="button" variant="outline">
-                  <Save className="size-4" />
-                  Save preferences
-                </Button>
-              </div>
-            </div>
-          </SectionCard>
         </div>
       </div>
     </PageShell>

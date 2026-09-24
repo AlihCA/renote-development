@@ -6,7 +6,6 @@ import {
   Clock3,
   FileQuestion,
   MoreHorizontal,
-  Plus,
   Send,
   XCircle,
 } from "lucide-react"

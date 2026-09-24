@@ -27,7 +27,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { mockFiles, mockRepositories, mockSummaries } from "@/data"
@@ -341,7 +340,7 @@ function SummaryDetailsPage() {
         <EmptyState
           action={
             <Button asChild>
-              <Link to="/app/summaries">Back to AI Summary History</Link>
+              <Link to="/app/my-repositories">Back to Materials</Link>
             </Button>
           }
           description="This prototype summary could not be found."
@@ -358,9 +357,9 @@ function SummaryDetailsPage() {
   return (
     <PageShell className="space-y-7">
       <Button asChild className="w-fit" variant="ghost">
-        <Link to="/app/summaries">
+        <Link to={source.file ? `/app/files/${source.file.id}` : "/app/my-repositories"}>
           <ArrowLeft className="size-4" />
-          Back to AI Summary History
+          Back to Materials
         </Link>
       </Button>
 
@@ -420,19 +419,11 @@ function SummaryDetailsPage() {
               <DropdownMenuLabel>Summary actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onSelect={() =>
-                  toast("Share summary will be connected during backend integration.")
-                }
-              >
-                Share summary
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() =>
                   toast("Regenerate summary will be connected during backend integration.")
                 }
               >
                 Regenerate
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() =>
                   toast("Archive summary will be connected during backend integration.")

@@ -10,11 +10,7 @@ import {
 import {
   Bell,
   BookOpen,
-  Bot,
   Circle,
-  Compass,
-  FolderOpen,
-  KeyRound,
   LayoutDashboard,
   Menu,
   Moon,
@@ -47,13 +43,9 @@ import useTheme from "@/hooks/useTheme"
 import { cn } from "@/lib/utils"
 
 const mobileNavIcons = {
-  "AI Summaries": Bot,
-  "Access Requests": KeyRound,
   "Archive / Trash": Archive,
-  Collections: FolderOpen,
-  Explore: Compass,
   Home: LayoutDashboard,
-  "My Repositories": BookOpen,
+  Materials: BookOpen,
   Notifications: Bell,
   Profile: User,
 }
@@ -80,15 +72,15 @@ function AppTopbar() {
   const { theme, toggleTheme } = useTheme()
   const { user } = useUser()
   const isDark = theme === "dark"
-  const isAppExplore = location.pathname === "/app/explore"
+  const isMaterialsPage = location.pathname === "/app/my-repositories"
   const exploreSearchQuery = searchParams.get("q") ?? ""
-  const searchValue = isAppExplore ? exploreSearchQuery : localSearch
+  const searchValue = isMaterialsPage ? exploreSearchQuery : localSearch
   const displayName = user?.firstName ?? user?.fullName ?? "ReNote User"
 
   function handleSearchChange(event) {
     const value = event.target.value
 
-    if (!isAppExplore) {
+    if (!isMaterialsPage) {
       setLocalSearch(value)
       return
     }
@@ -111,11 +103,11 @@ function AppTopbar() {
 
     if (!query) {
       setLocalSearch("")
-      navigate("/app/explore")
+      navigate("/app/my-repositories")
       return
     }
 
-    navigate(`/app/explore?q=${encodeURIComponent(query)}`)
+    navigate(`/app/my-repositories?q=${encodeURIComponent(query)}`)
   }
 
   return (
@@ -192,7 +184,7 @@ function AppTopbar() {
             <Input
               className="border-0 bg-transparent pl-9 shadow-none focus-visible:border-0 focus-visible:ring-0"
               onChange={handleSearchChange}
-              placeholder="Search repositories"
+              placeholder="Search materials"
               type="search"
               value={searchValue}
             />

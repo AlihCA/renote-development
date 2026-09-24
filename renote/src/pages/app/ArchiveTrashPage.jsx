@@ -44,7 +44,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { mockArchive } from "@/data"
 import { cn } from "@/lib/utils"
 
 const initialFilters = {
@@ -55,9 +54,7 @@ const initialFilters = {
 
 const archiveTabs = [
   { label: "All", value: "all" },
-  { label: "Repositories", value: "repository" },
-  { label: "Collections", value: "collection" },
-  { label: "Summaries", value: "summary" },
+  { label: "Materials", value: "repository" },
   { label: "Files", value: "file" },
 ]
 
@@ -233,7 +230,7 @@ function DeleteArchiveDialog({ item, onConfirm, onOpenChange, open }) {
 
 function ArchiveTrashPage() {
   const [filters, setFilters] = useState(initialFilters)
-  const [archivedItems, setArchivedItems] = useState(mockArchive)
+  const [archivedItems, setArchivedItems] = useState([])
   const [deleteCandidate, setDeleteCandidate] = useState(null)
 
   const filteredItems = useMemo(() => {
@@ -308,7 +305,7 @@ function ArchiveTrashPage() {
             Empty Trash
           </Button>
         }
-        description="Review archived repositories, collections, summaries, and removed workspace items."
+        description="Review archived materials and files when archive data is connected."
         icon={Archive}
         title="Archive / Trash"
       />
